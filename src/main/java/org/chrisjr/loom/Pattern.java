@@ -1,0 +1,89 @@
+package org.chrisjr.loom;
+
+import java.awt.Color;
+
+/**
+ * @author chrisjr
+ * 
+ *         The base class for patterns in Loom. Patterns may be discrete or
+ *         continuous.
+ * 
+ */
+public class Pattern {
+	Loom myLoom;
+
+	private String patternString = "";
+
+	/**
+	 * Constructor for an empty Pattern.
+	 * 
+	 * @param loom
+	 *            the loom that holds this pattern (can be null)
+	 */
+	public Pattern(Loom loom) {
+		this(loom, "");
+	}
+
+	/**
+	 * Constructor for a Pattern initialized by a string.
+	 * 
+	 * @param loom
+	 *            the loom that holds this pattern (can be null)
+	 * @param string
+	 *            a string declaring the pattern
+	 * 
+	 */
+	public Pattern(Loom loom, String string) {
+		myLoom = loom;
+		if (myLoom != null)
+			addTo(myLoom);
+	}
+
+	protected void addTo(Loom loom) {
+		loom.patterns.add(this);
+	}
+
+	/**
+	 * @param string
+	 *            a string such as "10010010" describing a pattern
+	 * @return the updated pattern
+	 */
+	public Pattern extend(String string) {
+		setPatternString(getPatternString() + string);
+		return this;
+	}
+
+	/**
+	 * Set a mapping from the pattern's events to sounds
+	 * 
+	 * @param instrument
+	 *            the name of a MIDI instrument to trigger
+	 * @return the updated pattern
+	 */
+	public Pattern asSound(String instrument) {
+		return this;
+	}
+
+	/**
+	 * Set a mapping from the pattern's events to colors
+	 * 
+	 * @param colors
+	 *            a list of colors to represent each state
+	 * @return the updated pattern
+	 */
+	public Pattern asColor(Color... colors) {
+		return this;
+	}
+
+	public Color asColor() {
+		return Color.black;
+	}
+
+	public String getPatternString() {
+		return patternString;
+	}
+
+	public void setPatternString(String patternString) {
+		this.patternString = patternString;
+	}
+}
