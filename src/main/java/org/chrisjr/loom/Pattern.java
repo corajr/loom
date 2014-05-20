@@ -1,6 +1,7 @@
 package org.chrisjr.loom;
 
 import java.awt.Color;
+import java.util.*;
 
 /**
  * @author chrisjr
@@ -13,6 +14,7 @@ public class Pattern {
 	Loom myLoom;
 
 	private String patternString = "";
+	private Map<String, Object> outputMappings;
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -37,6 +39,8 @@ public class Pattern {
 		myLoom = loom;
 		if (myLoom != null)
 			addTo(myLoom);
+		patternString = string;
+		outputMappings = new HashMap<String, Object>();
 	}
 
 	protected void addTo(Loom loom) {
@@ -61,6 +65,7 @@ public class Pattern {
 	 * @return the updated pattern
 	 */
 	public Pattern asSound(String instrument) {
+		outputMappings.put("sound", instrument);
 		return this;
 	}
 
@@ -72,11 +77,21 @@ public class Pattern {
 	 * @return the updated pattern
 	 */
 	public Pattern asColor(Color... colors) {
+		outputMappings.put("color", colors);
 		return this;
 	}
 
 	public Color asColor() {
 		return Color.black;
+	}
+	
+	public Pattern asRunnable(Runnable runnable) {
+		outputMappings.put("runnable", runnable);
+		return this;
+	}
+	
+	public Runnable asRunnable() {
+		return (Runnable) outputMappings.get("runnable");
 	}
 
 	public String getPatternString() {

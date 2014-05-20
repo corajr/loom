@@ -29,26 +29,31 @@ package org.chrisjr.loom;
 
 import java.util.*;
 
+import org.chrisjr.loom.time.*;
+
 import processing.core.*;
 
 /**
- * This is a template class and can be used to start a new processing library or tool.
- * Make sure you rename this class as well as the name of the example package 'template' 
- * to your own library or tool naming convention.
+ * This is a template class and can be used to start a new processing library or
+ * tool. Make sure you rename this class as well as the name of the example
+ * package 'template' to your own library or tool naming convention.
  * 
- * @example Hello 
+ * @example Hello
  * 
- * (the tag @example followed by the name of an example included in folder 'examples' will
- * automatically include the example in the javadoc.)
- *
+ *          (the tag @example followed by the name of an example included in
+ *          folder 'examples' will automatically include the example in the
+ *          javadoc.)
+ * 
  */
 
 public class Loom {
 	PApplet myParent;
-	
+
 	public List<Pattern> patterns;
 
-	public final static String VERSION = "##library.prettyVersion##";	
+	private Scheduler scheduler;
+
+	public final static String VERSION = "##library.prettyVersion##";
 
 	/**
 	 * a Constructor, usually called in the setup() method in your sketch to
@@ -58,15 +63,29 @@ public class Loom {
 	 * @param theParent
 	 */
 	public Loom(PApplet theParent) {
+		this(theParent, new RealTimeScheduler());
+	}
+
+	/**
+	 * Constructor for a new Loom with a particular type of scheduling
+	 * 
+	 * @param theParent
+	 *            parent Processing sketch
+	 * @param theScheduler
+	 *            choose real-time or non-real-time scheduling
+	 */
+	public Loom(PApplet theParent, Scheduler theScheduler) {
 		myParent = theParent;
 		patterns = new ArrayList<Pattern>();
+		scheduler = theScheduler;
 		welcome();
 	}
-	
+
 	private void welcome() {
-		System.out.println("##library.name## ##library.prettyVersion## by ##author##");
+		System.out
+				.println("##library.name## ##library.prettyVersion## by ##author##");
 	}
-		
+
 	/**
 	 * return the version of the library.
 	 * 
@@ -74,5 +93,17 @@ public class Loom {
 	 */
 	public static String version() {
 		return VERSION;
+	}
+	
+	public void play() {
+		scheduler.play();
+	}
+
+	public void pause() {
+		scheduler.pause();
+	}
+	
+	public void stop() {
+		scheduler.stop();
 	}
 }
