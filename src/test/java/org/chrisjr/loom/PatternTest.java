@@ -3,6 +3,8 @@ package org.chrisjr.loom;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import java.awt.Color;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +16,7 @@ public class PatternTest {
 	@Before
 	public void setUp() throws Exception {
 		loom = new Loom(null); // PApplet is not needed here
-		pattern = new ContinuousPattern(loom, 0.5);
+		pattern = new ContinuousPattern(loom, 0.6);
 	}
 
 	@After
@@ -26,22 +28,33 @@ public class PatternTest {
 	@Test
 	public void asInt() {
 		pattern.asInt(0, 100);
-		assertThat(pattern.asInt(), is(equalTo(50)));
+		assertThat(pattern.asInt(), is(equalTo(60)));
 	}
 
 	@Test
 	public void asColor() {
-		fail("Not yet implemented");
+		int black = Color.BLACK.getRGB();
+		int white = Color.WHITE.getRGB();
+		pattern.asColor(black, white);
+		assertThat(pattern.asColor(), is(equalTo(black)));
+
+		pattern.asColor(white, black);
+		assertThat(pattern.asColor(), is(equalTo(white)));
 	}
 
 	@Test
 	public void asColorBlended() {
-		fail("Not yet implemented");
+		int black = Color.BLACK.getRGB();
+		int white = Color.WHITE.getRGB();
+		int gray = 0xff999999;
+		pattern.asColorBlended(black, white);
+		assertThat(pattern.asColorBlended(), is(equalTo(gray)));
 	}
 
 	@Test
 	public void asObject() {
-		fail("Not yet implemented");
+		pattern.asObject(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+		assertThat((Integer) pattern.asObject(), is(equalTo(5)));
 	}
 
 }

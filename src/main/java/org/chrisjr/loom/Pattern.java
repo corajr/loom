@@ -2,7 +2,6 @@ package org.chrisjr.loom;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import java.awt.Color;
 import java.util.concurrent.*;
 
 /**
@@ -101,16 +100,23 @@ public abstract class Pattern {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColor(Color... _colors) {
-		return asObject((Object[]) _colors);
+	public Pattern asColor(int... _colors) {
+		final int[] colors = _colors;
+		outputMappings.put(Mapping.COLOR, new Callable<Integer>() {
+			public Integer call() {
+				int i = (int) getValue() * (colors.length - 1);
+				return colors[i];
+			}
+		});
+		return this;
 	}
 
 	/**
 	 * @return an the "color" data type (32-bit int)
 	 */
 	public int asColor() {
-		Color result = (Color) getAs(Mapping.COLOR);
-		return result != null ? result.getRGB() : Color.BLACK.getRGB();
+		Integer result = (Integer) getAs(Mapping.COLOR);
+		return result != null ? result : 0x00000000;
 	}
 
 	/**
@@ -125,14 +131,14 @@ public abstract class Pattern {
 		final int[] colors = _colors;
 		outputMappings.put(Mapping.COLOR_BLEND, new Callable<Integer>() {
 			public Integer call() {
-				float position = (float) getValue() * colors.length;
+				float position = (float) getValue() * (colors.length - 1);
 				int i = (int) position;
 				float diff = position - i;
 
 				int result = 0x00000000;
 				if (colors.length == 1) {
-
-				} else if (i + 1 < colors.length - 1) {
+					result = colors[0];
+				} else if (i + 1 < colors.length) {
 					result = PApplet.lerpColor(colors[i], colors[i + 1], diff,
 							PConstants.HSB);
 				}
@@ -151,7 +157,7 @@ public abstract class Pattern {
 		final Object[] objects = _objects;
 		outputMappings.put(Mapping.OBJECT, new Callable<Object>() {
 			public Object call() {
-				int i = (int) getValue() * objects.length;
+				int i = (int) (getValue() * (objects.length - 1));
 				return objects[i];
 			}
 		});
