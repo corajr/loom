@@ -1,20 +1,19 @@
 package org.chrisjr.loom;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.concurrent.*;
 
 /**
+ *        The base class for patterns in Loom. Patterns may be discrete or
+ *        continuous. A DiscretePattern is a series of Events, while a 
+ *        ContinuousPattern is a (closed-form) function of time.
+ *         
  * @author chrisjr
- * 
- *         The base class for patterns in Loom. Patterns may be discrete or
- *         continuous.
- * 
  */
-public class Pattern {
+public abstract class Pattern {
 	Loom myLoom;
 
-	private String patternString = "";
-	private Map<String, Object> outputMappings;
+	private ConcurrentMap<String, Callable<?>> outputMappings;
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -23,29 +22,17 @@ public class Pattern {
 	 *            the loom that holds this pattern (can be null)
 	 */
 	public Pattern(Loom loom) {
-		this(loom, "");
-	}
-
-	/**
-	 * Constructor for a Pattern initialized by a string.
-	 * 
-	 * @param loom
-	 *            the loom that holds this pattern (can be null)
-	 * @param string
-	 *            a string declaring the pattern
-	 * 
-	 */
-	public Pattern(Loom loom, String string) {
 		myLoom = loom;
 		if (myLoom != null)
 			addTo(myLoom);
-		patternString = string;
-		outputMappings = new HashMap<String, Object>();
+		outputMappings = new ConcurrentHashMap<String, Callable<?>>();
 	}
 
 	protected void addTo(Loom loom) {
 		loom.patterns.add(this);
 	}
+	
+	public abstract double getValue();
 
 	/**
 	 * @param string
@@ -53,8 +40,29 @@ public class Pattern {
 	 * @return the updated pattern
 	 */
 	public Pattern extend(String string) {
-		setPatternString(getPatternString() + string);
 		return this;
+	}
+	
+	public Pattern asInt(int _lo, int _hi) {
+		final int lo = _lo;
+		final int hi = _hi;
+		outputMappings.put("int", new Callable<Integer>() {
+			public Integer call() {
+				return (int) ((hi - lo) * getValue()) + lo;
+			}
+		});
+		return this;
+	}
+	
+	public int asInt() {
+		Callable<Integer> cb = (Callable<Integer>) outputMappings.get("int");
+		int result = 0;
+		try {
+			result = cb.call();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	/**
@@ -64,8 +72,13 @@ public class Pattern {
 	 *            the name of a MIDI instrument to trigger
 	 * @return the updated pattern
 	 */
-	public Pattern asSound(String instrument) {
-		outputMappings.put("sound", instrument);
+	public Pattern asSound(String _instrument) {
+		final String instrument = _instrument;
+		outputMappings.put("sound", new Callable<Void>() {
+			public Void call() {
+				return null;
+			}
+		});
 		return this;
 	}
 
@@ -76,8 +89,13 @@ public class Pattern {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColor(Color... colors) {
-		outputMappings.put("color", colors);
+	public Pattern asColor(Color... _colors) {
+		final Color[] colors = _colors;
+		outputMappings.put("color", new Callable<Color>() {
+			public Color call() {
+				return Color.black;
+			}
+		});
 		return this;
 	}
 
@@ -85,20 +103,12 @@ public class Pattern {
 		return Color.black;
 	}
 	
-	public Pattern asRunnable(Runnable runnable) {
-		outputMappings.put("runnable", runnable);
+	public Pattern asCallable(Callable callable) {
+		outputMappings.put("callable", callable);
 		return this;
 	}
 	
-	public Runnable asRunnable() {
-		return (Runnable) outputMappings.get("runnable");
-	}
-
-	public String getPatternString() {
-		return patternString;
-	}
-
-	public void setPatternString(String patternString) {
-		this.patternString = patternString;
+	public Callable asCallable() {
+		return (Callable) outputMappings.get("runnable");
 	}
 }
