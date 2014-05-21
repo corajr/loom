@@ -1,6 +1,6 @@
 package org.chrisjr.loom;
 
-import org.apache.commons.math3.fraction.Fraction;
+import org.chrisjr.loom.time.Interval;
 
 /**
  * @author chrisjr
@@ -10,13 +10,19 @@ import org.apache.commons.math3.fraction.Fraction;
  * (For "events" that vary over time, use a ContinuousPattern.)
  */
 public class Event {
-	Fraction start;
-	Fraction end;
-	double value;
+	final private Interval interval;
+	final private double value;
 
-	public Event(Fraction theStart, Fraction theEnd, double theValue) {
-		start = theStart;
-		end = theEnd;
-		value = theValue;
+	public Event(Interval _interval, double _value) {
+		interval = _interval;
+		value = _value;
+	}
+
+	public Interval getInterval() {
+		return interval;
+	}
+
+	public double getValue() {
+		return value;
 	}
 }
