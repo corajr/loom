@@ -156,6 +156,7 @@ ${line}
        <classpath>
 		<fileset dir="${project.lib}" includes="**/*.jar" />
        	<pathelement location="${project.bin}"/>
+       	<pathelement location="${classpath.local.location}/core.jar"/>
        	<pathelement location="./resources/libs/junit.jar"/>
        	<pathelement location="./resources/libs/hamcrest-all-1.3.jar"/>
        </classpath>
