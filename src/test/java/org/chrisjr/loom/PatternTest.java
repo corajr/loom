@@ -46,15 +46,15 @@ public class PatternTest {
 	public void asColorBlended() {
 		int black = Color.BLACK.getRGB();
 		int white = Color.WHITE.getRGB();
-		int gray = 0xff999999;
+		int gray60 = 0xff999999;
 		pattern.asColorBlended(black, white);
-		assertThat(pattern.asColorBlended(), is(equalTo(gray)));
+		assertThat(pattern.asColorBlended(), is(equalTo(gray60)));
 	}
 
 	@Test
 	public void asObject() {
-		pattern.asObject(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-		assertThat((Integer) pattern.asObject(), is(equalTo(5)));
+		pattern.asObject(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		assertThat((Integer) pattern.asObject(), is(equalTo(6)));
 	}
 
 }
