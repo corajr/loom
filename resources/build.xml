@@ -58,7 +58,7 @@
 	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
-			<pathelement location="./resources/code/ant-contrib-1.0b3.jar"/>
+			<pathelement location="./resources/libs/ant-contrib-1.0b3.jar"/>
 		</classpath>
 	</taskdef>
 
@@ -154,8 +154,8 @@ ${line}
      <junit haltonfailure="true"> 
        <classpath>
        	<pathelement location="${project.bin}"/>
-       	<pathelement location="./resources/code/junit.jar"/>
-       	<pathelement location="./resources/code/hamcrest-all-1.3.jar"/>
+       	<pathelement location="./resources/libs/junit.jar"/>
+       	<pathelement location="./resources/libs/hamcrest-all-1.3.jar"/>
        </classpath>
        <batchtest>
        	<fileset dir="src/test/java" includes="**/*.java" />
