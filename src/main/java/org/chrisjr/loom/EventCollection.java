@@ -89,10 +89,10 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 			BigFraction start = e.getInterval().getStart();
 			BigFraction end = e.getInterval().getEnd();
 
-			boolean startsBeforeQueryEnd = start.compareTo(queryEnd) <= 0;
-			boolean endsAfterQueryStart = end.compareTo(queryStart) >= 0;
+			boolean startsBeforeOrAtQueryEnd = start.compareTo(queryEnd) <= 0;
+			boolean endsAfterQueryStart = end.compareTo(queryStart) > 0;
 			
-			if (startsBeforeQueryEnd && endsAfterQueryStart) events.add(e);			
+			if (startsBeforeOrAtQueryEnd && endsAfterQueryStart) events.add(e);			
 		}
 		return events;
 	}

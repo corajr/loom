@@ -40,9 +40,7 @@ public class DiscretePatternTest {
 	@Test
 	public void canBeExtended() {
 		pattern.extend("0101");
-		for (Event e : pattern.events.values()) {
-			System.out.println(e.toString());
-		}
+
 		assertThat(pattern.getValue(), is(equalTo(0.0)));
 		scheduler.setElapsedMillis(251);
 		assertThat(pattern.getValue(), is(equalTo(1.0)));
