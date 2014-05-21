@@ -3,12 +3,15 @@ package org.chrisjr.loom;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.Collection;
 
 public class EventCollectionTest {
 	
@@ -47,9 +50,18 @@ public class EventCollectionTest {
 
 	@Test
 	public void initializeFromString() {
-		String sample = "01010";
+		String sample = "0101";
 		events = EventCollection.fromString(sample);
 		assertThat(events.size(), is(equalTo(sample.length())));		
+	}
+
+	@Test
+	public void getActiveEvents() {
+		String sample = "0101";
+		events = EventCollection.fromString(sample);
+		Interval interval = new Interval(new BigFraction(1,8), new BigFraction(3,8));
+		Collection<Event> results = events.getForInterval(interval);
+		assertThat(results.size(), is(equalTo(2)));
 	}
 	
 }

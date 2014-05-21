@@ -38,4 +38,9 @@ public class Interval {
 	public Interval multiply(int i) {
 		return multiply(new BigFraction(i));
 	}
+	
+	public String toString() {
+		String s = "[" + start.toString() + "," + end.toString() + "]";
+		return s.replaceAll(" ", "");
+	}
 }

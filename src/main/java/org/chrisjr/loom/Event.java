@@ -25,4 +25,8 @@ public class Event {
 	public double getValue() {
 		return value;
 	}
+	
+	public String toString() {
+		return "Event(" + interval.toString() + " == " + String.valueOf(value) + ")";
+	}
 }

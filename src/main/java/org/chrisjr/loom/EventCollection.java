@@ -33,8 +33,15 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 		// TODO specify this format and define a real parser
 		
 		int n = string.length();
+		
+		List<Integer> intValues = new ArrayList<Integer>(n);
 		for (int i = 0; i < n; i++) {
-			double value = (double) Integer.valueOf(string.substring(i, i+1));
+			intValues.add(Integer.parseInt(string.substring(i, i+1), 16));
+		}
+		int max = Collections.max(intValues);
+
+		for (int i = 0; i < n; i++) {
+			double value = ((double) intValues.get(i)) / max;
 			
 			BigFraction start = new BigFraction(i, n);
 			BigFraction end = start.add(new BigFraction(1, n));
@@ -51,12 +58,41 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 		put(e.getInterval().getStart(), e);
 	}
 	
+	public void addAll(Collection<Event> events) throws IllegalStateException {
+		for (Event e: events) {
+			add(e);
+		}
+	}
+	
+	public void addAfterwards(Collection<Event> events) throws IllegalStateException {
+		BigFraction end = getLatestEnd();
+		for (Event e: events) {
+			Interval newInterval = e.getInterval().add(end);
+			add(new Event(newInterval, e.getValue()));
+		}
+	}
+	
+	private BigFraction getLatestEnd() {
+		Event latest = null;
+		if (this.size() > 0) {
+			latest = this.descendingMap().firstEntry().getValue();			
+		}
+		return latest != null ? latest.getInterval().getEnd() : new BigFraction(0);
+	}
+	
 	public Collection<Event> getForInterval(Interval interval) {
+		BigFraction queryStart = interval.getStart();
+		BigFraction queryEnd = interval.getEnd();
+		
 		List<Event> events = new ArrayList<Event>();
 		for (Event e : this.values()) {
-			int startsCompared = e.getInterval().getStart().compareTo(interval.getStart());
-			int endsCompared = e.getInterval().getEnd().compareTo(interval.getEnd());
-			if (startsCompared >= 0 && endsCompared <= 0) events.add(e);			
+			BigFraction start = e.getInterval().getStart();
+			BigFraction end = e.getInterval().getEnd();
+
+			boolean startsBeforeQueryEnd = start.compareTo(queryEnd) <= 0;
+			boolean endsAfterQueryStart = end.compareTo(queryStart) >= 0;
+			
+			if (startsBeforeQueryEnd && endsAfterQueryStart) events.add(e);			
 		}
 		return events;
 	}
