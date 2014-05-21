@@ -36,11 +36,11 @@ public class ContinuousPatternTest {
 		scheduler.setElapsedMillis(250);
 		assertThat(pattern.getValue(), is(closeTo(1.0, epsilon)));
 		scheduler.setElapsedMillis(500);
-		assertThat(pattern.getValue(), is(closeTo(0.0, epsilon)));
+		assertThat(pattern.getValue(), is(closeTo(0.5, epsilon)));
 		scheduler.setElapsedMillis(750);
-		assertThat(pattern.getValue(), is(closeTo(-1.0, epsilon)));
-		scheduler.setElapsedMillis(1000);
 		assertThat(pattern.getValue(), is(closeTo(0.0, epsilon)));
+		scheduler.setElapsedMillis(1000);
+		assertThat(pattern.getValue(), is(closeTo(0.5, epsilon)));
 	}
 
 }
