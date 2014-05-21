@@ -28,8 +28,8 @@ public abstract class Scheduler {
 	/**
 	 * period of a complete cycle in milliseconds
 	 */
-	long periodMillis;
-	
+	long periodMillis = 1000;
+
 	State state = State.STOPPED;
 
 	BigFraction minimumResolution = new BigFraction(1, 1000);
@@ -59,5 +59,13 @@ public abstract class Scheduler {
 
 	public void stop() {
 		state = State.STOPPED;
+	}
+
+	public long getPeriod() {
+		return periodMillis;
+	}
+
+	public void setPeriod(long periodMillis) {
+		this.periodMillis = periodMillis;
 	}
 }

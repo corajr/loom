@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 public abstract class Pattern {
 	Loom myLoom;
 	
-	private double defaultValue;
+	protected double defaultValue;
 
 	public enum Mapping {
 		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI_ON, OBJECT

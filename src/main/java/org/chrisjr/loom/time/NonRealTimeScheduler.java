@@ -13,8 +13,8 @@ public class NonRealTimeScheduler extends Scheduler {
 		super.play();		
 	}
 
-	void setNow(long _elapsedMillis) {
-		elapsedMillis = _elapsedMillis;		
+	public void setElapsedMillis(long elapsedMillis) {
+		this.elapsedMillis = elapsedMillis;		
 	}
 	
 	public long getElapsedMillis() {

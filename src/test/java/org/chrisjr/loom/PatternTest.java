@@ -14,7 +14,7 @@ public class PatternTest {
 	@Before
 	public void setUp() throws Exception {
 		loom = new Loom(null); // PApplet is not needed here
-		pattern = new DiscretePattern(null);
+		pattern = new ContinuousPattern(loom, 0.5);
 	}
 
 	@After
@@ -26,6 +26,7 @@ public class PatternTest {
 	@Test
 	public void asInt() {
 		pattern.asInt(0, 100);
+		assertThat(pattern.asInt(), is(equalTo(50)));
 	}
 
 	@Test

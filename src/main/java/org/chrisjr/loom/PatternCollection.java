@@ -12,6 +12,6 @@ import java.util.concurrent.*;
  * with possible extensions for efficient querying.
  *
  */
-public class PatternCollection extends ConcurrentSkipListSet<Pattern> {
+public class PatternCollection extends CopyOnWriteArraySet<Pattern> {
 	private static final long serialVersionUID = -6951516407692217125L;
 }

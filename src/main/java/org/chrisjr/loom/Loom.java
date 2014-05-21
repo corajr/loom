@@ -27,8 +27,6 @@
 
 package org.chrisjr.loom;
 
-import java.util.*;
-
 import org.chrisjr.loom.time.*;
 
 import processing.core.*;
@@ -49,7 +47,7 @@ import processing.core.*;
 public class Loom {
 	PApplet myParent;
 
-	public PatternCollection patterns;
+	public PatternCollection patterns = new PatternCollection();
 
 	private Scheduler scheduler;
 
@@ -76,7 +74,6 @@ public class Loom {
 	 */
 	public Loom(PApplet theParent, Scheduler theScheduler) {
 		myParent = theParent;
-		patterns = new PatternCollection();
 		scheduler = theScheduler;
 		welcome();
 	}
