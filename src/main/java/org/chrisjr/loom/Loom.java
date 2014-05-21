@@ -49,7 +49,7 @@ import processing.core.*;
 public class Loom {
 	PApplet myParent;
 
-	public List<Pattern> patterns;
+	public PatternCollection patterns;
 
 	private Scheduler scheduler;
 
@@ -76,7 +76,7 @@ public class Loom {
 	 */
 	public Loom(PApplet theParent, Scheduler theScheduler) {
 		myParent = theParent;
-		patterns = new ArrayList<Pattern>();
+		patterns = new PatternCollection();
 		scheduler = theScheduler;
 		welcome();
 	}
@@ -93,6 +93,10 @@ public class Loom {
 	 */
 	public static String version() {
 		return VERSION;
+	}
+	
+	public Interval getCurrentInterval() {
+		return scheduler.getCurrentInterval();
 	}
 		
 	public void play() {

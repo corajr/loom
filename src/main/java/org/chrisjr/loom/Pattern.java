@@ -14,6 +14,8 @@ import java.util.concurrent.*;
  */
 public abstract class Pattern {
 	Loom myLoom;
+	
+	private double defaultValue;
 
 	public enum Mapping {
 		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI_ON, OBJECT
@@ -28,16 +30,23 @@ public abstract class Pattern {
 	 *            the loom that holds this pattern (can be null)
 	 */
 	public Pattern(Loom loom) {
+		this(loom, 0.0);
+	}
+	
+	public Pattern(Loom loom, double _defaultValue) {
 		myLoom = loom;
 		if (myLoom != null)
 			addTo(myLoom);
+		defaultValue = _defaultValue;
 	}
 
 	protected void addTo(Loom loom) {
 		loom.patterns.add(this);
 	}
 
-	public abstract double getValue();
+	public double getValue() {
+		return defaultValue;
+	}
 
 	@SuppressWarnings("unchecked")
 	private Object getAs(Mapping mapping) {

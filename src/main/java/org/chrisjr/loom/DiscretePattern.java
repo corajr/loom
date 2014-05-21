@@ -1,5 +1,7 @@
 package org.chrisjr.loom;
 
+import java.util.*;
+
 public class DiscretePattern extends Pattern {
 	public EventCollection events = new EventCollection();
 	
@@ -14,9 +16,15 @@ public class DiscretePattern extends Pattern {
 	 */
 	public Pattern extend(String string) {
 		return this;
-	}	
-	public double getValue() {
-		return 0.0;
 	}
 
+	public double getValue() {
+		double value = 0.0;
+		Collection<Event> activeEvents = events.getForInterval(myLoom.getCurrentInterval());
+		for (Event e : activeEvents) {
+			value = e.getValue();
+		}
+		return value;
+	}
+	
 }

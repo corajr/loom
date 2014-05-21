@@ -5,8 +5,6 @@ package org.chrisjr.loom;
 
 import java.util.concurrent.*;
 
-import org.apache.commons.math3.fraction.Fraction;
-
 /**
  * @author chrisjr
  * 
@@ -14,6 +12,6 @@ import org.apache.commons.math3.fraction.Fraction;
  * with possible extensions for efficient querying.
  *
  */
-public class PatternCollection extends ConcurrentSkipListMap<Fraction, Pattern> {
+public class PatternCollection extends ConcurrentSkipListSet<Pattern> {
 	private static final long serialVersionUID = -6951516407692217125L;
 }

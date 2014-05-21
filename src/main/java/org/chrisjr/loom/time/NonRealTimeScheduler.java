@@ -8,15 +8,16 @@ package org.chrisjr.loom.time;
  */
 public class NonRealTimeScheduler extends Scheduler {
 
+	// NonRealTimeScheduler only progresses when explicitly updated via <code>setNow</code>.
 	public void play() {
+		super.play();		
 	}
 
-	public void pause() {
-
+	void setNow(long _elapsedMillis) {
+		elapsedMillis = _elapsedMillis;		
 	}
-
-	public void stop() {
-
+	
+	public long getElapsedMillis() {
+		return elapsedMillis;
 	}
-
 }

@@ -1,6 +1,7 @@
 package org.chrisjr.loom;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,12 +24,12 @@ public class DiscretePatternTest {
 	}
 
 	@Test
-	public void testAddedToLoom() {
+	public void addedToLoom() {
 		assertTrue(loom.patterns.contains(pattern));
 	}	
 
 	@Test
-	public void testCanBeQueried() {
-		assertTrue(pattern.getValue() == 0.0);
+	public void returnsValue() {
+		assertThat(pattern.getValue(), is(equalTo(0.0)));
 	}
 }
