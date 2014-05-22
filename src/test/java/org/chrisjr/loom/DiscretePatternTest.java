@@ -45,4 +45,26 @@ public class DiscretePatternTest {
 		scheduler.setElapsedMillis(251);
 		assertThat(pattern.getValue(), is(equalTo(1.0)));
 	}
+
+	@Test
+	public void canBeLooped() {
+		pattern.extend("0101");
+		pattern.loop();
+
+		scheduler.setElapsedMillis(1251);
+		assertThat(pattern.getValue(), is(equalTo(1.0)));
+	}
+
+	@Test
+	public void canStopLooping() {
+		pattern.extend("0101");
+		pattern.loop();
+
+		scheduler.setElapsedMillis(1251);
+		assertThat(pattern.getValue(), is(equalTo(1.0)));
+		
+		pattern.once();
+		assertThat(pattern.getValue(), is(equalTo(0.0)));
+	}
+	
 }

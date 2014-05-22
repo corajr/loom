@@ -2,6 +2,8 @@ package org.chrisjr.loom;
 
 import java.util.*;
 
+import org.chrisjr.loom.time.Interval;
+
 public class DiscretePattern extends Pattern {
 	public EventCollection events = new EventCollection();
 
@@ -23,10 +25,12 @@ public class DiscretePattern extends Pattern {
 	
 	public double getValue() {
 		double value = 0.0;
-		Collection<Event> activeEvents = events.getForInterval(myLoom
-				.getCurrentInterval());
+		Interval interval = myLoom.getCurrentInterval();
+		if (isLooping) {
+			interval = interval.modulo(loopInterval);
+		}
+		Collection<Event> activeEvents = events.getForInterval(interval);
 		for (Event e : activeEvents) {
-			System.out.println(e.getValue());
 			value = e.getValue();
 		}
 		return value;

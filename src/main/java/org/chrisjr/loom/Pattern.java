@@ -2,7 +2,10 @@ package org.chrisjr.loom;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+
 import java.util.concurrent.*;
+
+import org.chrisjr.loom.time.Interval;
 
 /**
  * The base class for patterns in Loom. Patterns may be discrete or continuous.
@@ -15,6 +18,9 @@ public abstract class Pattern {
 	Loom myLoom;
 	
 	protected double defaultValue;
+	
+	boolean isLooping = false;
+	Interval loopInterval = new Interval(0, 1);
 
 	public enum Mapping {
 		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI_ON, OBJECT
@@ -45,6 +51,14 @@ public abstract class Pattern {
 
 	public double getValue() {
 		return defaultValue;
+	}
+	
+	public void once() {
+		isLooping = false;		
+	}
+	
+	public void loop() {
+		isLooping = true;
 	}
 
 	@SuppressWarnings("unchecked")
