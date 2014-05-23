@@ -3,6 +3,7 @@ package org.chrisjr.loom;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 import org.chrisjr.loom.time.Interval;
@@ -16,19 +17,37 @@ import org.chrisjr.loom.time.Interval;
  */
 public abstract class Pattern {
 	Loom myLoom;
-	
+
 	protected double defaultValue;
-	
+
 	boolean isLooping = false;
 	Interval loopInterval = new Interval(0, 1);
 
-	public enum Mapping {
-		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI_ON, OBJECT
-	}
-	
-	final private Mapping[] externalMappings = new Mapping[]{
-			Mapping.MIDI_ON
+	public static final Callable<Void> NOOP = new Callable<Void>() {
+		public Void call() {
+			return null;
+		}
 	};
+
+	public final class PickFromArray<E> implements Callable<E> {
+		final private E[] myArray;
+
+		public PickFromArray(E[] _array) {
+			myArray = _array;
+		}
+
+		public E call() {
+			int i = (int) (getValue() * (myArray.length - 1));
+			return myArray[i];
+		}
+	}
+
+	public enum Mapping {
+		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC, CALLABLE, OBJECT
+	}
+
+	final private Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
+			Mapping.OSC, Mapping.CALLABLE };
 
 	private ConcurrentMap<Mapping, Callable<?>> outputMappings = new ConcurrentHashMap<Mapping, Callable<?>>();
 
@@ -41,7 +60,7 @@ public abstract class Pattern {
 	public Pattern(Loom loom) {
 		this(loom, 0.0);
 	}
-	
+
 	public Pattern(Loom loom, double _defaultValue) {
 		myLoom = loom;
 		if (myLoom != null)
@@ -56,11 +75,11 @@ public abstract class Pattern {
 	public double getValue() {
 		return defaultValue;
 	}
-	
+
 	public void once() {
-		isLooping = false;		
+		isLooping = false;
 	}
-	
+
 	public void loop() {
 		isLooping = true;
 	}
@@ -68,8 +87,10 @@ public abstract class Pattern {
 	@SuppressWarnings("unchecked")
 	private Object getAs(Mapping mapping) throws IllegalStateException {
 		Callable<Object> cb = (Callable<Object>) outputMappings.get(mapping);
-		
-		if (cb == null) throw new IllegalStateException("No mapping available for " + mapping.toString());
+
+		if (cb == null)
+			throw new IllegalStateException("No mapping available for "
+					+ mapping.toString());
 
 		Object result = null;
 		try {
@@ -105,7 +126,7 @@ public abstract class Pattern {
 	 */
 	public Pattern asMIDI(String _instrument) {
 		final String instrument = _instrument;
-		outputMappings.put(Mapping.MIDI_ON, new Callable<Void>() {
+		outputMappings.put(Mapping.MIDI, new Callable<Void>() {
 			// TODO actually do something here
 			public Void call() {
 				return null;
@@ -121,14 +142,8 @@ public abstract class Pattern {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColor(int... _colors) {
-		final int[] colors = _colors;
-		outputMappings.put(Mapping.COLOR, new Callable<Integer>() {
-			public Integer call() {
-				int i = (int) getValue() * (colors.length - 1);
-				return colors[i];
-			}
-		});
+	public Pattern asColor(Integer... _colors) {
+		outputMappings.put(Mapping.COLOR, new PickFromArray<Integer>(_colors));
 		return this;
 	}
 
@@ -174,14 +189,8 @@ public abstract class Pattern {
 		return result != null ? result.intValue() : 0x00000000;
 	}
 
-	public Pattern asObject(Object... _objects) {
-		final Object[] objects = _objects;
-		outputMappings.put(Mapping.OBJECT, new Callable<Object>() {
-			public Object call() {
-				int i = (int) (getValue() * (objects.length - 1));
-				return objects[i];
-			}
-		});
+	public Pattern asObject(Object... objects) {
+		outputMappings.put(Mapping.OBJECT, new PickFromArray<Object>(objects));
 		return this;
 	}
 
@@ -189,11 +198,27 @@ public abstract class Pattern {
 		return getAs(Mapping.OBJECT);
 	}
 
-	public Boolean hasExternalMappings() {
-		boolean result = false;
+	public Pattern asCallable(Callable<?>... callables) {
+		outputMappings.put(Mapping.CALLABLE, new PickFromArray<Callable>(callables));
+		return this;
+
+	}
+
+	public Callable<Object> asCallable() {
+		return (Callable<Object>) getAs(Mapping.CALLABLE);
+	}
+
+	public Collection<Callable<?>> getExternalMappings() {
+		Collection<Callable<?>> callbacks = new ArrayList<Callable<?>>();
 		for (Mapping mapping : externalMappings) {
-			if (outputMappings.containsKey(mapping)) result = true;
+			if (outputMappings.containsKey(mapping))
+				callbacks.add((Callable<?>) getAs(mapping));
 		}
-		return result;
+		return callbacks;
+	}
+
+	public Boolean hasExternalMappings() {
+		Collection<Callable<?>> callbacks = getExternalMappings();
+		return callbacks.size() > 0;
 	}
 }
