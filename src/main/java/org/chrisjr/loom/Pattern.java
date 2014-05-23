@@ -62,8 +62,11 @@ public abstract class Pattern {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object getAs(Mapping mapping) {
+	private Object getAs(Mapping mapping) throws IllegalStateException {
 		Callable<Object> cb = (Callable<Object>) outputMappings.get(mapping);
+		
+		if (cb == null) throw new IllegalStateException("No mapping available for " + mapping.toString());
+
 		Object result = null;
 		try {
 			result = cb.call();

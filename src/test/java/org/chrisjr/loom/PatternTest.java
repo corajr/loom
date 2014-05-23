@@ -7,11 +7,16 @@ import java.awt.Color;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class PatternTest {
 	private Loom loom;
 	private Pattern pattern;
+
+	@Rule
+    public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -57,4 +62,9 @@ public class PatternTest {
 		assertThat((Integer) pattern.asObject(), is(equalTo(6)));
 	}
 
+	@Test
+	public void whenNoMappingIsSet() {
+		thrown.expect(IllegalStateException.class);
+		pattern.asColor();
+	}
 }
