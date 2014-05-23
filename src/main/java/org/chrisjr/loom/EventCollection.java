@@ -8,16 +8,17 @@ import org.chrisjr.loom.time.Interval;
 
 /**
  * @author chrisjr
- *
- * Events are stored as a sorted map indexed by start position.
- *
+ * 
+ *         Events are stored as a sorted map indexed by start position.
+ * 
  */
 
-// TODO using a map means no overlapping events in a collection. Is this desirable?
+// TODO using a map means no overlapping events in a collection. Is this
+// desirable?
 
 public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 	private static final long serialVersionUID = -4270420021705392093L;
-	
+
 	/**
 	 * Creates a series of events from a string.
 	 * 
@@ -27,28 +28,28 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 	 * @param string
 	 * @return a new EventCollection
 	 */
-	public static EventCollection fromString(String string) {		
+	public static EventCollection fromString(String string) {
 		// TODO specify this format and define a real parser
-		
+
 		int n = string.length();
-		
+
 		List<Integer> intValues = new ArrayList<Integer>(n);
 		for (int i = 0; i < n; i++) {
-			intValues.add(Integer.parseInt(string.substring(i, i+1), 16));
+			intValues.add(Integer.parseInt(string.substring(i, i + 1), 16));
 		}
 
 		return fromInts(intValues);
 	}
-	
+
 	public static EventCollection fromInts(Integer[] values) {
 		List<Integer> intValues = Arrays.asList(values);
 		return fromInts(intValues);
 	}
-	
+
 	public static EventCollection fromInts(List<Integer> intValues) {
 		int max = Collections.max(intValues);
 		int n = intValues.size();
-		
+
 		List<Double> doubleValues = new ArrayList<Double>(n);
 
 		for (int i = 0; i < n; i++) {
@@ -63,14 +64,16 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 		return fromDoubles(doubleValues);
 	}
 
-	public static EventCollection fromDoubles(List<Double> doubleValues) throws IllegalArgumentException {
+	public static EventCollection fromDoubles(List<Double> doubleValues)
+			throws IllegalArgumentException {
 		EventCollection events = new EventCollection();
 
 		int n = doubleValues.size();
 		for (int i = 0; i < n; i++) {
 			double value = doubleValues.get(i);
-			
-			if (value < 0.0 || value > 1.0) throw new IllegalArgumentException("Values out of range.");
+
+			if (value < 0.0 || value > 1.0)
+				throw new IllegalArgumentException("Values out of range.");
 
 			BigFraction start = new BigFraction(i, n);
 			BigFraction end = start.add(new BigFraction(1, n));
@@ -79,39 +82,43 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 		}
 		return events;
 	}
-	
-	public void add(Event e) throws IllegalStateException {		
+
+	public void add(Event e) throws IllegalStateException {
 		Collection<Event> existingEvents = getForInterval(e.getInterval());
-		if (!existingEvents.isEmpty()) throw new IllegalStateException("Cannot add overlapping events! Create a new pattern instead.");
+		if (!existingEvents.isEmpty())
+			throw new IllegalStateException(
+					"Cannot add overlapping events! Create a new pattern instead.");
 		put(e.getInterval().getStart(), e);
 	}
-	
+
 	public void addAll(Collection<Event> events) throws IllegalStateException {
-		for (Event e: events) {
+		for (Event e : events) {
 			add(e);
 		}
 	}
-	
-	public void addAfterwards(Collection<Event> events) throws IllegalStateException {
+
+	public void addAfterwards(Collection<Event> events)
+			throws IllegalStateException {
 		BigFraction end = getLatestEnd();
-		for (Event e: events) {
+		for (Event e : events) {
 			Interval newInterval = e.getInterval().add(end);
 			add(new Event(newInterval, e.getValue()));
 		}
 	}
-	
+
 	private BigFraction getLatestEnd() {
 		Event latest = null;
 		if (this.size() > 0) {
-			latest = this.descendingMap().firstEntry().getValue();			
+			latest = this.descendingMap().firstEntry().getValue();
 		}
-		return latest != null ? latest.getInterval().getEnd() : new BigFraction(0);
+		return latest != null ? latest.getInterval().getEnd()
+				: new BigFraction(0);
 	}
-	
+
 	public Collection<Event> getForInterval(Interval interval) {
 		BigFraction queryStart = interval.getStart();
 		BigFraction queryEnd = interval.getEnd();
-		
+
 		List<Event> events = new ArrayList<Event>();
 		for (Event e : this.values()) {
 			BigFraction start = e.getInterval().getStart();
@@ -119,9 +126,27 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 
 			boolean startsBeforeOrAtQueryEnd = start.compareTo(queryEnd) <= 0;
 			boolean endsAfterQueryStart = end.compareTo(queryStart) > 0;
-			
-			if (startsBeforeOrAtQueryEnd && endsAfterQueryStart) events.add(e);			
+
+			if (startsBeforeOrAtQueryEnd && endsAfterQueryStart)
+				events.add(e);
 		}
 		return events;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("EventCollection(\n\t");
+
+		boolean first = true;
+		for (Event e : this.values()) {
+			if (first)
+				first = false;
+			else
+				sb.append(",\n\t");
+			sb.append(e.toString());
+		}
+		sb.append("\n)");
+
+		return sb.toString();
 	}
 }

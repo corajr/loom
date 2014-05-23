@@ -41,5 +41,8 @@ public class DiscretePattern extends Pattern {
 		}
 		return value;
 	}
-
+	
+	public String toString() {
+		return events.toString();
+	}
 }
