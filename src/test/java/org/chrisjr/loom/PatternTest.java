@@ -31,6 +31,15 @@ public class PatternTest {
 	}
 
 	@Test
+	public void hasExternalMappings() {
+		assertThat(pattern.hasExternalMappings(), is(equalTo(false)));
+
+		pattern.asMIDI("clap");
+		assertThat(pattern.hasExternalMappings(), is(equalTo(true)));
+	}
+
+	
+	@Test
 	public void asInt() {
 		pattern.asInt(0, 100);
 		assertThat(pattern.asInt(), is(equalTo(60)));

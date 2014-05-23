@@ -14,4 +14,17 @@ import java.util.concurrent.*;
  */
 public class PatternCollection extends CopyOnWriteArraySet<Pattern> {
 	private static final long serialVersionUID = -6951516407692217125L;
+	
+	/**
+	 * 
+	 * 
+	 * @return the relevant subset of patterns
+	 */
+	public PatternCollection getPatternsWithExternalMappings() {
+		PatternCollection actives = new PatternCollection();
+		for (Pattern pattern : this) {
+			if (pattern.hasExternalMappings()) actives.add(pattern);
+		}
+		return actives;
+	}
 }

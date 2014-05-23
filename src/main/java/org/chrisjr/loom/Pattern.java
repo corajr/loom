@@ -25,6 +25,10 @@ public abstract class Pattern {
 	public enum Mapping {
 		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI_ON, OBJECT
 	}
+	
+	final private Mapping[] externalMappings = new Mapping[]{
+			Mapping.MIDI_ON
+	};
 
 	private ConcurrentMap<Mapping, Callable<?>> outputMappings = new ConcurrentHashMap<Mapping, Callable<?>>();
 
@@ -183,5 +187,13 @@ public abstract class Pattern {
 
 	public Object asObject() {
 		return getAs(Mapping.OBJECT);
+	}
+
+	public Boolean hasExternalMappings() {
+		boolean result = false;
+		for (Mapping mapping : externalMappings) {
+			if (outputMappings.containsKey(mapping)) result = true;
+		}
+		return result;
 	}
 }
