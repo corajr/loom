@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.*;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.chrisjr.loom.time.*;
 import org.junit.After;
@@ -31,20 +32,33 @@ public class RealTimeSchedulerTest {
 	@Test
 	public void testTiming() {
 		final ConcurrentLinkedQueue<Long> queue = new ConcurrentLinkedQueue<Long>();
-		Callable<Long> getTime = new Callable<Long>() {
-			public Long call() {
-				long now = System.nanoTime();
-				queue.add(now);
-				return now;
+		
+		final AtomicInteger lastValue = new AtomicInteger();
+
+		Callable<Void> notYet = new Callable<Void>() {
+			public Void call() {
+				lastValue.set(0);
+				return null;
+			}
+		};
+		
+		Callable<Void> addNowToQueue = new Callable<Void>() {
+			public Void call() {
+				int value = lastValue.getAndSet(1);
+				if (value == 0) {
+					long now = System.nanoTime();
+					queue.add(now);		
+				}
+				return null;
 			}
 		};
 		
 		DiscretePattern pattern = new DiscretePattern(loom);
 		
-		pattern.extend(0, 1, 1, 1, 0, 1, 0, 1, 0, 0);
+		pattern.extend(0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
 		
-		long[] expectedTimesMillis = new long[]{100, 200, 300, 500, 700};
-		pattern.asCallable(Pattern.NOOP, getTime);
+		long[] expectedTimesMillis = new long[]{100, 300, 500, 700, 900};
+		pattern.asCallable(notYet, addNowToQueue);
 		
 		long startNanos = System.nanoTime();
 		loom.play();
@@ -55,13 +69,13 @@ public class RealTimeSchedulerTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		assertThat(queue.size(), is(equalTo(expectedTimesMillis.length)));
 
 		long totalError = 0;
 		Iterator<Long> it = queue.iterator();
 		for (int i = 0; i < expectedTimesMillis.length; i++) {
-			long trueNanos = (Long) it.next();
+			long trueNanos = ((Long) it.next()) - startNanos;
 			long trueMillis = trueNanos / 1000000;
 			long error = trueMillis - expectedTimesMillis[i];
 			totalError += error;

@@ -15,7 +15,7 @@ public class RealTimeScheduler extends Scheduler {
 			while (true) {
 				try {
 					update();
-					Thread.sleep(0, 500000);
+					Thread.sleep(0, 100000);
 				} catch (InterruptedException e) {
 					break;					
 				} catch (Exception e) {
