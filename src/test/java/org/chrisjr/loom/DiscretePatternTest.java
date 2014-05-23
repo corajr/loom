@@ -38,7 +38,7 @@ public class DiscretePatternTest {
 	}
 
 	@Test
-	public void canBeExtended() {
+	public void canBeExtendedWithString() {
 		pattern.extend("0101");
 
 		assertThat(pattern.getValue(), is(equalTo(0.0)));
@@ -46,6 +46,15 @@ public class DiscretePatternTest {
 		assertThat(pattern.getValue(), is(equalTo(1.0)));
 	}
 
+	@Test
+	public void canBeExtendedWithInts() {
+		pattern.extend(0, 1, 0, 1);
+
+		assertThat(pattern.getValue(), is(equalTo(0.0)));
+		scheduler.setElapsedMillis(251);
+		assertThat(pattern.getValue(), is(equalTo(1.0)));
+	}
+	
 	@Test
 	public void canBeLooped() {
 		pattern.extend("0101");

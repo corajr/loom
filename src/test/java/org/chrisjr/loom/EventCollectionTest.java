@@ -36,7 +36,6 @@ public class EventCollectionTest {
 		events.add(e);
 		assertThat(events.size(), is(equalTo(1)));
 	}
-
 	
 	@Test
 	public void overlapppingEventsCannotBeAdded() {
@@ -55,6 +54,27 @@ public class EventCollectionTest {
 		assertThat(events.size(), is(equalTo(sample.length())));		
 	}
 
+	@Test
+	public void initializeFromInts() {
+		Integer[] sample = new Integer[]{0, 1, 0, 1};
+		events = EventCollection.fromInts(sample);
+		assertThat(events.size(), is(equalTo(sample.length)));		
+	}
+
+	@Test
+	public void initializeFromDoubles() {
+		Double[] sample = new Double[]{0.0, 1.0, 0.0, 1.0};
+		events = EventCollection.fromDoubles(sample);
+		assertThat(events.size(), is(equalTo(sample.length)));		
+	}
+
+	@Test
+	public void shouldNotInitializeFromInvalidDoubles() {
+		thrown.expect(IllegalArgumentException.class);
+		Double[] sample = new Double[]{-1.0, 1.5, 0.0, 1.0};
+		events = EventCollection.fromDoubles(sample);
+	}
+	
 	@Test
 	public void getActiveEvents() {
 		String sample = "0101";

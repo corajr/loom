@@ -22,6 +22,12 @@ public class DiscretePattern extends Pattern {
 		this.events.addAfterwards(newEvents.values());
 		return this;
 	}
+
+	public Pattern extend(Integer... values) {
+		EventCollection newEvents = EventCollection.fromInts(values);
+		this.events.addAfterwards(newEvents.values());
+		return this;
+	}
 	
 	public double getValue() {
 		double value = 0.0;
