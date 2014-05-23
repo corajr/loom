@@ -75,6 +75,7 @@ public class Loom {
 	public Loom(PApplet theParent, Scheduler theScheduler) {
 		myParent = theParent;
 		scheduler = theScheduler;
+		scheduler.setPatterns(patterns);
 		welcome();
 	}
 

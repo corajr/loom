@@ -1,6 +1,11 @@
 package org.chrisjr.loom.time;
 
+import java.util.*;
+import java.util.concurrent.*;
+
 import org.apache.commons.math3.fraction.BigFraction;
+import org.chrisjr.loom.Pattern;
+import org.chrisjr.loom.PatternCollection;
 
 /**
  * @author chrisjr
@@ -9,6 +14,8 @@ import org.apache.commons.math3.fraction.BigFraction;
  * 
  */
 public abstract class Scheduler {
+	
+	private PatternCollection patterns;
 	
 	public enum State {
 		PLAYING, PAUSED, STOPPED
@@ -23,7 +30,6 @@ public abstract class Scheduler {
 	 * Milliseconds since playing began.
 	 */
 	long elapsedMillis = -1;
-
 	
 	/**
 	 * period of a complete cycle in milliseconds
@@ -67,5 +73,29 @@ public abstract class Scheduler {
 
 	public void setPeriod(long periodMillis) {
 		this.periodMillis = periodMillis;
+	}
+	
+	public void update() throws Exception {
+		PatternCollection actives = getPatternsWithExternalMappings();
+		for (Pattern pattern : actives) {
+			Collection<Callable<?>> callbacks = pattern.getExternalMappings();
+			for (Callable<?> callback : callbacks) {
+				callback.call();
+			}
+		}
+	}
+
+	/**
+	 * @return the patterns that have external mappings
+	 */
+	public PatternCollection getPatternsWithExternalMappings() {
+		return patterns.getPatternsWithExternalMappings();
+	}
+
+	/**
+	 * @param patterns the patterns to manage with this scheduler
+	 */
+	public void setPatterns(PatternCollection patterns) {
+		this.patterns = patterns;
 	}
 }
