@@ -163,7 +163,7 @@ public abstract class Pattern {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColorBlended(int... _colors) {
+	public Pattern asColorBlend(int... _colors) {
 		final int[] colors = _colors;
 		outputMappings.put(Mapping.COLOR_BLEND, new Callable<Integer>() {
 			public Integer call() {
@@ -184,7 +184,7 @@ public abstract class Pattern {
 		return this;
 	}
 
-	public int asColorBlended() {
+	public int asColorBlend() {
 		Integer result = (Integer) getAs(Mapping.COLOR_BLEND);
 		return result != null ? result.intValue() : 0x00000000;
 	}
