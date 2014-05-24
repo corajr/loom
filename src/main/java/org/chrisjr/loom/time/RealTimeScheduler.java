@@ -2,13 +2,15 @@ package org.chrisjr.loom.time;
 
 /**
  * @author chrisjr
- *
- * This Scheduler plays back pattern events as close to real time as possible.
+ * 
+ *         This Scheduler plays back pattern events as close to real time as
+ *         possible.
  */
 public class RealTimeScheduler extends Scheduler {
-	class Timer implements Runnable {		
+	class Timer implements Runnable {
 		public long getElapsedMillis() {
-			return state == State.PAUSED ? elapsedMillis : System.currentTimeMillis() - startMillis;
+			return state == State.PAUSED ? elapsedMillis : System
+					.currentTimeMillis() - startMillis;
 		}
 
 		public void run() {
@@ -18,22 +20,23 @@ public class RealTimeScheduler extends Scheduler {
 				// resume counting where we left off
 				startMillis = now - elapsedMillis;
 			} else {
-				startMillis = System.currentTimeMillis();			
+				startMillis = System.currentTimeMillis();
 			}
-			
-			int waitInNanos = (int) (periodMillis * minimumResolution.doubleValue() * 500000);
+
+			int waitInNanos = (int) (periodMillis
+					* minimumResolution.doubleValue() * 500000);
 
 			while (true) {
 				try {
 					update();
 					Thread.sleep(0, waitInNanos);
 				} catch (InterruptedException e) {
-					break;					
+					break;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
 	}
@@ -41,7 +44,6 @@ public class RealTimeScheduler extends Scheduler {
 	private Timer timer;
 	private Thread timingThread;
 
-	
 	public RealTimeScheduler() {
 		timer = new Timer();
 		timingThread = new Thread(timer);
@@ -50,8 +52,8 @@ public class RealTimeScheduler extends Scheduler {
 	public long getElapsedMillis() {
 		return timer.getElapsedMillis();
 	}
-		
-	public void play() {		
+
+	public void play() {
 		timingThread.start();
 
 		super.play();

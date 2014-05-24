@@ -52,7 +52,7 @@ public abstract class Scheduler {
 
 	public Interval getCurrentInterval() {
 		BigFraction now = getNow();
-		return new Interval(now, now.add(minimumResolution));
+		return new Interval(now.subtract(minimumResolution), now);
 	}
 
 	public void play() {

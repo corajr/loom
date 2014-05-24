@@ -217,8 +217,17 @@ public abstract class Pattern {
 		return callbacks;
 	}
 
+	/**
+	 * Originally called getExternalMappings, but the new collection created slowed things down.
+	 * 
+	 * @return true if external mappings are present
+	 */
 	public Boolean hasExternalMappings() {
-		Collection<Callable<?>> callbacks = getExternalMappings();
-		return callbacks.size() > 0;
+		boolean result = false;
+		for (Mapping mapping : externalMappings) {
+			if (outputMappings.containsKey(mapping))
+				result = true;
+		}
+		return result;
 	}
 }

@@ -19,6 +19,9 @@ public class RealTimeSchedulerTest {
 	private Loom loom;
 	private Scheduler scheduler;
 	private DiscretePattern testPattern;
+	
+	final double epsilon = 1.0; // 1 millisecond error at most
+
 
 	@Before
 	public void setUp() throws Exception {
@@ -34,6 +37,14 @@ public class RealTimeSchedulerTest {
 
 	public void preparePattern(final ConcurrentLinkedQueue<Long> queue,
 			Pattern pattern) {
+		
+		/*
+		try {
+			Thread.sleep(15000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // */
 
 		final AtomicInteger lastValue = new AtomicInteger();
 
@@ -105,7 +116,7 @@ public class RealTimeSchedulerTest {
 
 		long totalError = getTotalAbsoluteError(queue, startNanos, expectedTimesMillis);
 		double avgError = totalError / expectedTimesMillis.length;
-		assertThat(avgError / 1e6, is(closeTo(0, 0.1)));
+		assertThat(avgError / 1e6, is(closeTo(0, epsilon)));
 	}
 
 	@Test
@@ -127,7 +138,7 @@ public class RealTimeSchedulerTest {
 
 		long totalError = getTotalRelativeError(queue, startNanos, expectedGapsMillis);
 		double avgError = totalError / expectedGapsMillis.length;
-		assertThat(avgError / 1e6, is(closeTo(0, 0.1)));
+		assertThat(avgError / 1e6, is(closeTo(0, epsilon)));
 	}
 
 }

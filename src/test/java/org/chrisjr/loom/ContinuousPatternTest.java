@@ -31,7 +31,7 @@ public class ContinuousPatternTest {
 	public void sinePattern() {
 		pattern = new ContinuousPattern(loom, new SineFunction());
 		
-		final double epsilon = 1e-6;
+		final double epsilon = 1e-2;
 		
 		scheduler.setElapsedMillis(250);
 		assertThat(pattern.getValue(), is(closeTo(1.0, epsilon)));
