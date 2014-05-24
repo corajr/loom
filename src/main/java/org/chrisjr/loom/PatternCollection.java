@@ -3,7 +3,7 @@
  */
 package org.chrisjr.loom;
 
-import java.util.concurrent.*;
+import java.util.HashSet;
 
 /**
  * @author chrisjr
@@ -12,7 +12,7 @@ import java.util.concurrent.*;
  * with possible extensions for efficient querying.
  *
  */
-public class PatternCollection extends CopyOnWriteArraySet<Pattern> {
+public class PatternCollection extends HashSet<Pattern> {
 	private static final long serialVersionUID = -6951516407692217125L;
 	
 	/**
