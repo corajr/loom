@@ -61,8 +61,8 @@ public class PatternTest {
 		int black = Color.BLACK.getRGB();
 		int white = Color.WHITE.getRGB();
 		int gray60 = 0xff999999;
-		pattern.asColorBlended(black, white);
-		assertThat(pattern.asColorBlended(), is(equalTo(gray60)));
+		pattern.asColorBlend(black, white);
+		assertThat(pattern.asColorBlend(), is(equalTo(gray60)));
 	}
 
 	@Test
