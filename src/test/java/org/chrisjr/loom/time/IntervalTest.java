@@ -28,7 +28,7 @@ public class IntervalTest {
 	@Test
 	public void mustStartBeforeEnd() {
 		thrown.expect(IllegalArgumentException.class);
-		Interval decimal = new Interval(0.5, 0.25);
+		new Interval(0.5, 0.25);
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class IntervalTest {
 		Interval zeroToOneAndAHalf = new Interval(0, 1.5);
 		
 		thrown.expect(IllegalArgumentException.class);
-		Interval modInterval = zeroToOneAndAHalf.modulo(interval);
+		zeroToOneAndAHalf.modulo(interval);
 	}
 
 	

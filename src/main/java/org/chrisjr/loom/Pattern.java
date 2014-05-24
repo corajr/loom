@@ -199,11 +199,13 @@ public abstract class Pattern {
 	}
 
 	public Pattern asCallable(Callable<?>... callables) {
-		outputMappings.put(Mapping.CALLABLE, new PickFromArray<Callable>(callables));
+		outputMappings.put(Mapping.CALLABLE, new PickFromArray<Callable<?>>(
+				callables));
 		return this;
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public Callable<Object> asCallable() {
 		return (Callable<Object>) getAs(Mapping.CALLABLE);
 	}
@@ -218,7 +220,8 @@ public abstract class Pattern {
 	}
 
 	/**
-	 * Originally called getExternalMappings, but the new collection created slowed things down.
+	 * Originally called getExternalMappings, but the new collection created
+	 * slowed things down.
 	 * 
 	 * @return true if external mappings are present
 	 */

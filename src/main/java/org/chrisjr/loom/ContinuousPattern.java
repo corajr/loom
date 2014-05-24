@@ -1,7 +1,5 @@
 package org.chrisjr.loom;
 
-import java.util.concurrent.Callable;
-
 import org.chrisjr.loom.continuous.*;
 
 public class ContinuousPattern extends Pattern {

@@ -71,7 +71,7 @@ public class RealTimeSchedulerTest {
 
 	public long getTotalAbsoluteError(final ConcurrentLinkedQueue<Long> queue, long startNanos, long[] expectedTimesMillis) {
 		long totalError = 0;
-		Iterator it = queue.iterator();
+		Iterator<Long> it = queue.iterator();
 		for (int i = 0; i < expectedTimesMillis.length; i++) {
 			long nanos = ((Long) it.next()) - startNanos;
 			totalError += nanos - (expectedTimesMillis[i] * 1000000);
@@ -83,7 +83,7 @@ public class RealTimeSchedulerTest {
 	public long getTotalRelativeError(final ConcurrentLinkedQueue<Long> queue, long startNanos, long[] expectedGapsMillis) {
 		long totalError = 0;
 
-		Iterator it = queue.iterator();
+		Iterator<Long> it = queue.iterator();
 		List<Long> times = new ArrayList<Long>();
 		while (it.hasNext()) {
 			times.add((Long) it.next() - startNanos);
