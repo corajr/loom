@@ -1,8 +1,9 @@
 package org.chrisjr.loom;
 
 import org.chrisjr.loom.continuous.*;
+import org.chrisjr.loom.time.Interval;
 
-public class ContinuousPattern extends Pattern {
+public class ContinuousPattern extends Pattern implements Cloneable {
 	
 	ContinuousFunction function = null;
 
@@ -24,13 +25,19 @@ public class ContinuousPattern extends Pattern {
 		if (function != null) {
 			try {
 				// midpoint of function within current interval
-				value = function.call(myLoom.getCurrentInterval().getStart());
-				value += function.call(myLoom.getCurrentInterval().getStart());
+				Interval now = myLoom.getCurrentInterval();
+				value = function.call(now.getStart());
+				value += function.call(now.getEnd());
 				value /= 2.0;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		return value;
+	}
+
+	@Override
+	public ContinuousPattern clone() throws CloneNotSupportedException {
+		return (ContinuousPattern) super.clone();
 	}
 }

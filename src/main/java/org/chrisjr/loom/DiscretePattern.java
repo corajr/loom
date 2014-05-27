@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.chrisjr.loom.time.Interval;
 
-public class DiscretePattern extends Pattern {
+public class DiscretePattern extends Pattern implements Cloneable {
 	public EventCollection events = new EventCollection();
 
 	public DiscretePattern(Loom loom) {
@@ -28,21 +28,29 @@ public class DiscretePattern extends Pattern {
 		this.events.addAfterwards(newEvents.values());
 		return this;
 	}
-	
+
 	public double getValue() {
 		double value = 0.0;
 		Interval interval = myLoom.getCurrentInterval();
 		if (isLooping) {
 			interval = interval.modulo(loopInterval);
 		}
+
 		Collection<Event> activeEvents = events.getForInterval(interval);
 		for (Event e : activeEvents) {
 			value = e.getValue();
 		}
 		return value;
 	}
-	
+
 	public String toString() {
 		return events.toString();
+	}
+
+	@Override
+	public DiscretePattern clone() throws CloneNotSupportedException {
+		DiscretePattern newPattern = (DiscretePattern) super.clone();
+		newPattern.events = (EventCollection) this.events.clone();
+		return newPattern;
 	}
 }

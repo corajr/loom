@@ -19,6 +19,7 @@ public class ContinuousPatternTest {
 	public void setUp() throws Exception {
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
+		scheduler.play();
 	}
 
 	@After
@@ -31,7 +32,7 @@ public class ContinuousPatternTest {
 	public void sinePattern() {
 		pattern = new ContinuousPattern(loom, new SineFunction());
 		
-		final double epsilon = 1e-2;
+		final double epsilon = 1e-4;
 		
 		scheduler.setElapsedMillis(250);
 		assertThat(pattern.getValue(), is(closeTo(1.0, epsilon)));
@@ -43,4 +44,20 @@ public class ContinuousPatternTest {
 		assertThat(pattern.getValue(), is(closeTo(0.5, epsilon)));
 	}
 
+	@Test
+	public void canBeCloned() throws CloneNotSupportedException {
+		pattern = new ContinuousPattern(loom, new SineFunction());
+		
+		ContinuousPattern pattern2 = pattern.clone();
+		
+		//TODO this test makes no sense until patterns can be modified.
+		
+		final double epsilon = 1e-3;
+		
+		scheduler.setElapsedMillis(250);
+		assertThat(pattern.getValue(), is(closeTo(1.0, epsilon)));
+
+		assertThat(pattern2.getValue(), is(closeTo(1.0, epsilon)));
+
+	}
 }
