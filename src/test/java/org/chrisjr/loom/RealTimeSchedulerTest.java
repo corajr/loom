@@ -22,7 +22,7 @@ public class RealTimeSchedulerTest {
 	private Scheduler scheduler;
 	private DiscretePattern testPattern;
 
-	final double epsilon = 1.0; // 1 millisecond error at most
+	final double epsilon = 1.0; // millisecond error
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

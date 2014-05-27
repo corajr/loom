@@ -39,6 +39,7 @@ public abstract class Scheduler {
 	State state = State.STOPPED;
 
 	BigFraction minimumResolution = new BigFraction(1, 1000);
+	BigFraction halfMinimum = minimumResolution.divide(2);
 
 	public abstract long getElapsedMillis();
 
@@ -54,7 +55,7 @@ public abstract class Scheduler {
 
 	public Interval getCurrentInterval() {
 		BigFraction now = getNow();
-		return new Interval(now.subtract(minimumResolution), now);
+		return new Interval(now.subtract(halfMinimum), now.add(halfMinimum));
 	}
 
 	public void play() {
