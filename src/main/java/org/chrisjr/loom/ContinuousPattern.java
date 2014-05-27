@@ -25,7 +25,7 @@ public class ContinuousPattern extends Pattern implements Cloneable {
 		if (function != null) {
 			try {
 				// midpoint of function within current interval
-				Interval now = myLoom.getCurrentInterval();
+				Interval now = getCurrentInterval();
 				value = function.call(now.getStart());
 				value += function.call(now.getEnd());
 				value /= 2.0;

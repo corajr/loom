@@ -71,6 +71,14 @@ public abstract class Pattern {
 	protected void addTo(Loom loom) {
 		loom.patterns.add(this);
 	}
+	
+	public Interval getCurrentInterval() {
+		Interval interval = myLoom.getCurrentInterval();
+		if (isLooping) {
+			interval = interval.modulo(loopInterval);
+		}
+		return interval;
+	}
 
 	public double getValue() {
 		return defaultValue;

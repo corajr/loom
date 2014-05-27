@@ -31,11 +31,7 @@ public class DiscretePattern extends Pattern implements Cloneable {
 
 	public double getValue() {
 		double value = 0.0;
-		Interval interval = myLoom.getCurrentInterval();
-		if (isLooping) {
-			interval = interval.modulo(loopInterval);
-		}
-
+		Interval interval = getCurrentInterval();
 		Collection<Event> activeEvents = events.getForInterval(interval);
 		for (Event e : activeEvents) {
 			value = e.getValue();
