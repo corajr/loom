@@ -14,13 +14,13 @@ import org.chrisjr.loom.PatternCollection;
  * 
  */
 public abstract class Scheduler {
-	
+
 	private PatternCollection patterns;
-	
+
 	public enum State {
 		PLAYING, PAUSED, STOPPED
 	}
-	
+
 	/**
 	 * System time in milliseconds upon first calling <code>play()</code>.
 	 */
@@ -30,7 +30,7 @@ public abstract class Scheduler {
 	 * Milliseconds since playing began.
 	 */
 	long elapsedMillis = -1;
-	
+
 	/**
 	 * period of a complete cycle in milliseconds
 	 */
@@ -43,10 +43,12 @@ public abstract class Scheduler {
 	public abstract long getElapsedMillis();
 
 	protected BigFraction getNow() {
-		// TODO if not playing, we should throw an informative exception
-		assert(state != State.STOPPED);
+		if (state == State.STOPPED)
+			throw new IllegalStateException(
+					"Tried to retrieve a new time while the scheduler was stopped!");
+
 		long elapsed = getElapsedMillis();
-		
+
 		return new BigFraction(elapsed, periodMillis);
 	}
 
@@ -74,7 +76,7 @@ public abstract class Scheduler {
 	public void setPeriod(long periodMillis) {
 		this.periodMillis = periodMillis;
 	}
-	
+
 	public void update() throws Exception {
 		PatternCollection actives = getPatternsWithExternalMappings();
 		for (Pattern pattern : actives) {
@@ -93,7 +95,8 @@ public abstract class Scheduler {
 	}
 
 	/**
-	 * @param patterns the patterns to manage with this scheduler
+	 * @param patterns
+	 *            the patterns to manage with this scheduler
 	 */
 	public void setPatterns(PatternCollection patterns) {
 		this.patterns = patterns;

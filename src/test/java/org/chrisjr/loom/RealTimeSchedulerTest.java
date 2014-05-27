@@ -12,16 +12,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.chrisjr.loom.time.*;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class RealTimeSchedulerTest {
 
 	private Loom loom;
 	private Scheduler scheduler;
 	private DiscretePattern testPattern;
-	
+
 	final double epsilon = 1.0; // 1 millisecond error at most
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -37,14 +41,11 @@ public class RealTimeSchedulerTest {
 
 	public void preparePattern(final ConcurrentLinkedQueue<Long> queue,
 			Pattern pattern) {
-		
+
 		/*
-		try {
-			Thread.sleep(15000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} // */
+		 * try { Thread.sleep(15000); } catch (InterruptedException e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } //
+		 */
 
 		final AtomicInteger lastValue = new AtomicInteger();
 
@@ -69,18 +70,20 @@ public class RealTimeSchedulerTest {
 		pattern.asCallable(notYet, addNowToQueue);
 	}
 
-	public long getTotalAbsoluteError(final ConcurrentLinkedQueue<Long> queue, long startNanos, long[] expectedTimesMillis) {
+	public long getTotalAbsoluteError(final ConcurrentLinkedQueue<Long> queue,
+			long startNanos, long[] expectedTimesMillis) {
 		long totalError = 0;
 		Iterator<Long> it = queue.iterator();
 		for (int i = 0; i < expectedTimesMillis.length; i++) {
 			long nanos = ((Long) it.next()) - startNanos;
 			totalError += nanos - (expectedTimesMillis[i] * 1000000);
 		}
-		
+
 		return totalError;
 	}
 
-	public long getTotalRelativeError(final ConcurrentLinkedQueue<Long> queue, long startNanos, long[] expectedGapsMillis) {
+	public long getTotalRelativeError(final ConcurrentLinkedQueue<Long> queue,
+			long startNanos, long[] expectedGapsMillis) {
 		long totalError = 0;
 
 		Iterator<Long> it = queue.iterator();
@@ -93,10 +96,10 @@ public class RealTimeSchedulerTest {
 			long gap = times.get(i + 1) - times.get(i);
 			totalError += gap - (expectedGapsMillis[i] * 1000000);
 		}
-		
+
 		return totalError;
 	}
-	
+
 	@Test
 	public void testAbsoluteTiming() {
 		final ConcurrentLinkedQueue<Long> queue = new ConcurrentLinkedQueue<Long>();
@@ -104,7 +107,7 @@ public class RealTimeSchedulerTest {
 		long[] expectedTimesMillis = new long[] { 100, 300, 500, 700, 900 };
 
 		preparePattern(queue, testPattern);
-		
+
 		long startNanos = System.nanoTime();
 		loom.play();
 		try {
@@ -114,7 +117,8 @@ public class RealTimeSchedulerTest {
 
 		assertThat(queue.size(), is(equalTo(expectedTimesMillis.length)));
 
-		long totalError = getTotalAbsoluteError(queue, startNanos, expectedTimesMillis);
+		long totalError = getTotalAbsoluteError(queue, startNanos,
+				expectedTimesMillis);
 		double avgError = totalError / expectedTimesMillis.length;
 		assertThat(avgError / 1e6, is(closeTo(0, epsilon)));
 	}
@@ -126,7 +130,7 @@ public class RealTimeSchedulerTest {
 		long[] expectedGapsMillis = new long[] { 200, 200, 200, 200 };
 
 		preparePattern(queue, testPattern);
-		
+
 		long startNanos = System.nanoTime();
 		loom.play();
 		try {
@@ -136,9 +140,15 @@ public class RealTimeSchedulerTest {
 
 		assertThat(queue.size(), is(equalTo(expectedGapsMillis.length + 1)));
 
-		long totalError = getTotalRelativeError(queue, startNanos, expectedGapsMillis);
+		long totalError = getTotalRelativeError(queue, startNanos,
+				expectedGapsMillis);
 		double avgError = totalError / expectedGapsMillis.length;
 		assertThat(avgError / 1e6, is(closeTo(0, epsilon)));
 	}
 
+	@Test
+	public void throwExceptionWhenStopped() {
+		thrown.expect(IllegalStateException.class);
+		loom.getCurrentInterval();
+	}
 }
