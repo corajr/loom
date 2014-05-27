@@ -6,6 +6,7 @@ import processing.core.PConstants;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 
 /**
@@ -21,6 +22,7 @@ public abstract class Pattern {
 	protected double defaultValue;
 
 	boolean isLooping = false;
+	BigFraction timeOffset = new BigFraction(0);
 	Interval loopInterval = new Interval(0, 1);
 
 	public static final Callable<Void> NOOP = new Callable<Void>() {
@@ -71,9 +73,12 @@ public abstract class Pattern {
 	protected void addTo(Loom loom) {
 		loom.patterns.add(this);
 	}
-	
+
 	public Interval getCurrentInterval() {
 		Interval interval = myLoom.getCurrentInterval();
+
+		interval = interval.add(timeOffset);
+
 		if (isLooping) {
 			interval = interval.modulo(loopInterval);
 		}
@@ -240,5 +245,21 @@ public abstract class Pattern {
 				result = true;
 		}
 		return result;
+	}
+
+	public BigFraction getTimeOffset() {
+		return timeOffset;
+	}
+
+	public void setTimeOffset(BigFraction timeOffset) {
+		this.timeOffset = timeOffset;
+	}
+
+	public Interval getLoopInterval() {
+		return loopInterval;
+	}
+
+	public void setLoopInterval(Interval loopInterval) {
+		this.loopInterval = loopInterval;
 	}
 }

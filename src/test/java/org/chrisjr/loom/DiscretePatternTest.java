@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.junit.After;
 import org.junit.Before;
@@ -81,6 +82,14 @@ public class DiscretePatternTest {
 		assertThat(pattern.getValue(), is(equalTo(0.0)));
 	}
 
+	@Test
+	public void canBeOffset() {
+		pattern.extend("0101");
+		pattern.setTimeOffset(new BigFraction(1,4));
+
+		scheduler.setElapsedMillis(501);
+		assertThat(pattern.getValue(), is(equalTo(1.0)));
+	}
 	@Test
 	public void clonedPatternsAreDistinct() throws CloneNotSupportedException {
 		pattern.extend("0101");
