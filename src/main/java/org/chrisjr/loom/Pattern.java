@@ -20,6 +20,8 @@ public abstract class Pattern {
 	Loom myLoom;
 
 	protected double defaultValue;
+	
+	PatternCollection children = new PatternCollection();
 
 	boolean isLooping = false;
 	BigFraction timeOffset = new BigFraction(0);

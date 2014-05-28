@@ -1,7 +1,8 @@
 package org.chrisjr.loom.time;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.After;
 import org.junit.Before;

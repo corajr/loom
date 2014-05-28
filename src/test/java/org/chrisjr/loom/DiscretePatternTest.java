@@ -1,10 +1,8 @@
 package org.chrisjr.loom;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
