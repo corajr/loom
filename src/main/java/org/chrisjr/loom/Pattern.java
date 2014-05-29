@@ -308,10 +308,13 @@ public class Pattern implements Cloneable {
 	public Pattern every(Interval interval, final Transform transform) {
 		EventCollection events = new EventCollection();
 
-		Interval after = new Interval(interval.getEnd(), interval.getEnd().add(
-				new BigFraction(1, 1000)));
+		BigFraction newEnd = interval.getEnd().subtract(
+				new BigFraction(1, 1000));
 
-		events.add(new Event(interval, 0.0));
+		Interval shortened = new Interval(interval.getStart(), newEnd);
+		Interval after = new Interval(newEnd, interval.getEnd());
+
+		events.add(new Event(shortened, 0.0));
 		events.add(new Event(after, 1.0));
 
 		PrimitivePattern primitive = new PrimitivePattern(loom, events);

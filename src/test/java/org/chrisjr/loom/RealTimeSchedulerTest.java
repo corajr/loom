@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.chrisjr.loom.time.*;
+import org.chrisjr.loom.util.*;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,31 +45,22 @@ public class RealTimeSchedulerTest {
 			Pattern pattern) {
 
 		/*
-		 * try { Thread.sleep(15000); } catch (InterruptedException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } //
+		 * try { Thread.sleep(15000); } catch (InterruptedException e) { e.printStackTrace(); } //
 		 */
 
 		final AtomicInteger lastValue = new AtomicInteger();
 
-		Callable<Void> notYet = new Callable<Void>() {
-			public Void call() {
-				lastValue.set(0);
-				return null;
-			}
-		};
+		StatefulCallable noop = new StatefulNoop(lastValue);
+		StatefulCallable addNowToQueue = new CallableOnChange(lastValue,
+				new Callable<Void>() {
+					public Void call() {
+						long now = System.nanoTime();
+						queue.add(now);
+						return null;
+					}
+				});
 
-		Callable<Void> addNowToQueue = new Callable<Void>() {
-			public Void call() {
-				int value = lastValue.getAndSet(1);
-				if (value == 0) {
-					long now = System.nanoTime();
-					queue.add(now);
-				}
-				return null;
-			}
-		};
-
-		pattern.asCallable(notYet, addNowToQueue);
+		pattern.asCallable(noop, addNowToQueue);
 	}
 
 	public long getTotalAbsoluteError(final ConcurrentLinkedQueue<Long> queue,
