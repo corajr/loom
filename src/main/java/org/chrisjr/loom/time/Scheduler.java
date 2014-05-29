@@ -83,7 +83,8 @@ public abstract class Scheduler {
 		for (Pattern pattern : actives) {
 			Collection<Callable<?>> callbacks = pattern.getExternalMappings();
 			for (Callable<?> callback : callbacks) {
-				callback.call();
+				if (callback != null)
+					callback.call();
 			}
 		}
 	}

@@ -24,10 +24,10 @@ public class PatternCollectionTest {
 	@Test
 	public void getExternalMappings() {
 		Loom loom = new Loom(null);
-		Pattern pattern = new DiscretePattern(loom);
-		Pattern pattern2 = new DiscretePattern(loom);
+		Pattern pattern = new Pattern(loom);
+		Pattern pattern2 = new Pattern(loom);
 
-		pattern2.asMIDI("clap");
+		pattern2.asMidi("clap");
 
 		patterns.add(pattern);
 		patterns.add(pattern2);

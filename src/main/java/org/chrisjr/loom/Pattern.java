@@ -7,53 +7,34 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.apache.commons.math3.fraction.BigFraction;
+import org.chrisjr.loom.continuous.ConstantFunction;
+import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
 
 /**
- * The base class for patterns in Loom. Patterns may be discrete or continuous.
- * A DiscretePattern is a series of Events, while a ContinuousPattern is a
- * (closed-form) function of time.
+ * The base class for patterns in Loom. Primitive Patterns may be discrete or
+ * continuous, while compound patterns can contain a combination of both.
  * 
  * @author chrisjr
  */
-public abstract class Pattern {
-	Loom myLoom;
+public class Pattern implements Cloneable {
+	Loom loom;
+
+	protected PatternCollection children = null;
+	protected Pattern parent = null;
 
 	protected double defaultValue;
-	
-	PatternCollection children = new PatternCollection();
 
 	boolean isLooping = false;
 	BigFraction timeOffset = new BigFraction(0);
 	Interval loopInterval = new Interval(0, 1);
 
-	public static final Callable<Void> NOOP = new Callable<Void>() {
-		public Void call() {
-			return null;
-		}
-	};
-
-	public final class PickFromArray<E> implements Callable<E> {
-		final private E[] myArray;
-
-		public PickFromArray(E[] _array) {
-			myArray = _array;
-		}
-
-		public E call() {
-			int i = (int) (getValue() * (myArray.length - 1));
-			return myArray[i];
-		}
-	}
-
 	public enum Mapping {
 		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC, CALLABLE, OBJECT
 	}
 
-	final private Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
+	final protected Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
 			Mapping.OSC, Mapping.CALLABLE };
-
-	private ConcurrentMap<Mapping, Callable<?>> outputMappings = new ConcurrentHashMap<Mapping, Callable<?>>();
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -62,22 +43,101 @@ public abstract class Pattern {
 	 *            the loom that holds this pattern (can be null)
 	 */
 	public Pattern(Loom loom) {
-		this(loom, 0.0);
+		this(loom, null, null);
 	}
 
-	public Pattern(Loom loom, double _defaultValue) {
-		myLoom = loom;
-		if (myLoom != null)
-			addTo(myLoom);
-		defaultValue = _defaultValue;
+	public Pattern(Loom loom, double defaultValue) {
+		this(loom, null, new ConstantFunction(defaultValue));
 	}
 
-	protected void addTo(Loom loom) {
+	public Pattern(Loom loom, ContinuousFunction function) {
+		this(loom, null, function);
+	}
+
+	public Pattern(Loom loom, EventCollection events) {
+		this(loom, events, null);
+	}
+
+	public Pattern(Loom loom, EventCollection events,
+			ContinuousFunction function) {
+		this.loom = loom;
+		if (this.loom != null)
+			addSelfTo(loom);
+
+		if (events != null || function != null) {
+			this.children = new PatternCollection();
+			if (events != null)
+				addChild(new PrimitivePattern(loom, events));
+			else if (function != null)
+				addChild(new PrimitivePattern(loom, function));
+		}
+	}
+
+	protected void addSelfTo(Loom loom) {
 		loom.patterns.add(this);
 	}
 
+	protected void addChild(Pattern child) {
+		if (children == null)
+			children = new PatternCollection();
+		child.parent = this;
+		children.add(child);
+	}
+
+	protected void removeChild(Pattern child) {
+		if (children != null)
+			children.remove(child);
+	}
+
+	protected Pattern getChild(int i) {
+		if (children == null)
+			return null;
+		return children.get(i);
+	}
+
+	protected PrimitivePattern getPrimitivePattern() {
+		if (isPrimitivePattern()) {
+			return (PrimitivePattern) this;
+		} else if (children != null && children.size() > 0) {
+			return (PrimitivePattern) getChild(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @param string
+	 *            a string such as "10010010" describing a pattern to be tacked
+	 *            on at the end
+	 * @return the updated pattern
+	 */
+	public Pattern extend(String string) {
+		EventCollection newEvents = EventCollection.fromString(string);
+		addChild(new PrimitivePattern(loom, newEvents));
+		return this;
+	}
+
+	public Pattern extend(Integer... values) {
+		EventCollection newEvents = EventCollection.fromInts(values);
+		addChild(new PrimitivePattern(loom, newEvents));
+		return this;
+	}
+
+	public double getValue() {
+		PrimitivePattern pattern = getPrimitivePattern();
+		if (pattern == null)
+			throw new IllegalStateException(
+					"Cannot get value from empty Pattern!");
+		return getPrimitivePattern().getValue();
+	}
+
 	public Interval getCurrentInterval() {
-		Interval interval = myLoom.getCurrentInterval();
+		Interval interval;
+		if (this.parent != null) {
+			interval = parent.getCurrentInterval();
+		} else {
+			interval = loom.getCurrentInterval();
+		}
 
 		interval = interval.add(timeOffset);
 
@@ -85,10 +145,6 @@ public abstract class Pattern {
 			interval = interval.modulo(loopInterval);
 		}
 		return interval;
-	}
-
-	public double getValue() {
-		return defaultValue;
 	}
 
 	public void once() {
@@ -99,37 +155,13 @@ public abstract class Pattern {
 		isLooping = true;
 	}
 
-	@SuppressWarnings("unchecked")
-	private Object getAs(Mapping mapping) throws IllegalStateException {
-		Callable<Object> cb = (Callable<Object>) outputMappings.get(mapping);
-
-		if (cb == null)
-			throw new IllegalStateException("No mapping available for "
-					+ mapping.toString());
-
-		Object result = null;
-		try {
-			result = cb.call();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	public Pattern asInt(int _lo, int _hi) {
-		final int lo = _lo;
-		final int hi = _hi;
-		outputMappings.put(Mapping.INTEGER, new Callable<Integer>() {
-			public Integer call() {
-				return (int) ((hi - lo) * getValue()) + lo;
-			}
-		});
+	public Pattern asInt(int lo, int hi) {
+		getPrimitivePattern().asInt(lo, hi);
 		return this;
 	}
 
 	public int asInt() {
-		Integer result = (Integer) getAs(Mapping.INTEGER);
-		return result != null ? result.intValue() : Integer.MIN_VALUE;
+		return getPrimitivePattern().asInt();
 	}
 
 	/**
@@ -139,14 +171,12 @@ public abstract class Pattern {
 	 *            the name of a MIDI instrument to trigger
 	 * @return the updated pattern
 	 */
-	public Pattern asMIDI(String _instrument) {
-		final String instrument = _instrument;
-		outputMappings.put(Mapping.MIDI, new Callable<Void>() {
-			// TODO actually do something here
-			public Void call() {
-				return null;
-			}
-		});
+	public Pattern asMidi(String instrument) {
+		// TODO note on, note off
+		// how to make compound mapping?
+
+		addChild(new PrimitivePattern(loom).asMidi(instrument));
+		addChild(new PrimitivePattern(loom, 1.0).asInt(0, 127));
 		return this;
 	}
 
@@ -157,8 +187,8 @@ public abstract class Pattern {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColor(Integer... _colors) {
-		outputMappings.put(Mapping.COLOR, new PickFromArray<Integer>(_colors));
+	public Pattern asColor(Integer... colors) {
+		getPrimitivePattern().asColor(colors);
 		return this;
 	}
 
@@ -166,8 +196,7 @@ public abstract class Pattern {
 	 * @return an the "color" data type (32-bit int)
 	 */
 	public int asColor() {
-		Integer result = (Integer) getAs(Mapping.COLOR);
-		return result != null ? result : 0x00000000;
+		return getPrimitivePattern().asColor();
 	}
 
 	/**
@@ -178,75 +207,67 @@ public abstract class Pattern {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColorBlend(int... _colors) {
-		final int[] colors = _colors;
-		outputMappings.put(Mapping.COLOR_BLEND, new Callable<Integer>() {
-			public Integer call() {
-				float position = (float) getValue() * (colors.length - 1);
-				int i = (int) position;
-				float diff = position - i;
-
-				int result = 0x00000000;
-				if (colors.length == 1) {
-					result = colors[0];
-				} else if (i + 1 < colors.length) {
-					result = PApplet.lerpColor(colors[i], colors[i + 1], diff,
-							PConstants.HSB);
-				}
-				return result;
-			}
-		});
+	public Pattern asColorBlend(int... colors) {
+		getPrimitivePattern().asColorBlend(colors);
 		return this;
 	}
 
 	public int asColorBlend() {
-		Integer result = (Integer) getAs(Mapping.COLOR_BLEND);
-		return result != null ? result.intValue() : 0x00000000;
+		return getPrimitivePattern().asColorBlend();
 	}
 
 	public Pattern asObject(Object... objects) {
-		outputMappings.put(Mapping.OBJECT, new PickFromArray<Object>(objects));
+		getPrimitivePattern().asObject(objects);
 		return this;
 	}
 
 	public Object asObject() {
-		return getAs(Mapping.OBJECT);
+		return getPrimitivePattern().asObject();
 	}
 
 	public Pattern asCallable(Callable<?>... callables) {
-		outputMappings.put(Mapping.CALLABLE, new PickFromArray<Callable<?>>(
-				callables));
+		getPrimitivePattern().asCallable(callables);
 		return this;
-
 	}
 
-	@SuppressWarnings("unchecked")
 	public Callable<Object> asCallable() {
-		return (Callable<Object>) getAs(Mapping.CALLABLE);
+		return getPrimitivePattern().asCallable();
 	}
 
-	public Collection<Callable<?>> getExternalMappings() {
-		Collection<Callable<?>> callbacks = new ArrayList<Callable<?>>();
-		for (Mapping mapping : externalMappings) {
-			if (outputMappings.containsKey(mapping))
-				callbacks.add((Callable<?>) getAs(mapping));
+	public Collection<Callable<?>> getExternalMappings() {		
+		if (isPrimitivePattern())
+			return getPrimitivePattern().getExternalMappings();
+
+		Collection<Callable<?>> callables = new ArrayList<Callable<?>>();
+		if (children != null) {
+			for (Pattern child : children) {
+				callables.addAll(child.getExternalMappings());
+			}
 		}
-		return callbacks;
+
+		return callables;
 	}
 
-	/**
-	 * Originally called getExternalMappings, but the new collection created
-	 * slowed things down.
-	 * 
-	 * @return true if external mappings are present
-	 */
 	public Boolean hasExternalMappings() {
 		boolean result = false;
-		for (Mapping mapping : externalMappings) {
-			if (outputMappings.containsKey(mapping))
-				result = true;
+		if (isPrimitivePattern()) {
+			result = getPrimitivePattern().hasExternalMappings();
+		} else {
+			if (children != null) {
+				for (Pattern pattern : children) {
+					if (pattern.hasExternalMappings()) {
+						result = true;
+						break;
+					}
+				}
+			}
 		}
+
 		return result;
+	}
+
+	public boolean isPrimitivePattern() {
+		return false;
 	}
 
 	public BigFraction getTimeOffset() {
@@ -263,5 +284,18 @@ public abstract class Pattern {
 
 	public void setLoopInterval(Interval loopInterval) {
 		this.loopInterval = loopInterval;
+	}
+
+	public Pattern clone() throws CloneNotSupportedException {
+		if (isPrimitivePattern())
+			return getPrimitivePattern().clone();
+
+		Pattern copy = new Pattern(loom);
+
+		// TODO add other fields here
+		for (Pattern pattern : children) {
+			copy.addChild(pattern.clone());
+		}
+		return copy;
 	}
 }

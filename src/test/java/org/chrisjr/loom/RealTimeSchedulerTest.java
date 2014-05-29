@@ -20,7 +20,7 @@ public class RealTimeSchedulerTest {
 
 	private Loom loom;
 	private Scheduler scheduler;
-	private DiscretePattern testPattern;
+	private Pattern testPattern;
 
 	final double epsilon = 1.0; // millisecond error
 
@@ -31,7 +31,7 @@ public class RealTimeSchedulerTest {
 	public void setUp() throws Exception {
 		scheduler = new RealTimeScheduler();
 		loom = new Loom(null, scheduler);
-		testPattern = new DiscretePattern(loom);
+		testPattern = new Pattern(loom);
 		testPattern.extend(0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
 	}
 

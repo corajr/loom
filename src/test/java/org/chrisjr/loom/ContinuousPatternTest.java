@@ -13,13 +13,13 @@ import org.junit.Test;
 public class ContinuousPatternTest {
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
-	private ContinuousPattern pattern;
+	private Pattern pattern;
 
 	@Before
 	public void setUp() throws Exception {
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
-		scheduler.play();
+		loom.play();
 	}
 
 	@After
@@ -30,7 +30,7 @@ public class ContinuousPatternTest {
 
 	@Test
 	public void sinePattern() {
-		pattern = new ContinuousPattern(loom, new SineFunction());
+		pattern = new Pattern(loom, new SineFunction());
 		
 		final double epsilon = 1e-4;
 		
@@ -46,9 +46,9 @@ public class ContinuousPatternTest {
 
 	@Test
 	public void canBeCloned() throws CloneNotSupportedException {
-		pattern = new ContinuousPattern(loom, new SineFunction());
+		pattern = new Pattern(loom, new SineFunction());
 		
-		ContinuousPattern pattern2 = pattern.clone();
+		Pattern pattern2 = pattern.clone();
 		
 		//TODO this test makes no sense until patterns can be modified.
 		
