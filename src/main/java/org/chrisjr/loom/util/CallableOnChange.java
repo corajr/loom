@@ -18,7 +18,7 @@ public class CallableOnChange extends StatefulCallable {
 	public Void call() throws Exception {
 		int priorValue = lastValue.getAndSet(1);
 		if (priorValue == 0) {
-//			System.out.println("called " + toString());
+			System.out.println("called " + toString());
 			inner.call();
 		}
 		return null;

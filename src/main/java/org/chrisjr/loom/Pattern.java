@@ -307,7 +307,7 @@ public class Pattern implements Cloneable {
 
 	public Pattern every(Interval interval, final Transform transform) {
 		EventCollection events = new EventCollection();
-
+		
 		BigFraction newEnd = interval.getEnd().subtract(
 				new BigFraction(1, 1000));
 
@@ -319,14 +319,18 @@ public class Pattern implements Cloneable {
 
 		PrimitivePattern primitive = new PrimitivePattern(loom, events);
 		primitive.loop();
+		primitive.setLoopInterval(interval);
 
 		final Pattern original = this;
 
 		StatefulCallable[] ops = CallableOnChange.fromTransform(transform, original);
 
 		primitive.asStatefulCallable(ops);
+		
+		// TODO can the modifying pattern live under the parent somehow?
+		
+		loom.patterns.add(primitive);
 
-		addChild(primitive);
 		return this;
 	}
 

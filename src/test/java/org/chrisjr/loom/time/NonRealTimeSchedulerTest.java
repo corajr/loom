@@ -27,7 +27,7 @@ public class NonRealTimeSchedulerTest {
 		loom = new Loom(null, scheduler);
 		testPattern = new Pattern(loom);
 		testPattern.extend(0, 1, 0, 1);
-		
+
 		loom.play();
 	}
 
@@ -37,23 +37,23 @@ public class NonRealTimeSchedulerTest {
 
 	@Test
 	public void testUpdate() {
-		final AtomicInteger lastValue = new AtomicInteger();
+		testPattern.loop();
+
 		final AtomicInteger totalCount = new AtomicInteger();
 
-		StatefulCallable one = new StatefulNoop(lastValue);
-		StatefulCallable add = new CallableOnChange(lastValue,
-				new Callable<Void>() {
+		StatefulCallable[] ops = CallableOnChange
+				.fromCallable(new Callable<Void>() {
 					public Void call() {
 						totalCount.incrementAndGet();
 						return null;
 					}
 				});
 
-		testPattern.asStatefulCallable(one, add);
-		
-		scheduler.setElapsedMillis(1002);
-		
-		assertThat(totalCount.get(), is(equalTo(2)));
+		testPattern.asStatefulCallable(ops);
+
+		scheduler.setElapsedMillis(2001);
+
+		assertThat(totalCount.get(), is(equalTo(4)));
 	}
 
 }
