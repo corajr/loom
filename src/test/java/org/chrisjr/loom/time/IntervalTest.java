@@ -13,8 +13,8 @@ import org.junit.rules.ExpectedException;
 public class IntervalTest {
 	private Interval interval;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -54,12 +54,20 @@ public class IntervalTest {
 	}
 
 	@Test
+	public void multiplyMod() {
+		Interval quarterToHalf = new Interval(0.25, 0.5);
+		Interval halfToThreeQuarters = new Interval(0.5, 0.75);
+
+		assertThat(quarterToHalf.multiplyMod(-1, interval),
+				is(equalTo(halfToThreeQuarters)));
+	}
+
+	@Test
 	public void moduloOtherSmallerInterval() {
 		Interval zeroToOneAndAHalf = new Interval(0, 1.5);
-		
+
 		thrown.expect(IllegalArgumentException.class);
 		zeroToOneAndAHalf.modulo(interval);
 	}
 
-	
 }

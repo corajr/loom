@@ -10,6 +10,7 @@ import org.chrisjr.loom.Pattern.Mapping;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.util.StatefulCallable;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -47,7 +48,7 @@ public class PrimitivePattern extends Pattern {
 		super(loom);
 		this.function = new ConstantFunction(defaultValue);
 	}
-	
+
 	public PrimitivePattern(Loom loom, EventCollection events) {
 		super(loom);
 		this.events = events;
@@ -183,6 +184,17 @@ public class PrimitivePattern extends Pattern {
 
 	}
 
+	public StatefulCallable asStatefulCallable() {
+		return (StatefulCallable) getAs(Mapping.STATEFUL_CALLABLE);
+	}
+
+	public Pattern asStatefulCallable(StatefulCallable... callables) {
+		outputMappings.put(Mapping.STATEFUL_CALLABLE,
+				new PickFromArray<StatefulCallable>(callables));
+		return this;
+
+	}
+
 	@SuppressWarnings("unchecked")
 	public Callable<Object> asCallable() {
 		return (Callable<Object>) getAs(Mapping.CALLABLE);
@@ -232,7 +244,7 @@ public class PrimitivePattern extends Pattern {
 		}
 		return value;
 	}
-	
+
 	public PrimitivePattern clone() throws CloneNotSupportedException {
 		PrimitivePattern copy = new PrimitivePattern(loom);
 		if (events != null)

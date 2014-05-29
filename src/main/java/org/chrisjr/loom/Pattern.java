@@ -5,11 +5,15 @@ import processing.core.PConstants;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.transforms.Temporal;
+import org.chrisjr.loom.transforms.Transform;
+import org.chrisjr.loom.util.*;
 
 /**
  * The base class for patterns in Loom. Primitive Patterns may be discrete or
@@ -27,14 +31,27 @@ public class Pattern implements Cloneable {
 
 	boolean isLooping = false;
 	BigFraction timeOffset = new BigFraction(0);
+	BigFraction timeScale = new BigFraction(1);
 	Interval loopInterval = new Interval(0, 1);
 
 	public enum Mapping {
-		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC, CALLABLE, OBJECT
+		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC, CALLABLE, STATEFUL_CALLABLE, OBJECT
 	}
 
 	final protected Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
-			Mapping.OSC, Mapping.CALLABLE };
+			Mapping.OSC, Mapping.CALLABLE, Mapping.STATEFUL_CALLABLE };
+
+	public enum Transforms {
+		NOOP, REVERSE, SHIFT_LEFT, SHIFT_RIGHT
+	}
+
+	private ConcurrentMap<Transforms, Transform> transforms = makeTransforms();
+
+	private ConcurrentMap<Transforms, Transform> makeTransforms() {
+		ConcurrentMap<Transforms, Transform> transforms = new ConcurrentHashMap<Transforms, Transform>();
+		transforms.put(Transforms.NOOP, new Temporal.Noop());
+		return transforms;
+	}
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -105,6 +122,10 @@ public class Pattern implements Cloneable {
 		}
 	}
 
+	public Transform getTransform(Transforms transform) {
+		return transforms.get(transform);
+	}
+
 	/**
 	 * @param string
 	 *            a string such as "10010010" describing a pattern to be tacked
@@ -139,11 +160,16 @@ public class Pattern implements Cloneable {
 			interval = loom.getCurrentInterval();
 		}
 
+		if (timeScale.compareTo(BigFraction.ZERO) > 0)
+			interval = interval.multiply(timeScale);
+		else
+			interval = interval.multiplyMod(timeScale, loopInterval);
 		interval = interval.add(timeOffset);
 
 		if (isLooping) {
 			interval = interval.modulo(loopInterval);
 		}
+
 		return interval;
 	}
 
@@ -154,6 +180,8 @@ public class Pattern implements Cloneable {
 	public void loop() {
 		isLooping = true;
 	}
+
+	// Mappings
 
 	public Pattern asInt(int lo, int hi) {
 		getPrimitivePattern().asInt(lo, hi);
@@ -234,7 +262,16 @@ public class Pattern implements Cloneable {
 		return getPrimitivePattern().asCallable();
 	}
 
-	public Collection<Callable<?>> getExternalMappings() {		
+	public Pattern asStatefulCallable(StatefulCallable... callables) {
+		getPrimitivePattern().asStatefulCallable(callables);
+		return this;
+	}
+
+	public StatefulCallable asStatefulCallable() {
+		return getPrimitivePattern().asStatefulCallable();
+	}
+
+	public Collection<Callable<?>> getExternalMappings() {
 		if (isPrimitivePattern())
 			return getPrimitivePattern().getExternalMappings();
 
@@ -270,12 +307,75 @@ public class Pattern implements Cloneable {
 		return false;
 	}
 
+	// Transformations
+
+	public Pattern reverse() {
+		setTimeScale(-1);
+		return this;
+	}
+
+	public Pattern every(double cycles, Transforms transform) {
+		return every(new BigFraction(cycles), transform);
+	}
+
+	public Pattern every(BigFraction fraction, Transforms transform) {
+		return every(new Interval(BigFraction.ZERO, fraction), transform);
+	}
+
+	public Pattern every(Interval interval, Transforms transform) {
+		return every(interval, getTransform(transform));
+	}
+
+	public Pattern every(Interval interval, final Transform transform) {
+		EventCollection events = new EventCollection();
+
+		Interval after = new Interval(interval.getEnd(), interval.getEnd().add(
+				new BigFraction(1, 1000)));
+
+		events.add(new Event(interval, 0.0));
+		events.add(new Event(after, 1.0));
+
+		PrimitivePattern primitive = new PrimitivePattern(loom, events);
+
+		final AtomicInteger v = new AtomicInteger();
+		final Pattern original = this;
+		StatefulCallable noop = new StatefulNoop(v);
+		StatefulCallable doTransform = new CallableOnChange(v,
+				new Callable<Void>() {
+					public Void call() {
+						transform.call(original);
+						return null;
+					}
+				});
+
+		primitive.asStatefulCallable(noop, doTransform);
+		return this;
+	}
+
+	// Time shifts
+
 	public BigFraction getTimeOffset() {
 		return timeOffset;
 	}
 
+	public void setTimeOffset(int i) {
+		setTimeOffset(new BigFraction(i));
+	}
+
 	public void setTimeOffset(BigFraction timeOffset) {
 		this.timeOffset = timeOffset;
+	}
+
+	public BigFraction getTimeScale() {
+		return timeScale;
+	}
+
+	public void setTimeScale(int i) {
+		setTimeScale(new BigFraction(i));
+	}
+
+	public void setTimeScale(BigFraction timeScale) {
+		this.timeScale = timeScale;
 	}
 
 	public Interval getLoopInterval() {
@@ -284,6 +384,10 @@ public class Pattern implements Cloneable {
 
 	public void setLoopInterval(Interval loopInterval) {
 		this.loopInterval = loopInterval;
+	}
+
+	public EventCollection getEvents() {
+		return getPrimitivePattern().events;
 	}
 
 	public Pattern clone() throws CloneNotSupportedException {
