@@ -1,17 +1,17 @@
-package org.chrisjr.loom;
+package org.chrisjr.loom.time;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.chrisjr.loom.time.*;
+import org.chrisjr.loom.Loom;
+import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.util.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,14 +45,12 @@ public class RealTimeSchedulerTest {
 			Pattern pattern) {
 
 		/*
-		 * try { Thread.sleep(15000); } catch (InterruptedException e) { e.printStackTrace(); } //
+		 * try { Thread.sleep(15000); } catch (InterruptedException e) {
+		 * e.printStackTrace(); } //
 		 */
 
-		final AtomicInteger lastValue = new AtomicInteger();
-
-		StatefulCallable noop = new StatefulNoop(lastValue);
-		StatefulCallable addNowToQueue = new CallableOnChange(lastValue,
-				new Callable<Void>() {
+		StatefulCallable[] ops = CallableOnChange
+				.fromCallable(new Callable<Void>() {
 					public Void call() {
 						long now = System.nanoTime();
 						queue.add(now);
@@ -60,7 +58,7 @@ public class RealTimeSchedulerTest {
 					}
 				});
 
-		pattern.asCallable(noop, addNowToQueue);
+		pattern.asStatefulCallable(ops);
 	}
 
 	public long getTotalAbsoluteError(final ConcurrentLinkedQueue<Long> queue,

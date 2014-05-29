@@ -293,7 +293,7 @@ public class Pattern implements Cloneable {
 	// Transformations
 
 	public Pattern reverse() {
-		setTimeScale(-1);
+		setTimeScale(getTimeScale().multiply(-1));
 		return this;
 	}
 
@@ -320,13 +320,11 @@ public class Pattern implements Cloneable {
 		PrimitivePattern primitive = new PrimitivePattern(loom, events);
 		primitive.loop();
 
-		final AtomicInteger v = new AtomicInteger();
+		final Pattern original = this;
 
-		StatefulCallable noop = new StatefulNoop(v);
-		StatefulCallable doTransform = CallableOnChange.fromTransform(v,
-				transform, this);
+		StatefulCallable[] ops = CallableOnChange.fromTransform(transform, original);
 
-		primitive.asStatefulCallable(noop, doTransform);
+		primitive.asStatefulCallable(ops);
 
 		addChild(primitive);
 		return this;

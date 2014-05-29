@@ -18,15 +18,23 @@ public class CallableOnChange extends StatefulCallable {
 	public Void call() throws Exception {
 		int priorValue = lastValue.getAndSet(1);
 		if (priorValue == 0) {
-//			System.out.println("Change");
+//			System.out.println("called " + toString());
 			inner.call();
 		}
 		return null;
 	}
 
-	public static CallableOnChange fromTransform(final AtomicInteger lastValue,
-			final Transform transform, final Pattern original) {
-		return new CallableOnChange(lastValue, new Callable<Void>() {
+	public static StatefulCallable[] fromCallable(final Callable<Void> callable) {
+		final AtomicInteger lastValue = new AtomicInteger();
+		StatefulCallable noop = new StatefulNoop(lastValue);
+		StatefulCallable doCall = new CallableOnChange(lastValue, callable);
+
+		return new StatefulCallable[] { noop, doCall };
+	}
+
+	public static StatefulCallable[] fromTransform(final Transform transform,
+			final Pattern original) {
+		return fromCallable(new Callable<Void>() {
 			public Void call() {
 				transform.call(original);
 				return null;
