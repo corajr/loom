@@ -11,8 +11,7 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
-import org.chrisjr.loom.transforms.Temporal;
-import org.chrisjr.loom.transforms.Transform;
+import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
 
 /**
@@ -40,18 +39,6 @@ public class Pattern implements Cloneable {
 
 	final protected Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
 			Mapping.OSC, Mapping.CALLABLE, Mapping.STATEFUL_CALLABLE };
-
-	public enum Transforms {
-		NOOP, REVERSE, SHIFT_LEFT, SHIFT_RIGHT
-	}
-
-	private ConcurrentMap<Transforms, Transform> transforms = makeTransforms();
-
-	private ConcurrentMap<Transforms, Transform> makeTransforms() {
-		ConcurrentMap<Transforms, Transform> transforms = new ConcurrentHashMap<Transforms, Transform>();
-		transforms.put(Transforms.NOOP, new Temporal.Noop());
-		return transforms;
-	}
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -120,10 +107,6 @@ public class Pattern implements Cloneable {
 		} else {
 			return null;
 		}
-	}
-
-	public Transform getTransform(Transforms transform) {
-		return transforms.get(transform);
 	}
 
 	/**
@@ -314,16 +297,12 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
-	public Pattern every(double cycles, Transforms transform) {
+	public Pattern every(double cycles, Transform transform) {
 		return every(new BigFraction(cycles), transform);
 	}
 
-	public Pattern every(BigFraction fraction, Transforms transform) {
+	public Pattern every(BigFraction fraction, Transform transform) {
 		return every(new Interval(BigFraction.ZERO, fraction), transform);
-	}
-
-	public Pattern every(Interval interval, Transforms transform) {
-		return every(interval, getTransform(transform));
 	}
 
 	public Pattern every(Interval interval, final Transform transform) {
