@@ -1,13 +1,13 @@
 import org.chrisjr.loom.*;
 
 Loom loom;
-DiscretePattern pattern;
+Pattern pattern;
 
 void setup() {
   size(400,400);
   
   loom = new Loom(this);
-  pattern = new DiscretePattern(loom);
+  pattern = new Pattern(loom);
 
   pattern.extend("0101");
   pattern.asColor(#000000, #FFFFFF);
