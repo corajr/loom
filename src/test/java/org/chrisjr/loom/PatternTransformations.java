@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.transforms.Transforms;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -47,4 +48,15 @@ public class PatternTransformations {
 		}
 	}
 
+	@Test
+	public void reverseEveryCycle() {
+		pattern.extend("0101");
+		pattern.asInt(0, 2);
+		pattern.every(1, new Transforms.Reverse());
+		
+		for (int i = 0; i < 4; i++) {
+			scheduler.setElapsedMillis((1000 * i) + 1);
+			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+		}
+	}
 }

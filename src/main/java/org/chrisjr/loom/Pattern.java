@@ -315,19 +315,17 @@ public class Pattern implements Cloneable {
 		events.add(new Event(after, 1.0));
 
 		PrimitivePattern primitive = new PrimitivePattern(loom, events);
+		primitive.loop();
 
 		final AtomicInteger v = new AtomicInteger();
-		final Pattern original = this;
+
 		StatefulCallable noop = new StatefulNoop(v);
-		StatefulCallable doTransform = new CallableOnChange(v,
-				new Callable<Void>() {
-					public Void call() {
-						transform.call(original);
-						return null;
-					}
-				});
+		StatefulCallable doTransform = CallableOnChange.fromTransform(v,
+				transform, this);
 
 		primitive.asStatefulCallable(noop, doTransform);
+
+		addChild(primitive);
 		return this;
 	}
 
