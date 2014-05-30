@@ -39,18 +39,15 @@ public class PatternTransformations {
 	@Test
 	public void reverse() {
 		pattern.extend("0101");
-
-		Pattern pattern2 = new Pattern(loom);
-		pattern2.extend("1010");
-
+		pattern.asInt(0, 1);
 		pattern.reverse();
 
 		for (int i = 0; i < 4; i++) {
 			scheduler.setElapsedMillis((250 * i) + 1);
-			assertThat(pattern2.getValue(), is(equalTo(pattern.getValue())));
+			assertThat(pattern.asInt(), is(equalTo((i + 1) % 2)));
 		}
 	}
-
+	
 	@Test
 	public void reverseTwiceIsUnchanged() {
 		pattern.extend("0101");
@@ -93,9 +90,6 @@ public class PatternTransformations {
 			for (int i = 0; i < 4; i++) {
 				long time = (j * 1000) + (250 * i) + 1;
 				scheduler.setElapsedMillis(time);
-				System.out.print(time);
-				System.out.print(" ");
-				System.out.println(pattern.asInt());
 				assertThat(pattern.asInt(), is(equalTo((i + j) % 2)));
 			}
 		}

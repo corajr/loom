@@ -292,11 +292,28 @@ public class Pattern implements Cloneable {
 
 	// Transformations
 
-	public Pattern reverse() {
-		setTimeScale(getTimeScale().multiply(-1));
+	public Pattern speed(double multiplier) {
+		return speed(new BigFraction(multiplier));
+	}
+	
+	public Pattern speed(BigFraction multiplier) {
+		setTimeScale(getTimeScale().multiply(multiplier));
 		return this;
 	}
 
+	public Pattern reverse() {
+		return speed(-1);
+	}
+
+	public Pattern shift(double amt) {
+		return shift(new BigFraction(amt));
+	}
+	
+	public Pattern shift(BigFraction amt) {
+		setTimeOffset(getTimeOffset().add(amt));
+		return this;
+	}
+	
 	public Pattern every(double cycles, Transform transform) {
 		return every(new BigFraction(cycles), transform);
 	}
