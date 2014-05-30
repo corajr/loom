@@ -37,6 +37,57 @@ public class PatternTransformations {
 	}
 
 	@Test
+	public void halfSpeed() {
+		pattern.extend("0101");
+		pattern.asInt(0, 1);
+		pattern.speed(0.5);
+
+		for (int i = 0; i < 4; i++) {
+			scheduler.setElapsedMillis((500 * i) + 1);
+			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+		}
+	}
+
+	@Test
+	public void doubleSpeed() {
+		pattern.extend("0101");
+		pattern.asInt(0, 1);
+		pattern.speed(2);
+
+		for (int i = 0; i < 4; i++) {
+			scheduler.setElapsedMillis((125 * i) + 1);
+			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+		}
+	}
+
+	@Test
+	public void shiftRight() {
+		pattern.extend("0101");
+		pattern.asInt(0, 1);
+		pattern.loop();
+		pattern.shift(0.25);
+
+		for (int i = 0; i < 4; i++) {
+			scheduler.setElapsedMillis((250 * (i+1)) + 1);
+			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+		}
+	}
+
+	@Test
+	public void shiftLeft() {
+		pattern.extend("0101");
+		pattern.asInt(0, 1);
+		pattern.loop();
+		pattern.shift(-0.25);
+
+		for (int i = 0; i < 4; i++) {
+			scheduler.setElapsedMillis((250 * i) + 1);
+			System.out.println(pattern.asInt());
+			assertThat(pattern.asInt(), is(equalTo((i+1) % 2)));
+		}
+	}
+	
+	@Test
 	public void reverse() {
 		pattern.extend("0101");
 		pattern.asInt(0, 1);

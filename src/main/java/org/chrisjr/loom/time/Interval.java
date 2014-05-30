@@ -41,15 +41,15 @@ public class Interval {
 		return new Interval(start.multiply(fraction), end.multiply(fraction));
 	}
 
-	public Interval add(int i) {
+	public Interval add(double i) {
 		return add(new BigFraction(i));
 	}
 
-	public Interval subtract(int i) {
+	public Interval subtract(double i) {
 		return subtract(new BigFraction(i));
 	}
 
-	public Interval multiply(int i) {
+	public Interval multiply(double i) {
 		return multiply(new BigFraction(i));
 	}
 
@@ -58,38 +58,53 @@ public class Interval {
 				&& fraction.compareTo(getEnd()) <= 0;
 	}
 
-	private static BigFraction fractionMod(BigFraction fraction, Interval interval) {
-		if (interval.contains(fraction))
-			return fraction;
-		
-		if (fraction.compareTo(interval.getSize()) > 0) {
-			throw new IllegalArgumentException(
-					"Fraction is larger than interval!");
-		}
+	/**
+	 * "modulo interval" in the sense given in
+	 * http://www.cs.tau.ac.il/~nachum/papers/Modulo.pdf
+	 * 
+	 * @param fraction
+	 *            the fraction to transform
+	 * @param interval
+	 *            the interval into which to fit the fraction
+	 * @return the fraction mod [start, end]
+	 */
+	private static BigFraction fractionMod(BigFraction x, Interval interval) {
 
-		while (fraction.compareTo(interval.getEnd()) > 0)
-			fraction = fraction.subtract(interval.getSize());			
+		BigFraction a = interval.getStart();
+		BigFraction b = interval.getEnd();
 
-		while (fraction.compareTo(interval.getStart()) < 0)
-			fraction = fraction.add(interval.getSize());
+		if (a.compareTo(b) == 0)
+			return x;
 
-		return fraction;
+		BigFraction x_minus_a = x.subtract(a);
+		BigFraction length = b.subtract(a);
+
+		int multiplier = (int) Math.floor((x_minus_a.divide(length))
+				.doubleValue());
+
+		return x.subtract(length.multiply(multiplier));
 	}
 
+	/**
+	 * @param other
+	 *            the other interval
+	 * @return this interval shifted into the range of the other
+	 * @throws IllegalArgumentException
+	 */
 	public Interval modulo(Interval other) throws IllegalArgumentException {
-		BigFraction mySize = getSize();
 
-		// TODO if my entire span is bigger than the other interval, what should
-		// happen?
-		if (mySize.compareTo(other.getSize()) > 0) {
+		BigFraction otherSize = other.getSize();
+		if (this.getSize().compareTo(otherSize) > 0)
 			throw new IllegalArgumentException(
-					"Cannot find modulo using smaller interval.");
-		}
+					"This interval is larger than modulo interval; will be aliased!");
 
 		Interval i = this;
-		while (i.getStart().compareTo(other.getEnd()) > 0) {
-			i = i.subtract(other.getEnd());
-		}
+
+		while (i.getStart().compareTo(other.getStart()) < 0)
+			i = i.add(otherSize);
+		
+		while (i.getEnd().compareTo(other.getEnd()) > 0)
+			i = i.subtract(otherSize);
 
 		return i;
 	}
@@ -98,12 +113,10 @@ public class Interval {
 		return multiplyMod(new BigFraction(i), interval);
 	}
 
-	public Interval multiplyMod(BigFraction fraction, Interval interval) {
-		BigFraction newStart = getStart().multiply(fraction);
-		BigFraction newEnd = getEnd().multiply(fraction);
-
-		newStart = Interval.fractionMod(newStart, interval);
-		newEnd = Interval.fractionMod(newEnd, interval);
+	public static Interval modulo(BigFraction newStart, BigFraction newEnd,
+			Interval other) {
+		newStart = Interval.fractionMod(newStart, other);
+		newEnd = Interval.fractionMod(newEnd, other);
 
 		Interval i = null;
 		if (newStart.compareTo(newEnd) <= 0) {
@@ -113,6 +126,13 @@ public class Interval {
 		}
 
 		return i;
+	}
+
+	public Interval multiplyMod(BigFraction fraction, Interval interval) {
+		BigFraction newStart = getStart().multiply(fraction);
+		BigFraction newEnd = getEnd().multiply(fraction);
+
+		return Interval.modulo(newStart, newEnd, interval);
 	}
 
 	// Auto-generated hashCode and equals

@@ -47,10 +47,34 @@ public class IntervalTest {
 
 	@Test
 	public void moduloOtherInterval() {
+		Interval zeroToQuarter = new Interval(0, 0.25);
 		Interval quarterToHalf = new Interval(0.25, 0.5);
-		Interval plusOne = quarterToHalf.add(1);
+		Interval halfToThreeQuarters = new Interval(0.5, 0.75);
+		Interval threeQuartersToOne = new Interval(0.75, 1.0);
+		Interval oneToOneAndAQuarter = zeroToQuarter.add(1);
+		Interval oneAndAQuarterToOneAndAHalf = quarterToHalf.add(1);
 
-		assertThat(plusOne.modulo(interval), is(equalTo(quarterToHalf)));
+		assertThat(zeroToQuarter.modulo(interval), is(equalTo(zeroToQuarter)));
+		assertThat(quarterToHalf.modulo(interval), is(equalTo(quarterToHalf)));
+		assertThat(halfToThreeQuarters.modulo(interval),
+				is(equalTo(halfToThreeQuarters)));
+		assertThat(threeQuartersToOne.modulo(interval),
+				is(equalTo(threeQuartersToOne)));
+		assertThat(oneToOneAndAQuarter.modulo(interval),
+				is(equalTo(zeroToQuarter)));
+		assertThat(oneAndAQuarterToOneAndAHalf.modulo(interval),
+				is(equalTo(quarterToHalf)));
+
+	}
+
+	@Test
+	public void negativeModuloOtherInterval() {
+		Interval zeroToQuarter = new Interval(0.0, 0.25);
+		zeroToQuarter = zeroToQuarter.add(-0.25);
+		Interval threeQuartersToOne = new Interval(0.75, 1.0);
+
+		assertThat(zeroToQuarter.modulo(interval),
+				is(equalTo(threeQuartersToOne)));
 	}
 
 	@Test
