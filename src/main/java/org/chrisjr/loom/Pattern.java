@@ -357,7 +357,7 @@ public class Pattern implements Cloneable {
 		return timeOffset;
 	}
 
-	public void setTimeOffset(int i) {
+	public void setTimeOffset(double i) {
 		setTimeOffset(new BigFraction(i));
 	}
 
@@ -369,7 +369,7 @@ public class Pattern implements Cloneable {
 		return timeScale;
 	}
 
-	public void setTimeScale(int i) {
+	public void setTimeScale(double i) {
 		setTimeScale(new BigFraction(i));
 	}
 
