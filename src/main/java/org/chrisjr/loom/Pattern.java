@@ -16,6 +16,8 @@ import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
 
+import oscP5.OscMessage;
+
 /**
  * The base class for patterns in Loom. Primitive Patterns may be discrete or
  * continuous, while compound patterns can contain a combination of both.
@@ -40,7 +42,7 @@ public class Pattern implements Cloneable {
 	}
 
 	final protected Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
-			Mapping.OSC_BUNDLE, Mapping.CALLABLE, Mapping.STATEFUL_CALLABLE };
+			Mapping.CALLABLE, Mapping.STATEFUL_CALLABLE };
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -206,12 +208,21 @@ public class Pattern implements Cloneable {
 
 	public Pattern asOscMessage(String addr, PrimitivePattern subPattern,
 			Mapping mapping) {
+
+		subPattern.asOscMessage(addr, mapping);
 		addChild(subPattern);
-		// getPrimitivePattern().asOscMessage(addr, pattern, mapping);
 		return this;
+	}
+	
+	public OscMessage asOscMessage() {
+		return getPrimitivePattern().asOscMessage();
 	}
 
 	public Pattern asOscBundle(NetAddress remoteAddress, Pattern... patterns) {
+		PrimitivePattern bundleTrigger = PrimitivePattern.forEach(getPrimitivePattern());
+		bundleTrigger.asOscBundle(remoteAddress, patterns);
+
+		loom.patterns.add(bundleTrigger);
 		return this;
 	}
 
@@ -292,6 +303,10 @@ public class Pattern implements Cloneable {
 		return callables;
 	}
 
+	public boolean hasMapping(Mapping mapping) {
+		return getPrimitivePattern().hasMapping(mapping);
+	}
+	
 	public Boolean hasExternalMappings() {
 		boolean result = false;
 		if (isPrimitivePattern()) {

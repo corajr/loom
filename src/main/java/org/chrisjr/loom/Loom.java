@@ -29,6 +29,8 @@ package org.chrisjr.loom;
 
 import org.chrisjr.loom.time.*;
 
+import oscP5.OscMessage;
+import oscP5.OscP5;
 import processing.core.*;
 
 /**
@@ -50,6 +52,8 @@ public class Loom {
 	public PatternCollection patterns = new PatternCollection();
 
 	private Scheduler scheduler;
+
+	private OscP5 oscP5;
 
 	public final static String VERSION = "##library.prettyVersion##";
 
@@ -76,6 +80,7 @@ public class Loom {
 		myParent = theParent;
 		scheduler = theScheduler;
 		scheduler.setPatterns(patterns);
+		oscP5 = new OscP5(this, 12000);
 		welcome();
 	}
 
@@ -92,11 +97,11 @@ public class Loom {
 	public static String version() {
 		return VERSION;
 	}
-	
+
 	public Interval getCurrentInterval() {
 		return scheduler.getCurrentInterval();
 	}
-		
+
 	public void play() {
 		scheduler.play();
 	}
@@ -104,8 +109,21 @@ public class Loom {
 	public void pause() {
 		scheduler.pause();
 	}
-	
+
 	public void stop() {
 		scheduler.stop();
+	}
+
+	public OscP5 getOscP5() {
+		return oscP5;
+	}
+
+	public void oscEvent(OscMessage theOscMessage) {
+		// TODO handle incoming messages
+		System.out.println(theOscMessage.addrPattern());
+	}
+
+	public void dispose() {
+		oscP5.dispose();
 	}
 }

@@ -6,14 +6,19 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import netP5.NetAddress;
+
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Pattern.Mapping;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.util.CallableOnChange;
 import org.chrisjr.loom.util.StatefulCallable;
 
+import oscP5.OscBundle;
 import oscP5.OscMessage;
+import oscP5.OscP5;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -116,13 +121,60 @@ public class PrimitivePattern extends Pattern {
 		return this;
 	}
 
-	public Pattern asOscMessage(final String addr, final Object... args) {
+	public Pattern asOscMessage(final String addr, final Mapping mapping) {
+		final PrimitivePattern original = this;
 		outputMappings.put(Mapping.OSC_MESSAGE, new Callable<OscMessage>() {
 			public OscMessage call() {
-				return new OscMessage(addr, args);
+				return new OscMessage(addr, new Object[] { original
+						.getAs(mapping) });
 			};
 		});
 		return this;
+	}
+
+	public OscMessage asOscMessage() {
+		return (OscMessage) getAs(Mapping.OSC_MESSAGE);
+	}
+
+	public Pattern asOscBundle(final NetAddress remoteAddress,
+			final Pattern... patterns) {		
+		final PrimitivePattern original = this;
+
+		final PatternCollection oscPatterns = new PatternCollection();
+
+		boolean hasOscMapping = false;
+		for (Pattern pat : patterns) {
+			if (pat.hasMapping(Mapping.OSC_MESSAGE)) {
+				hasOscMapping = true;
+				oscPatterns.add(pat);
+			}
+		}
+
+		if (!hasOscMapping)
+			throw new IllegalArgumentException(
+					"None of the patterns have an OSC mapping!");
+
+		outputMappings.put(Mapping.OSC_BUNDLE, new Callable<OscBundle>() {
+			public OscBundle call() {
+				OscBundle bundle = new OscBundle();
+				for (Pattern pat : oscPatterns) {
+					bundle.add(pat.asOscMessage());
+				}
+				return bundle;
+			}
+		});
+
+		asStatefulCallable(CallableOnChange.fromCallable(new Callable<Void>() {
+			public Void call() {
+				loom.getOscP5().send(original.asOscBundle(), remoteAddress);
+				return null;
+			}
+		}));
+		return this;
+	}
+
+	public OscBundle asOscBundle() {
+		return (OscBundle) getAs(Mapping.OSC_BUNDLE);
 	}
 
 	/**
@@ -233,6 +285,10 @@ public class PrimitivePattern extends Pattern {
 				result = true;
 		}
 		return result;
+	}
+
+	public boolean hasMapping(Mapping mapping) {
+		return outputMappings.containsKey(mapping);
 	}
 
 	public double getValue() {

@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Callable;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.junit.After;
@@ -17,7 +18,7 @@ import netP5.*;
 
 public class AsOscMessageTest {
 	private OscP5 oscP5;
-	private NetAddress myRemoteLocation = new NetAddress("127.0.0.1", 12000);
+	private NetAddress myRemoteLocation = new NetAddress("127.0.0.1", 12001);
 
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
@@ -27,7 +28,7 @@ public class AsOscMessageTest {
 
 	@Before
 	public void setUp() throws Exception {
-		oscP5 = new OscP5(this, 12000);
+		oscP5 = new OscP5(this, 12001);
 
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
@@ -38,6 +39,7 @@ public class AsOscMessageTest {
 
 	@After
 	public void tearDown() throws Exception {
+		loom.dispose();
 		oscP5.dispose();
 	}
 
@@ -60,7 +62,7 @@ public class AsOscMessageTest {
 	}
 
 	@Ignore
-	public void test() {
+	public void localReceiver() {
 		OscMessage myMessage = new OscMessage("/test");
 		myMessage.add(123);
 		oscP5.send(myMessage, myRemoteLocation);
@@ -71,12 +73,20 @@ public class AsOscMessageTest {
 	@Test
 	public void receive() {
 		pattern.extend("1101");
-		pattern.asOscMessage("/test", 123);
+		
+//		pattern.asCallable(new Callable<Void>() {
+//			public Void call() {
+//				System.out.println("active");
+//				return null;
+//			}
+//		});
 
-		Pattern pattern2 = new Pattern(loom);
-		pattern2.asOscBundle(myRemoteLocation, pattern);
+		Pattern messagePat = new Pattern(loom);
+		messagePat.asOscMessage("/test", 123);
+
+		pattern.asOscBundle(myRemoteLocation, messagePat);
 		
 		scheduler.setElapsedMillis(1001);
-		waitForEvents(3, 50);
+		waitForEvents(3, 200);
 	}
 }
