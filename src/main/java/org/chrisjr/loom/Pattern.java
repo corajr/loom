@@ -311,7 +311,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public boolean isPrimitivePattern() {
-		return children == null;
+		return (this instanceof PrimitivePattern);
 	}
 
 	public boolean isDiscretePattern() {
