@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import netP5.NetAddress;
+
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
@@ -34,11 +36,11 @@ public class Pattern implements Cloneable {
 	Interval loopInterval = new Interval(0, 1);
 
 	public enum Mapping {
-		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC, CALLABLE, STATEFUL_CALLABLE, OBJECT
+		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
 	}
 
 	final protected Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
-			Mapping.OSC, Mapping.CALLABLE, Mapping.STATEFUL_CALLABLE };
+			Mapping.OSC_BUNDLE, Mapping.CALLABLE, Mapping.STATEFUL_CALLABLE };
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -191,6 +193,28 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	public Pattern asOscMessage(String addr) {
+		return asOscMessage(addr, 1);
+	}
+
+	public Pattern asOscMessage(String addr, int value) {
+		PrimitivePattern subPattern = new PrimitivePattern(loom, 1.0);
+		subPattern.asInt(0, value);
+
+		return asOscMessage(addr, subPattern, Mapping.INTEGER);
+	}
+
+	public Pattern asOscMessage(String addr, PrimitivePattern subPattern,
+			Mapping mapping) {
+		addChild(subPattern);
+		// getPrimitivePattern().asOscMessage(addr, pattern, mapping);
+		return this;
+	}
+
+	public Pattern asOscBundle(NetAddress remoteAddress, Pattern... patterns) {
+		return this;
+	}
+
 	/**
 	 * Set a mapping from the pattern's events to colors
 	 * 
@@ -287,7 +311,11 @@ public class Pattern implements Cloneable {
 	}
 
 	public boolean isPrimitivePattern() {
-		return false;
+		return children == null;
+	}
+
+	public boolean isDiscretePattern() {
+		return getEvents() != null;
 	}
 
 	// Transformations
@@ -295,7 +323,7 @@ public class Pattern implements Cloneable {
 	public Pattern speed(double multiplier) {
 		return speed(new BigFraction(multiplier));
 	}
-	
+
 	public Pattern speed(BigFraction multiplier) {
 		setTimeScale(getTimeScale().multiply(multiplier));
 		return this;
@@ -308,12 +336,12 @@ public class Pattern implements Cloneable {
 	public Pattern shift(double amt) {
 		return shift(new BigFraction(amt));
 	}
-	
+
 	public Pattern shift(BigFraction amt) {
 		setTimeOffset(getTimeOffset().add(amt));
 		return this;
 	}
-	
+
 	public Pattern every(double cycles, Transform transform) {
 		return every(new BigFraction(cycles), transform);
 	}
@@ -324,15 +352,12 @@ public class Pattern implements Cloneable {
 
 	public Pattern every(Interval interval, final Transform transform) {
 		EventCollection events = new EventCollection();
-		
-		BigFraction newEnd = interval.getEnd().subtract(
-				new BigFraction(1, 1000));
 
-		Interval shortened = new Interval(interval.getStart(), newEnd);
-		Interval after = new Interval(newEnd, interval.getEnd());
+		Interval[] longShort = Interval.shortenBy(interval, new BigFraction(1,
+				1000));
 
-		events.add(new Event(shortened, 0.0));
-		events.add(new Event(after, 1.0));
+		events.add(new Event(longShort[0], 0.0));
+		events.add(new Event(longShort[1], 1.0));
 
 		PrimitivePattern primitive = new PrimitivePattern(loom, events);
 		primitive.loop();
@@ -340,12 +365,25 @@ public class Pattern implements Cloneable {
 
 		final Pattern original = this;
 
-		StatefulCallable[] ops = CallableOnChange.fromTransform(transform, original);
+		StatefulCallable[] ops = CallableOnChange.fromTransform(transform,
+				original);
 
 		primitive.asStatefulCallable(ops);
-		
+
 		// TODO can the modifying pattern live under the parent somehow?
-		
+
+		loom.patterns.add(primitive);
+
+		return this;
+	}
+
+	public Pattern forEach(Callable<Void> callable) {
+
+		PrimitivePattern primitive = getPrimitivePattern().forEach(getPrimitivePattern());
+
+		StatefulCallable[] ops = CallableOnChange.fromCallable(callable);
+		primitive.asStatefulCallable(ops);
+
 		loom.patterns.add(primitive);
 
 		return this;
@@ -386,7 +424,10 @@ public class Pattern implements Cloneable {
 	}
 
 	public EventCollection getEvents() {
-		return getPrimitivePattern().events;
+		EventCollection events = null;
+		if (isPrimitivePattern())
+			events = getPrimitivePattern().events;
+		return events;
 	}
 
 	public Pattern clone() throws CloneNotSupportedException {

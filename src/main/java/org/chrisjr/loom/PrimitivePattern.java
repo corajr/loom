@@ -6,12 +6,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Pattern.Mapping;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.util.StatefulCallable;
 
+import oscP5.OscMessage;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -110,6 +112,15 @@ public class PrimitivePattern extends Pattern {
 			public Void call() {
 				return null;
 			}
+		});
+		return this;
+	}
+
+	public Pattern asOscMessage(final String addr, final Object... args) {
+		outputMappings.put(Mapping.OSC_MESSAGE, new Callable<OscMessage>() {
+			public OscMessage call() {
+				return new OscMessage(addr, args);
+			};
 		});
 		return this;
 	}
@@ -243,6 +254,25 @@ public class PrimitivePattern extends Pattern {
 			}
 		}
 		return value;
+	}
+
+	public static PrimitivePattern forEach(Pattern other) {
+		if (!other.isDiscretePattern())
+			throw new IllegalArgumentException(
+					"Other pattern in forEach is not made of discrete events!");
+
+		EventCollection events = new EventCollection();
+
+		for (Event event : other.getEvents().values()) {
+			if (event.getValue() != 0.0) {
+				Interval[] longShort = Interval.shortenBy(event.getInterval(),
+						new BigFraction(1, 1000));
+				events.add(new Event(longShort[0], 1.0));
+				events.add(new Event(longShort[1], 0.0));
+			}
+		}
+
+		return new PrimitivePattern(other.loom, events);
 	}
 
 	public PrimitivePattern clone() throws CloneNotSupportedException {

@@ -1,6 +1,7 @@
 package org.chrisjr.loom.time;
 
 import org.apache.commons.math3.fraction.BigFraction;
+import org.chrisjr.loom.Event;
 
 public class Interval {
 	private final BigFraction start;
@@ -133,6 +134,15 @@ public class Interval {
 		BigFraction newEnd = getEnd().multiply(fraction);
 
 		return Interval.modulo(newStart, newEnd, interval);
+	}
+	
+	public static Interval[] shortenBy(Interval interval, BigFraction fraction) {
+		BigFraction newEnd = interval.getEnd().subtract(fraction);
+
+		Interval shortened = new Interval(interval.getStart(), newEnd);
+		Interval after = new Interval(newEnd, interval.getEnd());
+
+		return new Interval[] { shortened, after };
 	}
 
 	// Auto-generated hashCode and equals
