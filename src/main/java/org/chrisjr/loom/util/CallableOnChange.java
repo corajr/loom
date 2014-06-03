@@ -18,7 +18,6 @@ public class CallableOnChange extends StatefulCallable {
 	public Void call() throws Exception {
 		int priorValue = lastValue.getAndSet(1);
 		if (priorValue == 0) {
-			System.out.println("called " + toString());
 			inner.call();
 		}
 		return null;
@@ -39,6 +38,14 @@ public class CallableOnChange extends StatefulCallable {
 				transform.call(original);
 				return null;
 			}
+
+			public String toString() {
+				return transform.toString();
+			}
 		});
+	}
+
+	public String toString() {
+		return "CallableOnChange(" + inner.toString() + ")" + "@" + Integer.toHexString(hashCode());
 	}
 }

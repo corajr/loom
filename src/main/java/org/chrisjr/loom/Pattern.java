@@ -39,6 +39,8 @@ public class Pattern implements Cloneable {
 
 	protected double valueOffset = 0.0;
 	protected double valueScale = 1.0;
+	
+	protected boolean isPrimitive;
 
 	public enum Mapping {
 		INTEGER, FLOAT, COLOR, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
@@ -54,25 +56,27 @@ public class Pattern implements Cloneable {
 	 *            the loom that holds this pattern (can be null)
 	 */
 	public Pattern(Loom loom) {
-		this(loom, null, null);
+		this(loom, null, null, false);
 	}
 
 	public Pattern(Loom loom, double defaultValue) {
-		this(loom, null, new ConstantFunction(defaultValue));
+		this(loom, null, new ConstantFunction(defaultValue), false);
 	}
 
 	public Pattern(Loom loom, ContinuousFunction function) {
-		this(loom, null, function);
+		this(loom, null, function, false);
 	}
 
 	public Pattern(Loom loom, EventCollection events) {
-		this(loom, events, null);
+		this(loom, events, null, false);
 	}
 
 	public Pattern(Loom loom, EventCollection events,
-			ContinuousFunction function) {
+			ContinuousFunction function, boolean isPrimitive) {
 		this.loom = loom;
-		if (this.loom != null)
+		this.isPrimitive = isPrimitive;
+
+		if (this.loom != null && !isPrimitive)
 			addSelfTo(loom);
 
 		if (events != null || function != null) {
@@ -167,7 +171,7 @@ public class Pattern implements Cloneable {
 		if (isLooping) {
 			interval = interval.modulo(loopInterval);
 		}
-
+		
 		return interval;
 	}
 
@@ -234,7 +238,7 @@ public class Pattern implements Cloneable {
 				.forEach(getPrimitivePattern());
 		bundleTrigger.asOscBundle(remoteAddress, patterns);
 
-		addSibling(bundleTrigger);
+		addChild(bundleTrigger);
 		return this;
 	}
 
@@ -322,7 +326,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public boolean isPrimitivePattern() {
-		return (this instanceof PrimitivePattern);
+		return isPrimitive;
 	}
 
 	public boolean isDiscretePattern() {
@@ -387,23 +391,27 @@ public class Pattern implements Cloneable {
 
 		primitive.asStatefulCallable(ops);
 
-		// TODO can the modifying pattern live under the parent somehow?
-
-		addSibling(primitive);
+		addChild(primitive);
 
 		return this;
 	}
 
 	public Pattern forEach(Callable<Void> callable) {
 
-		PrimitivePattern primitive = getPrimitivePattern().forEach(
-				getPrimitivePattern());
+		getPrimitivePattern();
+		PrimitivePattern primitive = PrimitivePattern
+				.forEach(getPrimitivePattern());
 
 		StatefulCallable[] ops = CallableOnChange.fromCallable(callable);
 		primitive.asStatefulCallable(ops);
 
 		addSibling(primitive);
 
+		return this;
+	}
+	
+	public Pattern clear() {
+		children.clear();
 		return this;
 	}
 

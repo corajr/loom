@@ -29,7 +29,10 @@ public class PatternTransformations {
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
 		scheduler.play();
+
 		pattern = new Pattern(loom);
+		pattern.extend("0101");
+		pattern.asInt(0, 1);
 	}
 
 	@After
@@ -41,8 +44,6 @@ public class PatternTransformations {
 
 	@Test
 	public void halfSpeed() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
 		pattern.speed(0.5);
 
 		for (int i = 0; i < 4; i++) {
@@ -53,8 +54,6 @@ public class PatternTransformations {
 
 	@Test
 	public void doubleSpeed() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
 		pattern.speed(2);
 
 		for (int i = 0; i < 4; i++) {
@@ -65,8 +64,6 @@ public class PatternTransformations {
 
 	@Test
 	public void shiftRight() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
 		pattern.loop();
 		pattern.shift(0.25);
 
@@ -78,22 +75,17 @@ public class PatternTransformations {
 
 	@Test
 	public void shiftLeft() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
 		pattern.loop();
 		pattern.shift(-0.25);
 
 		for (int i = 0; i < 4; i++) {
 			scheduler.setElapsedMillis((250 * i) + 1);
-			System.out.println(pattern.asInt());
 			assertThat(pattern.asInt(), is(equalTo((i + 1) % 2)));
 		}
 	}
 
 	@Test
 	public void reverse() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
 		pattern.reverse();
 
 		for (int i = 0; i < 4; i++) {
@@ -104,8 +96,6 @@ public class PatternTransformations {
 
 	@Test
 	public void reverseTwiceIsUnchanged() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
 		pattern.reverse();
 		pattern.reverse();
 
@@ -114,48 +104,54 @@ public class PatternTransformations {
 			assertThat(pattern.asInt(), is(equalTo(i % 2)));
 		}
 	}
-
-	@Test
-	public void reverseAfterCycleManually() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
-		pattern.loop();
-
+	
+	public void checkIfReversing(int beatLength) {
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 4; i++) {
-				long time = (j * 1000) + (250 * i) + 1;
+				long time = (j * beatLength * 4) + (beatLength * i) + 1;
 				scheduler.setElapsedMillis(time);
 				assertThat(pattern.asInt(), is(equalTo((i + j) % 2)));
 			}
-			pattern.reverse();
 		}
 	}
 
 	@Test
 	public void reverseEveryCycle() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
+		Transform reverse = new Transforms.Reverse();
+		pattern.every(1, reverse);
+
+		pattern.loop();
+		
+		checkIfReversing(250);
+	}
+
+
+	@Test
+	public void speedUpAndReverse() {
+		pattern.speed(5);
 
 		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
+		System.out.println(pattern.getChild(1));
 
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < 4; i++) {
-				long time = (j * 1000) + (250 * i) + 1;
-				scheduler.setElapsedMillis(time);
-				assertThat(pattern.asInt(), is(equalTo((i + j) % 2)));
-			}
-		}
+		checkIfReversing(50);
+	}
+
+	@Test
+	public void slowAndReverse() {
+		pattern.speed(0.1);
+
+		pattern.every(10, new Transforms.Reverse());
+
+		pattern.loop();
+
+		checkIfReversing(2500);
 	}
 
 	@Test
 	public void invert() {
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
 		pattern.invert();
-		
-		System.out.println(pattern.getValueScale());
 
 		scheduler.setElapsedMillis(251);
 		assertThat(pattern.asInt(), is(equalTo(0)));
@@ -163,6 +159,7 @@ public class PatternTransformations {
 
 	@Test
 	public void forEach() {
+		pattern.clear();
 		pattern.extend("1101");
 
 		final AtomicInteger counter = new AtomicInteger();

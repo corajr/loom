@@ -49,26 +49,22 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public PrimitivePattern(Loom loom) {
-		super(loom);
+		super(loom, null, null, true);
 	}
 
 	public PrimitivePattern(Loom loom, double defaultValue) {
-		super(loom);
+		super(loom, null, null, true);
 		this.function = new ConstantFunction(defaultValue);
 	}
 
 	public PrimitivePattern(Loom loom, EventCollection events) {
-		super(loom);
+		super(loom, null, null, true);
 		this.events = events;
 	}
 
 	public PrimitivePattern(Loom loom, ContinuousFunction function) {
-		super(loom);
+		super(loom, null, null, true);
 		this.function = function;
-	}
-
-	public boolean isPrimitivePattern() {
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -199,8 +195,8 @@ public class PrimitivePattern extends Pattern {
 				} else if (i + 1 == colors.length) {
 					result = colors[i];
 				} else if (i + 1 < colors.length) {
-					result = PApplet.lerpColor(colors[i], colors[i + 1],
-							diff, PConstants.HSB);
+					result = PApplet.lerpColor(colors[i], colors[i + 1], diff,
+							PConstants.HSB);
 				}
 				return result;
 			}
@@ -263,8 +259,10 @@ public class PrimitivePattern extends Pattern {
 	public Boolean hasExternalMappings() {
 		boolean result = false;
 		for (Mapping mapping : externalMappings) {
-			if (outputMappings.containsKey(mapping))
+			if (outputMappings.containsKey(mapping)) {
 				result = true;
+				break;
+			}
 		}
 		return result;
 	}
@@ -328,5 +326,17 @@ public class PrimitivePattern extends Pattern {
 		else if (function != null)
 			copy.function = function; // immutable
 		return copy;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("PrimitivePattern(");
+		if (events != null)
+			sb.append(events.toString());
+		else if (function != null)
+			sb.append(function.toString());
+		sb.append(")@");
+		sb.append(Integer.toHexString(hashCode()));
+		return sb.toString();
 	}
 }
