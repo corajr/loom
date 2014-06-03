@@ -179,26 +179,6 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	/**
-	 * Set a mapping from the pattern's events to colors
-	 * 
-	 * @param colors
-	 *            a list of colors to represent each state
-	 * @return the updated pattern
-	 */
-	public Pattern asColor(Integer... colors) {
-		outputMappings.put(Mapping.COLOR, new PickFromArray<Integer>(colors));
-		return this;
-	}
-
-	/**
-	 * @return an the "color" data type (32-bit int)
-	 */
-	public int asColor() {
-		Integer result = (Integer) getAs(Mapping.COLOR);
-		return result != null ? result : 0x00000000;
-	}
-
-	/**
 	 * Set a mapping from the pattern's events to colors, blending between them
 	 * using <code>lerpColor</code>.
 	 * 
@@ -206,19 +186,20 @@ public class PrimitivePattern extends Pattern {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColorBlend(int... colors) {
-		final int[] _colors = colors;
-		outputMappings.put(Mapping.COLOR_BLEND, new Callable<Integer>() {
+	public Pattern asColor(final int... colors) {
+		outputMappings.put(Mapping.COLOR, new Callable<Integer>() {
 			public Integer call() {
-				float position = (float) getValue() * (_colors.length - 1);
+				float position = (float) getValue() * (colors.length - 1);
 				int i = (int) position;
 				float diff = position - i;
 
 				int result = 0x00000000;
-				if (_colors.length == 1) {
-					result = _colors[0];
-				} else if (i + 1 < _colors.length) {
-					result = PApplet.lerpColor(_colors[i], _colors[i + 1],
+				if (colors.length == 1) {
+					result = colors[0];
+				} else if (i + 1 == colors.length) {
+					result = colors[i];
+				} else if (i + 1 < colors.length) {
+					result = PApplet.lerpColor(colors[i], colors[i + 1],
 							diff, PConstants.HSB);
 				}
 				return result;
@@ -227,8 +208,8 @@ public class PrimitivePattern extends Pattern {
 		return this;
 	}
 
-	public int asColorBlend() {
-		Integer result = (Integer) getAs(Mapping.COLOR_BLEND);
+	public int asColor() {
+		Integer result = (Integer) getAs(Mapping.COLOR);
 		return result != null ? result.intValue() : 0x00000000;
 	}
 

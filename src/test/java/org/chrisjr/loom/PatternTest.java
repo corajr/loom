@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.awt.Color;
 
+import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,22 +52,30 @@ public class PatternTest {
 	public void asColor() {
 		int black = Color.BLACK.getRGB();
 		int white = Color.WHITE.getRGB();
+		int gray60 = 0xff999999;
 		pattern.asColor(black, white);
-		assertThat(pattern.asColor(), is(equalTo(black)));
-
-		pattern.asColor(white, black);
-		assertThat(pattern.asColor(), is(equalTo(white)));
+		assertThat(pattern.asColor(), is(equalTo(gray60)));
 	}
 
 	@Test
-	public void asColorBlended() {
+	public void asColorDiscrete() {
+		NonRealTimeScheduler scheduler = new NonRealTimeScheduler();
+		pattern = new Pattern(new Loom(null, scheduler));
+		
+		scheduler.play();
+		
+		pattern.extend("0101");
+
 		int black = Color.BLACK.getRGB();
 		int white = Color.WHITE.getRGB();
-		int gray60 = 0xff999999;
-		pattern.asColorBlend(black, white);
-		assertThat(pattern.asColorBlend(), is(equalTo(gray60)));
-	}
+		pattern.asColor(black, white);
 
+		assertThat(pattern.asColor(), is(equalTo(black)));
+		
+		scheduler.setElapsedMillis(251);
+		assertThat(pattern.asColor(), is(equalTo(white)));
+	}
+	
 	@Test
 	public void asObject() {
 		pattern.asObject(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);

@@ -41,7 +41,7 @@ public class Pattern implements Cloneable {
 	protected double valueScale = 1.0;
 
 	public enum Mapping {
-		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
+		INTEGER, FLOAT, COLOR, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
 	}
 
 	final protected Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
@@ -119,7 +119,7 @@ public class Pattern implements Cloneable {
 		} else if (children != null && children.size() > 0) {
 			return (PrimitivePattern) getChild(0);
 		} else {
-			return null;
+			throw new IllegalStateException("Pattern is empty!");
 		}
 	}
 
@@ -239,39 +239,23 @@ public class Pattern implements Cloneable {
 	}
 
 	/**
-	 * Set a mapping from the pattern's events to colors
+	 * Set a mapping from the pattern's events to colors, blending between them
+	 * using <code>lerpColor</code> in HSB mode.
 	 * 
 	 * @param colors
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColor(Integer... colors) {
+	public Pattern asColor(int... colors) {
 		getPrimitivePattern().asColor(colors);
 		return this;
 	}
 
 	/**
-	 * @return an the "color" data type (32-bit int)
+	 * @return a color as 32-bit int
 	 */
 	public int asColor() {
 		return getPrimitivePattern().asColor();
-	}
-
-	/**
-	 * Set a mapping from the pattern's events to colors, blending between them
-	 * using <code>lerpColor</code>.
-	 * 
-	 * @param colors
-	 *            a list of colors to represent each state
-	 * @return the updated pattern
-	 */
-	public Pattern asColorBlend(int... colors) {
-		getPrimitivePattern().asColorBlend(colors);
-		return this;
-	}
-
-	public int asColorBlend() {
-		return getPrimitivePattern().asColorBlend();
 	}
 
 	public Pattern asObject(Object... objects) {
@@ -463,7 +447,8 @@ public class Pattern implements Cloneable {
 
 	public void setValueOffset(double valueOffset) {
 		this.valueOffset = valueOffset;
-		if (!isPrimitivePattern()) getPrimitivePattern().setValueOffset(valueOffset);
+		if (!isPrimitivePattern())
+			getPrimitivePattern().setValueOffset(valueOffset);
 	}
 
 	public double getValueScale() {
@@ -472,7 +457,8 @@ public class Pattern implements Cloneable {
 
 	public void setValueScale(double valueScale) {
 		this.valueScale = valueScale;
-		if (!isPrimitivePattern()) getPrimitivePattern().setValueScale(valueScale);
+		if (!isPrimitivePattern())
+			getPrimitivePattern().setValueScale(valueScale);
 	}
 
 	public EventCollection getEvents() {
