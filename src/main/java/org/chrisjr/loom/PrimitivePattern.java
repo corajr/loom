@@ -14,6 +14,7 @@ import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.util.CallableOnChange;
+import org.chrisjr.loom.util.MathOps;
 import org.chrisjr.loom.util.StatefulCallable;
 
 import oscP5.OscBundle;
@@ -137,7 +138,7 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public Pattern asOscBundle(final NetAddress remoteAddress,
-			final Pattern... patterns) {		
+			final Pattern... patterns) {
 		final PrimitivePattern original = this;
 
 		final PatternCollection oscPatterns = new PatternCollection();
@@ -309,6 +310,14 @@ public class PrimitivePattern extends Pattern {
 				value = e.getValue();
 			}
 		}
+
+		// apply transformations
+		value *= valueScale;
+		value += valueOffset;
+
+		// constrain to [0.0, 1.0]
+		value = MathOps.modInterval(value);
+
 		return value;
 	}
 

@@ -150,6 +150,18 @@ public class PatternTransformations {
 	}
 
 	@Test
+	public void invert() {
+		pattern.extend("0101");
+		pattern.asInt(0, 1);
+		pattern.invert();
+		
+		System.out.println(pattern.getValueScale());
+
+		scheduler.setElapsedMillis(251);
+		assertThat(pattern.asInt(), is(equalTo(0)));
+	}
+
+	@Test
 	public void forEach() {
 		pattern.extend("1101");
 

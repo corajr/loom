@@ -37,6 +37,9 @@ public class Pattern implements Cloneable {
 	BigFraction timeScale = new BigFraction(1);
 	Interval loopInterval = new Interval(0, 1);
 
+	protected double valueOffset = 0.0;
+	protected double valueScale = 1.0;
+
 	public enum Mapping {
 		INTEGER, FLOAT, COLOR, COLOR_BLEND, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
 	}
@@ -92,6 +95,13 @@ public class Pattern implements Cloneable {
 		children.add(child);
 	}
 
+	protected void addSibling(Pattern sibling) {
+		if (parent != null)
+			parent.addChild(sibling);
+		else
+			loom.patterns.add(sibling);
+	}
+
 	protected void removeChild(Pattern child) {
 		if (children != null)
 			children.remove(child);
@@ -136,6 +146,7 @@ public class Pattern implements Cloneable {
 		if (pattern == null)
 			throw new IllegalStateException(
 					"Cannot get value from empty Pattern!");
+
 		return getPrimitivePattern().getValue();
 	}
 
@@ -213,16 +224,17 @@ public class Pattern implements Cloneable {
 		addChild(subPattern);
 		return this;
 	}
-	
+
 	public OscMessage asOscMessage() {
 		return getPrimitivePattern().asOscMessage();
 	}
 
 	public Pattern asOscBundle(NetAddress remoteAddress, Pattern... patterns) {
-		PrimitivePattern bundleTrigger = PrimitivePattern.forEach(getPrimitivePattern());
+		PrimitivePattern bundleTrigger = PrimitivePattern
+				.forEach(getPrimitivePattern());
 		bundleTrigger.asOscBundle(remoteAddress, patterns);
 
-		loom.patterns.add(bundleTrigger);
+		addSibling(bundleTrigger);
 		return this;
 	}
 
@@ -306,7 +318,7 @@ public class Pattern implements Cloneable {
 	public boolean hasMapping(Mapping mapping) {
 		return getPrimitivePattern().hasMapping(mapping);
 	}
-	
+
 	public Boolean hasExternalMappings() {
 		boolean result = false;
 		if (isPrimitivePattern()) {
@@ -357,6 +369,12 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	public Pattern invert() {
+		setValueScale(-1.0);
+		setValueOffset(1.0);
+		return this;
+	}
+
 	public Pattern every(double cycles, Transform transform) {
 		return every(new BigFraction(cycles), transform);
 	}
@@ -387,19 +405,20 @@ public class Pattern implements Cloneable {
 
 		// TODO can the modifying pattern live under the parent somehow?
 
-		loom.patterns.add(primitive);
+		addSibling(primitive);
 
 		return this;
 	}
 
 	public Pattern forEach(Callable<Void> callable) {
 
-		PrimitivePattern primitive = getPrimitivePattern().forEach(getPrimitivePattern());
+		PrimitivePattern primitive = getPrimitivePattern().forEach(
+				getPrimitivePattern());
 
 		StatefulCallable[] ops = CallableOnChange.fromCallable(callable);
 		primitive.asStatefulCallable(ops);
 
-		loom.patterns.add(primitive);
+		addSibling(primitive);
 
 		return this;
 	}
@@ -436,6 +455,24 @@ public class Pattern implements Cloneable {
 
 	public void setLoopInterval(Interval loopInterval) {
 		this.loopInterval = loopInterval;
+	}
+
+	public double getValueOffset() {
+		return valueOffset;
+	}
+
+	public void setValueOffset(double valueOffset) {
+		this.valueOffset = valueOffset;
+		if (!isPrimitivePattern()) getPrimitivePattern().setValueOffset(valueOffset);
+	}
+
+	public double getValueScale() {
+		return valueScale;
+	}
+
+	public void setValueScale(double valueScale) {
+		this.valueScale = valueScale;
+		if (!isPrimitivePattern()) getPrimitivePattern().setValueScale(valueScale);
 	}
 
 	public EventCollection getEvents() {

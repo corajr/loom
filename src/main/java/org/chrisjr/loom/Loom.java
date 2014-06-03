@@ -53,7 +53,7 @@ public class Loom {
 
 	private Scheduler scheduler;
 
-	private OscP5 oscP5;
+	private OscP5 oscP5 = null;
 
 	public final static String VERSION = "##library.prettyVersion##";
 
@@ -80,7 +80,6 @@ public class Loom {
 		myParent = theParent;
 		scheduler = theScheduler;
 		scheduler.setPatterns(patterns);
-		oscP5 = new OscP5(this, 12000);
 		welcome();
 	}
 
@@ -115,6 +114,8 @@ public class Loom {
 	}
 
 	public OscP5 getOscP5() {
+		if (oscP5 == null)
+			oscP5 = new OscP5(this, 12000);
 		return oscP5;
 	}
 
