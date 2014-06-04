@@ -1,7 +1,6 @@
 package org.chrisjr.loom.time;
 
 import org.apache.commons.math3.fraction.BigFraction;
-import org.chrisjr.loom.Event;
 
 public class Interval {
 	private final BigFraction start;

@@ -1,11 +1,8 @@
 package org.chrisjr.loom;
 
-import processing.core.PApplet;
-import processing.core.PConstants;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import netP5.NetAddress;
 
@@ -14,8 +11,9 @@ import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
-import org.chrisjr.loom.transforms.*;
-import org.chrisjr.loom.util.*;
+import org.chrisjr.loom.transforms.Transform;
+import org.chrisjr.loom.util.CallableOnChange;
+import org.chrisjr.loom.util.StatefulCallable;
 
 import oscP5.OscMessage;
 
@@ -43,12 +41,12 @@ public class Pattern implements Cloneable {
 
 	protected boolean isPrimitive;
 
-	public enum Mapping {
+	public enum MappingType {
 		INTEGER, FLOAT, COLOR, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
 	}
 
-	final protected Mapping[] externalMappings = new Mapping[] { Mapping.MIDI,
-			Mapping.CALLABLE, Mapping.STATEFUL_CALLABLE };
+	final protected MappingType[] externalMappings = new MappingType[] { MappingType.MIDI,
+			MappingType.CALLABLE, MappingType.STATEFUL_CALLABLE };
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -219,11 +217,11 @@ public class Pattern implements Cloneable {
 		PrimitivePattern subPattern = new PrimitivePattern(loom, 1.0);
 		subPattern.asInt(0, value);
 
-		return asOscMessage(addr, subPattern, Mapping.INTEGER);
+		return asOscMessage(addr, subPattern, MappingType.INTEGER);
 	}
 
 	public Pattern asOscMessage(String addr, PrimitivePattern subPattern,
-			Mapping mapping) {
+			MappingType mapping) {
 
 		subPattern.asOscMessage(addr, mapping);
 		addChild(subPattern);
@@ -304,7 +302,7 @@ public class Pattern implements Cloneable {
 		return callables;
 	}
 
-	public boolean hasMapping(Mapping mapping) {
+	public boolean hasMapping(MappingType mapping) {
 		return getPrimitivePattern().hasMapping(mapping);
 	}
 

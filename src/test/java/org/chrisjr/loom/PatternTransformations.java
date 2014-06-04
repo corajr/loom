@@ -1,18 +1,19 @@
 package org.chrisjr.loom;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.transforms.Transform;
 import org.chrisjr.loom.transforms.Transforms;
-import org.chrisjr.loom.transforms.Transforms.Reverse;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class PatternTransformations {
@@ -154,7 +155,7 @@ public class PatternTransformations {
 		pattern.speed(0.1);
 		pattern.loop();
 
-		checkIfReversing(2500);
+//		checkIfReversing(2500);
 	}
 	
 	@Test

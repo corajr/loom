@@ -8,10 +8,13 @@ import java.util.concurrent.ConcurrentMap;
 
 import netP5.NetAddress;
 
-import org.apache.commons.math3.fraction.BigFraction;
-import org.chrisjr.loom.Pattern.Mapping;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
+import org.chrisjr.loom.mappings.ColorMapping;
+import org.chrisjr.loom.mappings.IntMapping;
+import org.chrisjr.loom.mappings.Mapping;
+import org.chrisjr.loom.mappings.NoopMapping;
+import org.chrisjr.loom.mappings.ObjectMapping;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.util.CallableOnChange;
@@ -20,34 +23,12 @@ import org.chrisjr.loom.util.StatefulCallable;
 
 import oscP5.OscBundle;
 import oscP5.OscMessage;
-import oscP5.OscP5;
-import processing.core.PApplet;
-import processing.core.PConstants;
 
 public class PrimitivePattern extends Pattern {
-	private ConcurrentMap<Mapping, Callable<?>> outputMappings = new ConcurrentHashMap<Mapping, Callable<?>>();
+	private ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
 
 	protected EventCollection events = null;
 	protected ContinuousFunction function = null;
-
-	public static final Callable<Void> NOOP = new Callable<Void>() {
-		public Void call() {
-			return null;
-		}
-	};
-
-	public final class PickFromArray<E> implements Callable<E> {
-		final private E[] myArray;
-
-		public PickFromArray(E[] _array) {
-			myArray = _array;
-		}
-
-		public E call() {
-			int i = (int) (getValue() * (myArray.length - 1));
-			return myArray[i];
-		}
-	}
 
 	public PrimitivePattern(Loom loom) {
 		super(loom, null, null, true);
@@ -68,9 +49,14 @@ public class PrimitivePattern extends Pattern {
 		this.function = function;
 	}
 
+	private Object getAs(MappingType mapping) throws IllegalStateException {
+		return getAs(mapping, getValue());
+	}
+
 	@SuppressWarnings("unchecked")
-	private Object getAs(Mapping mapping) throws IllegalStateException {
-		Callable<Object> cb = (Callable<Object>) outputMappings.get(mapping);
+	private Object getAs(MappingType mapping, double value)
+			throws IllegalStateException {
+		Mapping<Object> cb = (Mapping<Object>) outputMappings.get(mapping);
 
 		if (cb == null)
 			throw new IllegalStateException("No mapping available for "
@@ -78,7 +64,7 @@ public class PrimitivePattern extends Pattern {
 
 		Object result = null;
 		try {
-			result = cb.call();
+			result = cb.call(value);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -86,18 +72,12 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public Pattern asInt(int lo, int hi) {
-		final int _lo = lo;
-		final int _hi = hi;
-		outputMappings.put(Mapping.INTEGER, new Callable<Integer>() {
-			public Integer call() {
-				return (int) ((_hi - _lo) * getValue()) + _lo;
-			}
-		});
+		outputMappings.put(MappingType.INTEGER, new IntMapping(lo, hi));
 		return this;
 	}
 
 	public int asInt() {
-		Integer result = (Integer) getAs(Mapping.INTEGER);
+		Integer result = (Integer) getAs(MappingType.INTEGER);
 		return result != null ? result.intValue() : Integer.MIN_VALUE;
 	}
 
@@ -109,20 +89,14 @@ public class PrimitivePattern extends Pattern {
 	 * @return the updated pattern
 	 */
 	public Pattern asMidi(String instrument) {
-		final String _instrument = instrument;
-		outputMappings.put(Mapping.MIDI, new Callable<Void>() {
-			// TODO actually do something here
-			public Void call() {
-				return null;
-			}
-		});
+		outputMappings.put(MappingType.MIDI, new NoopMapping());
 		return this;
 	}
 
-	public Pattern asOscMessage(final String addr, final Mapping mapping) {
+	public Pattern asOscMessage(final String addr, final MappingType mapping) {
 		final PrimitivePattern original = this;
-		outputMappings.put(Mapping.OSC_MESSAGE, new Callable<OscMessage>() {
-			public OscMessage call() {
+		outputMappings.put(MappingType.OSC_MESSAGE, new Mapping<OscMessage>() {
+			public OscMessage call(double value) {
 				return new OscMessage(addr, new Object[] { original
 						.getAs(mapping) });
 			};
@@ -131,7 +105,7 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public OscMessage asOscMessage() {
-		return (OscMessage) getAs(Mapping.OSC_MESSAGE);
+		return (OscMessage) getAs(MappingType.OSC_MESSAGE);
 	}
 
 	public Pattern asOscBundle(final NetAddress remoteAddress,
@@ -142,7 +116,7 @@ public class PrimitivePattern extends Pattern {
 
 		boolean hasOscMapping = false;
 		for (Pattern pat : patterns) {
-			if (pat.hasMapping(Mapping.OSC_MESSAGE)) {
+			if (pat.hasMapping(MappingType.OSC_MESSAGE)) {
 				hasOscMapping = true;
 				oscPatterns.add(pat);
 			}
@@ -152,8 +126,8 @@ public class PrimitivePattern extends Pattern {
 			throw new IllegalArgumentException(
 					"None of the patterns have an OSC mapping!");
 
-		outputMappings.put(Mapping.OSC_BUNDLE, new Callable<OscBundle>() {
-			public OscBundle call() {
+		outputMappings.put(MappingType.OSC_BUNDLE, new Mapping<OscBundle>() {
+			public OscBundle call(double value) {
 				OscBundle bundle = new OscBundle();
 				for (Pattern pat : oscPatterns) {
 					bundle.add(pat.asOscMessage());
@@ -172,79 +146,61 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public OscBundle asOscBundle() {
-		return (OscBundle) getAs(Mapping.OSC_BUNDLE);
+		return (OscBundle) getAs(MappingType.OSC_BUNDLE);
 	}
 
 	/**
 	 * Set a mapping from the pattern's events to colors, blending between them
-	 * using <code>lerpColor</code>.
+	 * using <code>lerpColor</code> in HSB mode.
 	 * 
 	 * @param colors
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
 	public Pattern asColor(final int... colors) {
-		outputMappings.put(Mapping.COLOR, new Callable<Integer>() {
-			public Integer call() {
-				float position = (float) getValue() * (colors.length - 1);
-				int i = (int) position;
-				float diff = position - i;
-
-				int result = 0x00000000;
-				if (colors.length == 1) {
-					result = colors[0];
-				} else if (i + 1 == colors.length) {
-					result = colors[i];
-				} else if (i + 1 < colors.length) {
-					result = PApplet.lerpColor(colors[i], colors[i + 1], diff,
-							PConstants.HSB);
-				}
-				return result;
-			}
-		});
+		outputMappings.put(MappingType.COLOR, new ColorMapping(colors));
 		return this;
 	}
 
 	public int asColor() {
-		Integer result = (Integer) getAs(Mapping.COLOR);
+		Integer result = (Integer) getAs(MappingType.COLOR);
 		return result != null ? result.intValue() : 0x00000000;
 	}
 
 	public Pattern asObject(Object... objects) {
-		outputMappings.put(Mapping.OBJECT, new PickFromArray<Object>(objects));
+		outputMappings.put(MappingType.OBJECT, new ObjectMapping<Object>(
+				objects));
 		return this;
 	}
 
 	public Object asObject() {
-		return getAs(Mapping.OBJECT);
+		return getAs(MappingType.OBJECT);
 	}
 
 	public Pattern asCallable(Callable<?>... callables) {
-		outputMappings.put(Mapping.CALLABLE, new PickFromArray<Callable<?>>(
-				callables));
+		outputMappings.put(MappingType.CALLABLE,
+				new ObjectMapping<Callable<?>>(callables));
 		return this;
-
 	}
 
 	public StatefulCallable asStatefulCallable() {
-		return (StatefulCallable) getAs(Mapping.STATEFUL_CALLABLE);
+		return (StatefulCallable) getAs(MappingType.STATEFUL_CALLABLE);
 	}
 
 	public Pattern asStatefulCallable(StatefulCallable... callables) {
-		outputMappings.put(Mapping.STATEFUL_CALLABLE,
-				new PickFromArray<StatefulCallable>(callables));
+		outputMappings.put(MappingType.STATEFUL_CALLABLE,
+				new ObjectMapping<StatefulCallable>(callables));
 		return this;
-
 	}
 
 	@SuppressWarnings("unchecked")
 	public Callable<Object> asCallable() {
-		return (Callable<Object>) getAs(Mapping.CALLABLE);
+		return (Callable<Object>) getAs(MappingType.CALLABLE);
 	}
 
 	public Collection<Callable<?>> getExternalMappings() {
 		Collection<Callable<?>> callbacks = new ArrayList<Callable<?>>();
-		for (Mapping mapping : externalMappings) {
+		for (MappingType mapping : externalMappings) {
 			if (outputMappings.containsKey(mapping))
 				callbacks.add((Callable<?>) getAs(mapping));
 		}
@@ -259,7 +215,7 @@ public class PrimitivePattern extends Pattern {
 	 */
 	public Boolean hasExternalMappings() {
 		boolean result = false;
-		for (Mapping mapping : externalMappings) {
+		for (MappingType mapping : externalMappings) {
 			if (outputMappings.containsKey(mapping)) {
 				result = true;
 				break;
@@ -268,7 +224,7 @@ public class PrimitivePattern extends Pattern {
 		return result;
 	}
 
-	public boolean hasMapping(Mapping mapping) {
+	public boolean hasMapping(MappingType mapping) {
 		return outputMappings.containsKey(mapping);
 	}
 

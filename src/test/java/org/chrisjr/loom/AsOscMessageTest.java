@@ -1,11 +1,10 @@
 package org.chrisjr.loom;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.Callable;
+
+import netP5.NetAddress;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.junit.After;
@@ -13,8 +12,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import oscP5.*;
-import netP5.*;
+import oscP5.OscMessage;
+import oscP5.OscP5;
 
 public class AsOscMessageTest {
 	private OscP5 oscP5;

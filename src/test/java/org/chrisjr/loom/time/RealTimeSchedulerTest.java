@@ -1,17 +1,20 @@
 package org.chrisjr.loom.time;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
-import org.chrisjr.loom.util.*;
+import org.chrisjr.loom.util.CallableOnChange;
+import org.chrisjr.loom.util.StatefulCallable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
