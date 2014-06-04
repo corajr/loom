@@ -3,19 +3,25 @@ package org.chrisjr.loom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentMap;
 
 import netP5.NetAddress;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
+import org.chrisjr.loom.mappings.ColorMapping;
+import org.chrisjr.loom.mappings.IntMapping;
 import org.chrisjr.loom.mappings.Mapping;
+import org.chrisjr.loom.mappings.NoopMapping;
+import org.chrisjr.loom.mappings.ObjectMapping;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.transforms.Transform;
 import org.chrisjr.loom.util.CallableOnChange;
 import org.chrisjr.loom.util.StatefulCallable;
 
+import oscP5.OscBundle;
 import oscP5.OscMessage;
 
 /**
@@ -128,9 +134,35 @@ public class Pattern implements Cloneable {
 		}
 	}
 
-	public Pattern putMapping(MappingType mappingType, Mapping mapping) {		
-		getPrimitivePattern().outputMappings.put(mappingType, mapping);
+	public Pattern putMapping(MappingType mappingType, Mapping<?> mapping) {
+		getOutputMappings().put(mappingType, mapping);
 		return this;
+	}
+
+	public ConcurrentMap<MappingType, Mapping<?>> getOutputMappings() {
+		return getPrimitivePattern().getOutputMappings();
+	}
+
+	protected Object getAs(MappingType mapping) throws IllegalStateException {
+		return getAs(mapping, getValue());
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Object getAs(MappingType mapping, double value)
+			throws IllegalStateException {
+		Mapping<Object> cb = (Mapping<Object>) getOutputMappings().get(mapping);
+
+		if (cb == null)
+			throw new IllegalStateException("No mapping available for "
+					+ mapping.toString());
+
+		Object result = null;
+		try {
+			result = cb.call(value);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	/**
@@ -196,12 +228,13 @@ public class Pattern implements Cloneable {
 	// Mappings
 
 	public Pattern asInt(int lo, int hi) {
-		getPrimitivePattern().asInt(lo, hi);
+		putMapping(MappingType.INTEGER, new IntMapping(lo, hi));
 		return this;
 	}
 
 	public int asInt() {
-		return getPrimitivePattern().asInt();
+		Integer result = (Integer) getAs(MappingType.INTEGER);
+		return result != null ? result.intValue() : Integer.MIN_VALUE;
 	}
 
 	/**
@@ -212,11 +245,9 @@ public class Pattern implements Cloneable {
 	 * @return the updated pattern
 	 */
 	public Pattern asMidi(String instrument) {
-		// TODO note on, note off
-		// how to make compound mapping?
-
-		addChild(new PrimitivePattern(loom).asMidi(instrument));
-		addChild(new PrimitivePattern(loom, 1.0).asInt(0, 127));
+		PrimitivePattern beats = new PrimitivePattern(loom);
+		beats.putMapping(MappingType.MIDI, new NoopMapping());
+		addChild(beats);
 		return this;
 	}
 
@@ -231,6 +262,17 @@ public class Pattern implements Cloneable {
 		return asOscMessage(addr, subPattern, MappingType.INTEGER);
 	}
 
+	public Pattern asOscMessage(final String addr, final MappingType mapping) {
+		final PrimitivePattern original = getPrimitivePattern();
+		putMapping(MappingType.OSC_MESSAGE, new Mapping<OscMessage>() {
+			public OscMessage call(double value) {
+				return new OscMessage(addr, new Object[] { original
+						.getAs(mapping) });
+			};
+		});
+		return this;
+	}
+
 	public Pattern asOscMessage(String addr, PrimitivePattern subPattern,
 			MappingType mapping) {
 
@@ -240,7 +282,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public OscMessage asOscMessage() {
-		return getPrimitivePattern().asOscMessage();
+		return (OscMessage) getAs(MappingType.OSC_MESSAGE);
 	}
 
 	public Pattern asOscBundle(NetAddress remoteAddress, Pattern... patterns) {
@@ -252,6 +294,10 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	public OscBundle asOscBundle() {
+		return (OscBundle) getAs(MappingType.OSC_BUNDLE);
+	}
+
 	/**
 	 * Set a mapping from the pattern's events to colors, blending between them
 	 * using <code>lerpColor</code> in HSB mode.
@@ -260,43 +306,44 @@ public class Pattern implements Cloneable {
 	 *            a list of colors to represent each state
 	 * @return the updated pattern
 	 */
-	public Pattern asColor(int... colors) {
-		getPrimitivePattern().asColor(colors);
+	public Pattern asColor(final int... colors) {
+		putMapping(MappingType.COLOR, new ColorMapping(colors));
 		return this;
 	}
 
-	/**
-	 * @return a color as 32-bit int
-	 */
 	public int asColor() {
-		return getPrimitivePattern().asColor();
+		Integer result = (Integer) getAs(MappingType.COLOR);
+		return result != null ? result.intValue() : 0x00000000;
 	}
 
 	public Pattern asObject(Object... objects) {
-		getPrimitivePattern().asObject(objects);
+		putMapping(MappingType.OBJECT, new ObjectMapping<Object>(objects));
 		return this;
 	}
 
 	public Object asObject() {
-		return getPrimitivePattern().asObject();
+		return getAs(MappingType.OBJECT);
 	}
 
 	public Pattern asCallable(Callable<?>... callables) {
-		getPrimitivePattern().asCallable(callables);
-		return this;
-	}
-
-	public Callable<Object> asCallable() {
-		return getPrimitivePattern().asCallable();
-	}
-
-	public Pattern asStatefulCallable(StatefulCallable... callables) {
-		getPrimitivePattern().asStatefulCallable(callables);
+		putMapping(MappingType.CALLABLE, new ObjectMapping<Callable<?>>(
+				callables));
 		return this;
 	}
 
 	public StatefulCallable asStatefulCallable() {
-		return getPrimitivePattern().asStatefulCallable();
+		return (StatefulCallable) getAs(MappingType.STATEFUL_CALLABLE);
+	}
+
+	public Pattern asStatefulCallable(StatefulCallable... callables) {
+		putMapping(MappingType.STATEFUL_CALLABLE,
+				new ObjectMapping<StatefulCallable>(callables));
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Callable<Object> asCallable() {
+		return (Callable<Object>) getAs(MappingType.CALLABLE);
 	}
 
 	public Collection<Callable<?>> getExternalMappings() {

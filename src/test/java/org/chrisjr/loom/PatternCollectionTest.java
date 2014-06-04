@@ -26,7 +26,7 @@ public class PatternCollectionTest {
 		Loom loom = new Loom(null);
 		Pattern pattern = new Pattern(loom);
 		Pattern pattern2 = new Pattern(loom);
-
+		
 		pattern2.asMidi("clap");
 
 		patterns.add(pattern);

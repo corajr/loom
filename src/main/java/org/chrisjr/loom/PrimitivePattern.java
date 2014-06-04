@@ -10,19 +10,13 @@ import netP5.NetAddress;
 
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
-import org.chrisjr.loom.mappings.ColorMapping;
-import org.chrisjr.loom.mappings.IntMapping;
 import org.chrisjr.loom.mappings.Mapping;
-import org.chrisjr.loom.mappings.NoopMapping;
-import org.chrisjr.loom.mappings.ObjectMapping;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.util.CallableOnChange;
 import org.chrisjr.loom.util.MathOps;
-import org.chrisjr.loom.util.StatefulCallable;
 
 import oscP5.OscBundle;
-import oscP5.OscMessage;
 
 public class PrimitivePattern extends Pattern {
 	protected ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
@@ -49,65 +43,7 @@ public class PrimitivePattern extends Pattern {
 		this.function = function;
 	}
 
-	private Object getAs(MappingType mapping) throws IllegalStateException {
-		return getAs(mapping, getValue());
-	}
-
-	@SuppressWarnings("unchecked")
-	private Object getAs(MappingType mapping, double value)
-			throws IllegalStateException {
-		Mapping<Object> cb = (Mapping<Object>) outputMappings.get(mapping);
-
-		if (cb == null)
-			throw new IllegalStateException("No mapping available for "
-					+ mapping.toString());
-
-		Object result = null;
-		try {
-			result = cb.call(value);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	public Pattern asInt(int lo, int hi) {
-		putMapping(MappingType.INTEGER, new IntMapping(lo, hi));
-		return this;
-	}
-
-	public int asInt() {
-		Integer result = (Integer) getAs(MappingType.INTEGER);
-		return result != null ? result.intValue() : Integer.MIN_VALUE;
-	}
-
-	/**
-	 * Set a mapping from the pattern's events to sounds
-	 * 
-	 * @param instrument
-	 *            the name of a MIDI instrument to trigger
-	 * @return the updated pattern
-	 */
-	public Pattern asMidi(String instrument) {
-		putMapping(MappingType.MIDI, new NoopMapping());
-		return this;
-	}
-
-	public Pattern asOscMessage(final String addr, final MappingType mapping) {
-		final PrimitivePattern original = this;
-		putMapping(MappingType.OSC_MESSAGE, new Mapping<OscMessage>() {
-			public OscMessage call(double value) {
-				return new OscMessage(addr, new Object[] { original
-						.getAs(mapping) });
-			};
-		});
-		return this;
-	}
-
-	public OscMessage asOscMessage() {
-		return (OscMessage) getAs(MappingType.OSC_MESSAGE);
-	}
-
+	@Override
 	public Pattern asOscBundle(final NetAddress remoteAddress,
 			final Pattern... patterns) {
 		final PrimitivePattern original = this;
@@ -145,59 +81,12 @@ public class PrimitivePattern extends Pattern {
 		return this;
 	}
 
-	public OscBundle asOscBundle() {
-		return (OscBundle) getAs(MappingType.OSC_BUNDLE);
+	@Override
+	public ConcurrentMap<MappingType, Mapping<?>> getOutputMappings() {
+		return outputMappings;
 	}
 
-	/**
-	 * Set a mapping from the pattern's events to colors, blending between them
-	 * using <code>lerpColor</code> in HSB mode.
-	 * 
-	 * @param colors
-	 *            a list of colors to represent each state
-	 * @return the updated pattern
-	 */
-	public Pattern asColor(final int... colors) {
-		putMapping(MappingType.COLOR, new ColorMapping(colors));
-		return this;
-	}
-
-	public int asColor() {
-		Integer result = (Integer) getAs(MappingType.COLOR);
-		return result != null ? result.intValue() : 0x00000000;
-	}
-
-	public Pattern asObject(Object... objects) {
-		putMapping(MappingType.OBJECT, new ObjectMapping<Object>(
-				objects));
-		return this;
-	}
-
-	public Object asObject() {
-		return getAs(MappingType.OBJECT);
-	}
-
-	public Pattern asCallable(Callable<?>... callables) {
-		putMapping(MappingType.CALLABLE,
-				new ObjectMapping<Callable<?>>(callables));
-		return this;
-	}
-
-	public StatefulCallable asStatefulCallable() {
-		return (StatefulCallable) getAs(MappingType.STATEFUL_CALLABLE);
-	}
-
-	public Pattern asStatefulCallable(StatefulCallable... callables) {
-		putMapping(MappingType.STATEFUL_CALLABLE,
-				new ObjectMapping<StatefulCallable>(callables));
-		return this;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Callable<Object> asCallable() {
-		return (Callable<Object>) getAs(MappingType.CALLABLE);
-	}
-
+	@Override
 	public Collection<Callable<?>> getExternalMappings() {
 		Collection<Callable<?>> callbacks = new ArrayList<Callable<?>>();
 		for (MappingType mapping : externalMappings) {
@@ -227,7 +116,7 @@ public class PrimitivePattern extends Pattern {
 	public boolean hasMapping(MappingType mapping) {
 		return outputMappings.containsKey(mapping);
 	}
-	
+
 	public double getValueFor(Interval now) {
 		double value = defaultValue;
 		if (this.function != null) {
