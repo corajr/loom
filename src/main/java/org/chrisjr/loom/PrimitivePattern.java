@@ -13,6 +13,7 @@ import org.chrisjr.loom.Pattern.Mapping;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.util.CallableOnChange;
 import org.chrisjr.loom.util.MathOps;
 import org.chrisjr.loom.util.StatefulCallable;
@@ -310,7 +311,8 @@ public class PrimitivePattern extends Pattern {
 		for (Event event : other.getEvents().values()) {
 			if (event.getValue() != 0.0) {
 				Interval[] longShort = Interval.shortenBy(event.getInterval(),
-						new BigFraction(1, 1000));
+						Scheduler.minimumResolution.multiply(other
+								.getTimeScale()));
 				events.add(new Event(longShort[0], 1.0));
 				events.add(new Event(longShort[1], 0.0));
 			}
@@ -327,7 +329,7 @@ public class PrimitivePattern extends Pattern {
 			copy.function = function; // immutable
 		return copy;
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("PrimitivePattern(");

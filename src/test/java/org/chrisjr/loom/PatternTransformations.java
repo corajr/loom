@@ -104,7 +104,7 @@ public class PatternTransformations {
 			assertThat(pattern.asInt(), is(equalTo(i % 2)));
 		}
 	}
-	
+
 	public void checkIfReversing(int beatLength) {
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 4; i++) {
@@ -121,10 +121,9 @@ public class PatternTransformations {
 		pattern.every(1, reverse);
 
 		pattern.loop();
-		
+
 		checkIfReversing(250);
 	}
-
 
 	@Test
 	public void speedUpAndReverse() {
@@ -133,7 +132,7 @@ public class PatternTransformations {
 		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
-		System.out.println(pattern.getChild(1));
+		// System.out.println(pattern.getChild(1));
 
 		checkIfReversing(50);
 	}
@@ -142,13 +141,22 @@ public class PatternTransformations {
 	public void slowAndReverse() {
 		pattern.speed(0.1);
 
-		pattern.every(10, new Transforms.Reverse());
+		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
 
 		checkIfReversing(2500);
 	}
 
+	@Test
+	public void reverseThenSlow() {
+		pattern.every(1, new Transforms.Reverse());
+		pattern.speed(0.1);
+		pattern.loop();
+
+		checkIfReversing(2500);
+	}
+	
 	@Test
 	public void invert() {
 		pattern.invert();

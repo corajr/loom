@@ -38,7 +38,7 @@ public abstract class Scheduler {
 
 	State state = State.STOPPED;
 
-	BigFraction minimumResolution = new BigFraction(1, 1000);
+	public static final BigFraction minimumResolution = new BigFraction(1, 1000);
 	BigFraction halfMinimum = minimumResolution.divide(2);
 
 	public abstract long getElapsedMillis();

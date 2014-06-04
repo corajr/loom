@@ -13,6 +13,7 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
 
@@ -39,7 +40,7 @@ public class Pattern implements Cloneable {
 
 	protected double valueOffset = 0.0;
 	protected double valueScale = 1.0;
-	
+
 	protected boolean isPrimitive;
 
 	public enum Mapping {
@@ -171,7 +172,7 @@ public class Pattern implements Cloneable {
 		if (isLooping) {
 			interval = interval.modulo(loopInterval);
 		}
-		
+
 		return interval;
 	}
 
@@ -374,8 +375,8 @@ public class Pattern implements Cloneable {
 	public Pattern every(Interval interval, final Transform transform) {
 		EventCollection events = new EventCollection();
 
-		Interval[] longShort = Interval.shortenBy(interval, new BigFraction(1,
-				1000));
+		Interval[] longShort = Interval.shortenBy(interval,
+				Scheduler.minimumResolution.multiply(getTimeScale()));
 
 		events.add(new Event(longShort[0], 0.0));
 		events.add(new Event(longShort[1], 1.0));
@@ -409,7 +410,7 @@ public class Pattern implements Cloneable {
 
 		return this;
 	}
-	
+
 	public Pattern clear() {
 		children.clear();
 		return this;
