@@ -9,6 +9,7 @@ import netP5.NetAddress;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
+import org.chrisjr.loom.mappings.Mapping;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.transforms.Transform;
@@ -45,8 +46,9 @@ public class Pattern implements Cloneable {
 		INTEGER, FLOAT, COLOR, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
 	}
 
-	final protected MappingType[] externalMappings = new MappingType[] { MappingType.MIDI,
-			MappingType.CALLABLE, MappingType.STATEFUL_CALLABLE };
+	final protected MappingType[] externalMappings = new MappingType[] {
+			MappingType.MIDI, MappingType.CALLABLE,
+			MappingType.STATEFUL_CALLABLE };
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -126,6 +128,11 @@ public class Pattern implements Cloneable {
 		}
 	}
 
+	public Pattern putMapping(MappingType mappingType, Mapping mapping) {		
+		getPrimitivePattern().outputMappings.put(mappingType, mapping);
+		return this;
+	}
+
 	/**
 	 * @param string
 	 *            a string such as "10010010" describing a pattern to be tacked
@@ -143,11 +150,11 @@ public class Pattern implements Cloneable {
 		addChild(new PrimitivePattern(loom, newEvents));
 		return this;
 	}
-	
+
 	public double getValue() {
 		return getValueFor(getCurrentInterval());
 	}
-	
+
 	public double getValueFor(Interval now) {
 		PrimitivePattern pattern = getPrimitivePattern();
 		if (pattern == null)
@@ -156,7 +163,7 @@ public class Pattern implements Cloneable {
 
 		return getPrimitivePattern().getValueFor(now);
 	}
-	
+
 	public Interval getCurrentInterval() {
 		Interval interval;
 		if (this.parent != null) {

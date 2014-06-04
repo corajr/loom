@@ -25,7 +25,7 @@ import oscP5.OscBundle;
 import oscP5.OscMessage;
 
 public class PrimitivePattern extends Pattern {
-	private ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
+	protected ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
 
 	protected EventCollection events = null;
 	protected ContinuousFunction function = null;
@@ -72,7 +72,7 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public Pattern asInt(int lo, int hi) {
-		outputMappings.put(MappingType.INTEGER, new IntMapping(lo, hi));
+		putMapping(MappingType.INTEGER, new IntMapping(lo, hi));
 		return this;
 	}
 
@@ -89,13 +89,13 @@ public class PrimitivePattern extends Pattern {
 	 * @return the updated pattern
 	 */
 	public Pattern asMidi(String instrument) {
-		outputMappings.put(MappingType.MIDI, new NoopMapping());
+		putMapping(MappingType.MIDI, new NoopMapping());
 		return this;
 	}
 
 	public Pattern asOscMessage(final String addr, final MappingType mapping) {
 		final PrimitivePattern original = this;
-		outputMappings.put(MappingType.OSC_MESSAGE, new Mapping<OscMessage>() {
+		putMapping(MappingType.OSC_MESSAGE, new Mapping<OscMessage>() {
 			public OscMessage call(double value) {
 				return new OscMessage(addr, new Object[] { original
 						.getAs(mapping) });
@@ -126,7 +126,7 @@ public class PrimitivePattern extends Pattern {
 			throw new IllegalArgumentException(
 					"None of the patterns have an OSC mapping!");
 
-		outputMappings.put(MappingType.OSC_BUNDLE, new Mapping<OscBundle>() {
+		putMapping(MappingType.OSC_BUNDLE, new Mapping<OscBundle>() {
 			public OscBundle call(double value) {
 				OscBundle bundle = new OscBundle();
 				for (Pattern pat : oscPatterns) {
@@ -158,7 +158,7 @@ public class PrimitivePattern extends Pattern {
 	 * @return the updated pattern
 	 */
 	public Pattern asColor(final int... colors) {
-		outputMappings.put(MappingType.COLOR, new ColorMapping(colors));
+		putMapping(MappingType.COLOR, new ColorMapping(colors));
 		return this;
 	}
 
@@ -168,7 +168,7 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public Pattern asObject(Object... objects) {
-		outputMappings.put(MappingType.OBJECT, new ObjectMapping<Object>(
+		putMapping(MappingType.OBJECT, new ObjectMapping<Object>(
 				objects));
 		return this;
 	}
@@ -178,7 +178,7 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public Pattern asCallable(Callable<?>... callables) {
-		outputMappings.put(MappingType.CALLABLE,
+		putMapping(MappingType.CALLABLE,
 				new ObjectMapping<Callable<?>>(callables));
 		return this;
 	}
@@ -188,7 +188,7 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public Pattern asStatefulCallable(StatefulCallable... callables) {
-		outputMappings.put(MappingType.STATEFUL_CALLABLE,
+		putMapping(MappingType.STATEFUL_CALLABLE,
 				new ObjectMapping<StatefulCallable>(callables));
 		return this;
 	}
