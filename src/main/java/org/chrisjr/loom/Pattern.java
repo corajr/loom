@@ -143,16 +143,20 @@ public class Pattern implements Cloneable {
 		addChild(new PrimitivePattern(loom, newEvents));
 		return this;
 	}
-
+	
 	public double getValue() {
+		return getValueFor(getCurrentInterval());
+	}
+	
+	public double getValueFor(Interval now) {
 		PrimitivePattern pattern = getPrimitivePattern();
 		if (pattern == null)
 			throw new IllegalStateException(
 					"Cannot get value from empty Pattern!");
 
-		return getPrimitivePattern().getValue();
+		return getPrimitivePattern().getValueFor(now);
 	}
-
+	
 	public Interval getCurrentInterval() {
 		Interval interval;
 		if (this.parent != null) {

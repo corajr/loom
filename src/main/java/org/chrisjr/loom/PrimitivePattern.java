@@ -227,10 +227,9 @@ public class PrimitivePattern extends Pattern {
 	public boolean hasMapping(MappingType mapping) {
 		return outputMappings.containsKey(mapping);
 	}
-
-	public double getValue() {
+	
+	public double getValueFor(Interval now) {
 		double value = defaultValue;
-		Interval now = getCurrentInterval();
 		if (this.function != null) {
 			try {
 				// midpoint of function within current interval
