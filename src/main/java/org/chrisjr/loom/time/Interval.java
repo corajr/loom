@@ -53,11 +53,6 @@ public class Interval {
 		return multiply(new BigFraction(i));
 	}
 
-	private boolean contains(BigFraction fraction) {
-		return fraction.compareTo(getStart()) >= 0
-				&& fraction.compareTo(getEnd()) <= 0;
-	}
-
 	/**
 	 * "modulo interval" in the sense given in
 	 * http://www.cs.tau.ac.il/~nachum/papers/Modulo.pdf
@@ -102,7 +97,7 @@ public class Interval {
 
 		while (i.getStart().compareTo(other.getStart()) < 0)
 			i = i.add(otherSize);
-		
+
 		while (i.getEnd().compareTo(other.getEnd()) > 0)
 			i = i.subtract(otherSize);
 
@@ -134,7 +129,7 @@ public class Interval {
 
 		return Interval.modulo(newStart, newEnd, interval);
 	}
-	
+
 	public static Interval[] shortenBy(Interval interval, BigFraction fraction) {
 		BigFraction newEnd = interval.getEnd().subtract(fraction);
 

@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.util.concurrent.atomic.*;
-
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.time.*;
