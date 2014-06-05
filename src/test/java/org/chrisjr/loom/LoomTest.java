@@ -4,6 +4,8 @@
 package org.chrisjr.loom;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,8 +25,14 @@ public class LoomTest {
 	}
 
 	@Test
-	public void testStartsEmpty() {
+	public void startsEmpty() {
 		assertTrue(loom.patterns.size() == 0);
+	}
+	
+	@Test
+	public void canIntializeWithBpm() {
+		loom = new Loom(null, 120);
+		assertThat(loom.getPeriod(), is(equalTo(2000L)));
 	}
 
 }

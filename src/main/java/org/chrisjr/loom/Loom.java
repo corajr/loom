@@ -57,6 +57,8 @@ public class Loom {
 
 	public final static String VERSION = "##library.prettyVersion##";
 
+	public final static String WELCOME_MESSAGE = "##library.name## ##library.prettyVersion## by ##author##";
+
 	/**
 	 * a Constructor, usually called in the setup() method in your sketch to
 	 * initialize and start the library.
@@ -65,7 +67,15 @@ public class Loom {
 	 * @param theParent
 	 */
 	public Loom(PApplet theParent) {
-		this(theParent, new RealTimeScheduler());
+		this(theParent, new RealTimeScheduler(), 1000L);
+	}
+
+	public Loom(PApplet theParent, Scheduler scheduler) {
+		this(theParent, scheduler, 1000L);
+	}
+
+	public Loom(PApplet theParent, int bpm) {
+		this(theParent, new RealTimeScheduler(), bpmToPeriod(bpm));
 	}
 
 	/**
@@ -74,18 +84,21 @@ public class Loom {
 	 * @param theParent
 	 *            parent Processing sketch
 	 * @param theScheduler
-	 *            choose real-time or non-real-time scheduling
+	 *            real-time or non-real-time scheduler
+	 * @param periodMillis
+	 *            the cycle period in milliseconds
 	 */
-	public Loom(PApplet theParent, Scheduler theScheduler) {
+	public Loom(PApplet theParent, Scheduler theScheduler, long periodMillis) {
 		myParent = theParent;
 		scheduler = theScheduler;
 		scheduler.setPatterns(patterns);
+		scheduler.setPeriod(periodMillis);
 		welcome();
 	}
 
 	private void welcome() {
-		System.out
-				.println("##library.name## ##library.prettyVersion## by ##author##");
+		if (!WELCOME_MESSAGE.startsWith("##")) // don't print while testing
+			System.out.println(WELCOME_MESSAGE);
 	}
 
 	/**
@@ -111,6 +124,30 @@ public class Loom {
 
 	public void stop() {
 		scheduler.stop();
+	}
+
+	private static int periodToBpm(long period) {
+		return (int) (240000.0 / period);
+	}
+
+	private static long bpmToPeriod(int bpm) {
+		return (long) (240000.0 / bpm);
+	}
+
+	public int getBPM(int bpm) {
+		return periodToBpm(getPeriod());
+	}
+
+	public void setBPM(int bpm) {
+		setPeriod(bpmToPeriod(bpm));
+	}
+
+	public long getPeriod() {
+		return scheduler.getPeriod();
+	}
+
+	public void setPeriod(long millis) {
+		scheduler.setPeriod(millis);
 	}
 
 	public OscP5 getOscP5() {
