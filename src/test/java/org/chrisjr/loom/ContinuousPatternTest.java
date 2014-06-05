@@ -138,11 +138,11 @@ public class ContinuousPatternTest {
 	
 	@Test
 	public void triggerPattern() {
-		AtomicBoolean fired = new AtomicBoolean();
-		pattern = new Pattern(loom, new TriggerFunction(fired));
+		TriggerFunction trigger = new TriggerFunction();
+		pattern = new Pattern(loom, trigger);
 		
 		assertThat(pattern.getValue(), is(equalTo(0.0)));
-		fired.set(true);
+		trigger.fire();
 		assertThat(pattern.getValue(), is(equalTo(1.0)));
 		assertThat(pattern.getValue(), is(equalTo(0.0)));
 	}

@@ -12,11 +12,11 @@ import org.apache.commons.math3.fraction.BigFraction;
  * 
  */
 public class TriggerFunction extends ContinuousFunction {
-	final AtomicBoolean fired;
-	private AtomicInteger countdown = new AtomicInteger();
+	private final AtomicBoolean fired = new AtomicBoolean();
+	private final AtomicInteger countdown = new AtomicInteger();
 
-	public TriggerFunction(final AtomicBoolean fired) {
-		this.fired = fired;
+	public void fire() {
+		fired.set(true);
 	}
 
 	public double call(BigFraction t) {
