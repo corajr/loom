@@ -155,7 +155,7 @@ public class PatternTransformations {
 		pattern.speed(0.1);
 		pattern.loop();
 
-//		checkIfReversing(2500);
+		checkIfReversing(2500);
 	}
 	
 	@Test
