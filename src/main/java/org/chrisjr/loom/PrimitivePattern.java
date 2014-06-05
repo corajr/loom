@@ -6,17 +6,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import netP5.NetAddress;
-
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
-import org.chrisjr.loom.mappings.Mapping;
+import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
-import org.chrisjr.loom.util.CallableOnChange;
 import org.chrisjr.loom.util.MathOps;
-
-import oscP5.OscBundle;
 
 public class PrimitivePattern extends Pattern {
 	protected ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
@@ -41,44 +36,6 @@ public class PrimitivePattern extends Pattern {
 	public PrimitivePattern(Loom loom, ContinuousFunction function) {
 		super(loom, null, null, true);
 		this.function = function;
-	}
-
-	@Override
-	public Pattern asOscBundle(final NetAddress remoteAddress,
-			final Pattern... patterns) {
-		final PrimitivePattern original = this;
-
-		final PatternCollection oscPatterns = new PatternCollection();
-
-		boolean hasOscMapping = false;
-		for (Pattern pat : patterns) {
-			if (pat.hasMapping(MappingType.OSC_MESSAGE)) {
-				hasOscMapping = true;
-				oscPatterns.add(pat);
-			}
-		}
-
-		if (!hasOscMapping)
-			throw new IllegalArgumentException(
-					"None of the patterns have an OSC mapping!");
-
-		putMapping(MappingType.OSC_BUNDLE, new Mapping<OscBundle>() {
-			public OscBundle call(double value) {
-				OscBundle bundle = new OscBundle();
-				for (Pattern pat : oscPatterns) {
-					bundle.add(pat.asOscMessage());
-				}
-				return bundle;
-			}
-		});
-
-		asStatefulCallable(CallableOnChange.fromCallable(new Callable<Void>() {
-			public Void call() {
-				loom.getOscP5().send(original.asOscBundle(), remoteAddress);
-				return null;
-			}
-		}));
-		return this;
 	}
 
 	@Override

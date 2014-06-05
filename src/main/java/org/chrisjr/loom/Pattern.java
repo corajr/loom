@@ -275,12 +275,54 @@ public class Pattern implements Cloneable {
 		return (OscMessage) getAs(MappingType.OSC_MESSAGE);
 	}
 
-	public Pattern asOscBundle(NetAddress remoteAddress, Pattern... patterns) {
-		PrimitivePattern bundleTrigger = PrimitivePattern
-				.forEach(getPrimitivePattern());
-		bundleTrigger.asOscBundle(remoteAddress, patterns);
+	public Pattern asOscBundle(NetAddress remoteAddress) {
+		return asOscBundle(remoteAddress, children.toArray(new Pattern[] {}));
+	}
 
-		addChild(bundleTrigger);
+	public Pattern asOscBundle(final NetAddress remoteAddress,
+			final Pattern... patterns) {
+		if (isPrimitivePattern()) {
+			final PatternCollection oscPatterns = new PatternCollection();
+
+			boolean hasOscMapping = false;
+			for (Pattern pat : patterns) {
+				if (pat.hasMapping(MappingType.OSC_MESSAGE)) {
+					hasOscMapping = true;
+					oscPatterns.add(pat);
+				}
+			}
+
+			if (!hasOscMapping)
+				throw new IllegalArgumentException(
+						"None of the patterns have an OSC mapping!");
+
+			putMapping(MappingType.OSC_BUNDLE,
+					new OscBundleMapping(oscPatterns));
+
+			final Pattern original = this;
+
+			// It seemed like this might be overriding whatever else is set as a
+			// StatefulCallable, but in fact the current pattern would have been
+			// created especially to trigger the bundle sending. Clumsy but it
+			// works?
+
+			asStatefulCallable(CallableOnChange
+					.fromCallable(new Callable<Void>() {
+						public Void call() {
+							loom.getOscP5().send(original.asOscBundle(),
+									remoteAddress);
+							return null;
+						}
+					}));
+
+		} else {
+			PrimitivePattern bundleTrigger = PrimitivePattern
+					.forEach(getPrimitivePattern());
+			bundleTrigger.asOscBundle(remoteAddress, patterns);
+
+			addChild(bundleTrigger);
+		}
+
 		return this;
 	}
 

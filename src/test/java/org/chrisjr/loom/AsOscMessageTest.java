@@ -44,7 +44,9 @@ public class AsOscMessageTest {
 
 	void oscEvent(OscMessage theOscMessage) {
 		eventsCounter.incrementAndGet();
-		System.out.println(theOscMessage.addrPattern());
+		System.out.print(theOscMessage.addrPattern());
+		System.out.print(" ");
+		System.out.println(theOscMessage.get(0).intValue());
 	}
 	
 	void waitForEvents(int expected, int timeout) {
@@ -72,18 +74,12 @@ public class AsOscMessageTest {
 	@Test
 	public void receive() {
 		pattern.extend("1101");
-		
-//		pattern.asCallable(new Callable<Void>() {
-//			public Void call() {
-//				System.out.println("active");
-//				return null;
-//			}
-//		});
 
 		Pattern messagePat = new Pattern(loom);
 		messagePat.asOscMessage("/test", 123);
 
-		pattern.asOscBundle(myRemoteLocation, messagePat);
+		pattern.addChild(messagePat);
+		pattern.asOscBundle(myRemoteLocation);
 		
 		scheduler.setElapsedMillis(1001);
 		waitForEvents(3, 200);
