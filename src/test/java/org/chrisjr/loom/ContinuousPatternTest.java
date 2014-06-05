@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import java.util.concurrent.atomic.*;
+
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.time.*;
@@ -132,5 +134,16 @@ public class ContinuousPatternTest {
 			assertThat(pattern2.getValue(), is(closeTo(oldValue, epsilon)));
 			oldValue = pattern.getValue();
 		}
+	}
+	
+	@Test
+	public void triggerPattern() {
+		AtomicBoolean fired = new AtomicBoolean();
+		pattern = new Pattern(loom, new TriggerFunction(fired));
+		
+		assertThat(pattern.getValue(), is(equalTo(0.0)));
+		fired.set(true);
+		assertThat(pattern.getValue(), is(equalTo(1.0)));
+		assertThat(pattern.getValue(), is(equalTo(0.0)));
 	}
 }
