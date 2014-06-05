@@ -10,11 +10,7 @@ import netP5.NetAddress;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
-import org.chrisjr.loom.mappings.ColorMapping;
-import org.chrisjr.loom.mappings.IntMapping;
-import org.chrisjr.loom.mappings.Mapping;
-import org.chrisjr.loom.mappings.NoopMapping;
-import org.chrisjr.loom.mappings.ObjectMapping;
+import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.transforms.Transform;
@@ -251,32 +247,26 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
-	public Pattern asOscMessage(String addr) {
-		return asOscMessage(addr, 1);
+	public Pattern asOscMessage(String addressPattern) {
+		return asOscMessage(addressPattern, 1);
 	}
 
-	public Pattern asOscMessage(String addr, int value) {
+	public Pattern asOscMessage(String addressPattern, int value) {
 		PrimitivePattern subPattern = new PrimitivePattern(loom, 1.0);
-		subPattern.asInt(0, value);
-
-		return asOscMessage(addr, subPattern, MappingType.INTEGER);
+		return asOscMessage(addressPattern, subPattern,
+				new IntMapping(0, value));
 	}
 
-	public Pattern asOscMessage(final String addr, final MappingType mapping) {
+	public Pattern asOscMessage(String addressPattern, Mapping<?> mapping) {
 		final PrimitivePattern original = getPrimitivePattern();
-		putMapping(MappingType.OSC_MESSAGE, new Mapping<OscMessage>() {
-			public OscMessage call(double value) {
-				return new OscMessage(addr, new Object[] { original
-						.getAs(mapping) });
-			};
-		});
+		putMapping(MappingType.OSC_MESSAGE, new OscMessageMapping(original,
+				addressPattern, mapping));
 		return this;
 	}
 
-	public Pattern asOscMessage(String addr, PrimitivePattern subPattern,
-			MappingType mapping) {
-
-		subPattern.asOscMessage(addr, mapping);
+	public Pattern asOscMessage(String addressPattern,
+			PrimitivePattern subPattern, Mapping<?> mapping) {
+		subPattern.asOscMessage(addressPattern, mapping);
 		addChild(subPattern);
 		return this;
 	}
