@@ -31,7 +31,9 @@ import org.chrisjr.loom.time.*;
 
 import oscP5.OscMessage;
 import oscP5.OscP5;
+
 import processing.core.*;
+import themidibus.*;
 
 /**
  * This is a template class and can be used to start a new processing library or
@@ -54,6 +56,7 @@ public class Loom {
 	private Scheduler scheduler;
 
 	private OscP5 oscP5 = null;
+	private MidiBus myBus = null;
 
 	public final static String VERSION = "##library.prettyVersion##";
 
@@ -156,6 +159,12 @@ public class Loom {
 		return oscP5;
 	}
 
+	public MidiBus getMidiBus() {
+		if (myBus == null)
+			myBus = new MidiBus(this, -1, "Java Sound Synthesizer");
+		return myBus;
+	}
+
 	public void oscEvent(OscMessage theOscMessage) {
 		// TODO handle incoming messages
 		System.out.println(theOscMessage.addrPattern());
@@ -164,5 +173,7 @@ public class Loom {
 	public void dispose() {
 		if (oscP5 != null)
 			oscP5.dispose();
+		if (myBus != null)
+			myBus.dispose();
 	}
 }

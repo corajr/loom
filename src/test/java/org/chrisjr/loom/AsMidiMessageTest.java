@@ -11,11 +11,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import themidibus.*;
+
 public class AsMidiMessageTest {
 
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
+	private MidiBus myBus;
 
 	AtomicInteger notesOnReceived = new AtomicInteger();
 	AtomicInteger notesOffReceived = new AtomicInteger();
@@ -25,6 +28,7 @@ public class AsMidiMessageTest {
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
+		myBus = new MidiBus(this, -1, "Java Sound Synthesizer");
 
 		loom.play();
 	}
