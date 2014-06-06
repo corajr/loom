@@ -1,15 +1,15 @@
 package org.chrisjr.loom.mappings;
 
-import org.chrisjr.loom.PrimitivePattern;
+import org.chrisjr.loom.*;
 
 import oscP5.OscMessage;
 
 public class OscMessageMapping implements Mapping<OscMessage> {
-	private final PrimitivePattern original;
+	private final Pattern original;
 	private final String addressPattern;
 	private final Mapping<?> mapping;
 
-	public OscMessageMapping(final PrimitivePattern original,
+	public OscMessageMapping(final Pattern original,
 			final String addressPattern, final Mapping<?> mapping) {
 		this.original = original;
 		this.addressPattern = addressPattern;

@@ -1,6 +1,8 @@
 package org.chrisjr.loom;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -59,7 +61,7 @@ public class AsOscMessageTest {
 			}
 			millisPassed++;
 		}
-		if (eventsCounter.get() < expected) fail("Timed out waiting for events");
+		assertThat(eventsCounter.get(), is(equalTo(expected)));
 	}
 
 	@Ignore

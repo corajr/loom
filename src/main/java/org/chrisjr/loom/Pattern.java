@@ -45,11 +45,21 @@ public class Pattern implements Cloneable {
 	protected boolean isPrimitive;
 
 	public enum MappingType {
-		INTEGER, FLOAT, COLOR, MIDI, OSC_MESSAGE, OSC_BUNDLE, CALLABLE, STATEFUL_CALLABLE, OBJECT
+		INTEGER, // inclusive range
+		FLOAT, // inclusive range
+		COLOR, // 32-bit integer (ARGB) format
+		MIDI_COMMAND, // NOTE_ON, NOTE_OFF, etc.
+		MIDI_CHANNEL, // 1-16
+		MIDI_MESSAGE, // javax.sound.midi.MidiMessage suitable for sending
+		OSC_MESSAGE, // OscMessage with arbitrary data
+		OSC_BUNDLE, // collection of OscMessages
+		CALLABLE, // a function object
+		STATEFUL_CALLABLE, // a function object that has internal state
+		OBJECT // generic object
 	}
 
 	final protected MappingType[] externalMappings = new MappingType[] {
-			MappingType.MIDI, MappingType.CALLABLE,
+			MappingType.MIDI_MESSAGE, MappingType.CALLABLE,
 			MappingType.STATEFUL_CALLABLE };
 
 	/**
@@ -242,8 +252,12 @@ public class Pattern implements Cloneable {
 	 */
 	public Pattern asMidi(String instrument) {
 		PrimitivePattern beats = new PrimitivePattern(loom);
-		beats.putMapping(MappingType.MIDI, new NoopMapping());
+		beats.putMapping(MappingType.MIDI_MESSAGE, new NoopMapping());
 		addChild(beats);
+		return this;
+	}
+
+	public Pattern asMidiMessage() {
 		return this;
 	}
 
@@ -258,7 +272,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asOscMessage(String addressPattern, Mapping<?> mapping) {
-		final PrimitivePattern original = getPrimitivePattern();
+		final Pattern original = this;
 		putMapping(MappingType.OSC_MESSAGE, new OscMessageMapping(original,
 				addressPattern, mapping));
 		return this;

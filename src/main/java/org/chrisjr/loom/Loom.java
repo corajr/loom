@@ -162,6 +162,7 @@ public class Loom {
 	}
 
 	public void dispose() {
-		oscP5.dispose();
+		if (oscP5 != null)
+			oscP5.dispose();
 	}
 }
