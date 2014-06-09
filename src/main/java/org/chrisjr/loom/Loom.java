@@ -27,11 +27,13 @@
 
 package org.chrisjr.loom;
 
+import javax.sound.midi.MidiMessage;
+
 import org.chrisjr.loom.time.*;
+import org.chrisjr.loom.util.MidiTools;
 
 import oscP5.OscMessage;
 import oscP5.OscP5;
-
 import processing.core.*;
 import themidibus.*;
 
@@ -161,13 +163,21 @@ public class Loom {
 
 	public MidiBus getMidiBus() {
 		if (myBus == null)
-			myBus = new MidiBus(this, 0, 0);
+			myBus = new MidiBus(this, "Bus 1", "Bus 1");
 		return myBus;
 	}
 
 	public void oscEvent(OscMessage theOscMessage) {
 		// TODO handle incoming messages
 		System.out.println(theOscMessage.addrPattern());
+	}
+	
+	public void midiMessage(MidiMessage theMidiMessage) {
+//		MidiTools.printMidi(theMidiMessage);
+	}
+
+	public void rawMidi(byte[] raw) {
+//		MidiTools.printMidiRaw(raw);		
 	}
 
 	public void dispose() {

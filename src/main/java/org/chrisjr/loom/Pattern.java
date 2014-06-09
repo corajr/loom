@@ -18,6 +18,7 @@ import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.transforms.Transform;
 import org.chrisjr.loom.util.CallableOnChange;
+import org.chrisjr.loom.util.MidiTools;
 import org.chrisjr.loom.util.StatefulCallable;
 
 import oscP5.OscBundle;
@@ -295,12 +296,12 @@ public class Pattern implements Cloneable {
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
-	public Pattern asMidiNotes(Integer... values) {
+	public Pattern asMidiNote(Integer... values) {
 		Arrays.sort(values);
 		return asMidiData1(values[0], values[values.length - 1]);
 	}
 
-	public int asMidiNotes() {
+	public int asMidiNote() {
 		return asMidiData1();
 	}
 
@@ -315,8 +316,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asMidiMessage(Pattern notes) {
-		Pattern commands = asMidiCommand(ShortMessage.NOTE_OFF,
-				ShortMessage.NOTE_ON);
+		Pattern commands = this;
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
 		Pattern velocities = (new Pattern(loom, 1.0)).asMidiData2(0, 127);
 		return asMidiMessage(commands, channels, notes, velocities);
@@ -335,12 +335,8 @@ public class Pattern implements Cloneable {
 					.fromCallable(new Callable<Void>() {
 						public Void call() {
 							MidiMessage mess = original.asMidiMessage();
-							System.out.print("sending ");
-							for (byte b : mess.getMessage()) {
-								System.out.print(b & 0xff);
-								System.out.print(",");
-							}
-							System.out.println();
+							System.out.print("sent ");
+							MidiTools.printMidi(mess);
 							loom.getMidiBus().sendMessage(mess);
 							return null;
 						}
@@ -348,7 +344,9 @@ public class Pattern implements Cloneable {
 		} else {
 			PrimitivePattern midiTrigger = PrimitivePattern
 					.forEach(getPrimitivePattern());
-			midiTrigger.asMidiMessage(commands, channels, notes, velocities);
+			midiTrigger.asMidiCommand(ShortMessage.NOTE_OFF,
+					ShortMessage.NOTE_ON);
+			midiTrigger.asMidiMessage(midiTrigger, channels, notes, velocities);
 
 			addChild(midiTrigger);
 		}
