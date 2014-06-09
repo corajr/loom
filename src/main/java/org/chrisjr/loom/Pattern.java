@@ -1,9 +1,12 @@
 package org.chrisjr.loom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.sound.midi.*;
 
 import netP5.NetAddress;
 
@@ -49,7 +52,9 @@ public class Pattern implements Cloneable {
 		FLOAT, // inclusive range
 		COLOR, // 32-bit integer (ARGB) format
 		MIDI_COMMAND, // NOTE_ON, NOTE_OFF, etc.
-		MIDI_CHANNEL, // 1-16
+		MIDI_CHANNEL, // 0-15
+		MIDI_DATA1, // byte 1 of command
+		MIDI_DATA2, // byte 2 of command (optional)
 		MIDI_MESSAGE, // javax.sound.midi.MidiMessage suitable for sending
 		OSC_MESSAGE, // OscMessage with arbitrary data
 		OSC_BUNDLE, // collection of OscMessages
@@ -59,8 +64,7 @@ public class Pattern implements Cloneable {
 	}
 
 	final protected MappingType[] externalMappings = new MappingType[] {
-			MappingType.MIDI_MESSAGE, MappingType.CALLABLE,
-			MappingType.STATEFUL_CALLABLE };
+			MappingType.CALLABLE, MappingType.STATEFUL_CALLABLE };
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -233,6 +237,10 @@ public class Pattern implements Cloneable {
 
 	// Mappings
 
+	private static int getIntOrElse(Integer result, int defaultInt) {
+		return result != null ? result.intValue() : defaultInt;
+	}
+
 	public Pattern asInt(int lo, int hi) {
 		putMapping(MappingType.INTEGER, new IntMapping(lo, hi));
 		return this;
@@ -240,7 +248,7 @@ public class Pattern implements Cloneable {
 
 	public int asInt() {
 		Integer result = (Integer) getAs(MappingType.INTEGER);
-		return result != null ? result.intValue() : Integer.MIN_VALUE;
+		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
 	/**
@@ -257,8 +265,99 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
-	public Pattern asMidiMessage() {
+	public Pattern asMidiCommand(Integer... commands) {
+		putMapping(MappingType.MIDI_COMMAND, new MidiCommandMapping(commands));
 		return this;
+	}
+
+	public int asMidiCommand() {
+		Integer result = (Integer) getAs(MappingType.MIDI_COMMAND);
+		return getIntOrElse(result, Integer.MIN_VALUE);
+	}
+
+	public Pattern asMidiChannel(Integer... channels) {
+		putMapping(MappingType.MIDI_CHANNEL, new MidiChannelMapping(channels));
+		return this;
+	}
+
+	public int asMidiChannel() {
+		Integer result = (Integer) getAs(MappingType.MIDI_CHANNEL);
+		return getIntOrElse(result, Integer.MIN_VALUE);
+	}
+
+	public Pattern asMidiData1(int lo, int hi) {
+		putMapping(MappingType.MIDI_DATA1, new IntMapping(lo, hi));
+		return this;
+	}
+
+	public int asMidiData1() {
+		Integer result = (Integer) getAs(MappingType.MIDI_DATA1);
+		return getIntOrElse(result, Integer.MIN_VALUE);
+	}
+
+	public Pattern asMidiNotes(Integer... values) {
+		Arrays.sort(values);
+		return asMidiData1(values[0], values[values.length - 1]);
+	}
+
+	public int asMidiNotes() {
+		return asMidiData1();
+	}
+
+	public Pattern asMidiData2(int lo, int hi) {
+		putMapping(MappingType.MIDI_DATA2, new IntMapping(lo, hi));
+		return this;
+	}
+
+	public int asMidiData2() {
+		Integer result = (Integer) getAs(MappingType.MIDI_DATA2);
+		return getIntOrElse(result, Integer.MIN_VALUE);
+	}
+
+	public Pattern asMidiMessage(Pattern notes) {
+		Pattern commands = asMidiCommand(ShortMessage.NOTE_OFF,
+				ShortMessage.NOTE_ON);
+		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
+		Pattern velocities = (new Pattern(loom, 1.0)).asMidiData2(0, 127);
+		return asMidiMessage(commands, channels, notes, velocities);
+	}
+
+	public Pattern asMidiMessage(Pattern commands, Pattern channels,
+			Pattern notes, Pattern velocities) {
+
+		if (isPrimitivePattern()) {
+			putMapping(MappingType.MIDI_MESSAGE, new MidiMessageMapping(
+					commands, channels, notes, velocities));
+
+			final Pattern original = this;
+
+			asStatefulCallable(CallableOnChange
+					.fromCallable(new Callable<Void>() {
+						public Void call() {
+							MidiMessage mess = original.asMidiMessage();
+							System.out.print("sending ");
+							for (byte b : mess.getMessage()) {
+								System.out.print(b & 0xff);
+								System.out.print(",");
+							}
+							System.out.println();
+							loom.getMidiBus().sendMessage(mess);
+							return null;
+						}
+					}));
+		} else {
+			PrimitivePattern midiTrigger = PrimitivePattern
+					.forEach(getPrimitivePattern());
+			midiTrigger.asMidiMessage(commands, channels, notes, velocities);
+
+			addChild(midiTrigger);
+		}
+
+		return this;
+	}
+
+	public MidiMessage asMidiMessage() {
+		return (MidiMessage) getAs(MappingType.MIDI_MESSAGE);
 	}
 
 	public Pattern asOscMessage(String addressPattern) {
@@ -359,7 +458,7 @@ public class Pattern implements Cloneable {
 
 	public int asColor() {
 		Integer result = (Integer) getAs(MappingType.COLOR);
-		return result != null ? result.intValue() : 0x00000000;
+		return getIntOrElse(result, 0x00000000);
 	}
 
 	public Pattern asObject(Object... objects) {

@@ -28,8 +28,7 @@ public class AsMidiMessageTest {
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
-		myBus = new MidiBus(this, -1, "Java Sound Synthesizer");
-
+		myBus = new MidiBus(this, 0, 0);
 		loom.play();
 	}
 
@@ -39,12 +38,17 @@ public class AsMidiMessageTest {
 	}
 
 	@Test
-	public void noteOnAndOffMessagesSent() {
-		pattern.extend(60, 64, 67, 64);
+	public void noteOnAndOffMessagesSent() throws InterruptedException {
+		pattern.extend("1353");
 
-		pattern.asMidiMessage();
+		pattern.asMidiNotes(60, 64, 67);
+
+		pattern.asMidiMessage(pattern);
 
 		scheduler.setElapsedMillis(251);
+
+		Thread.sleep(100);
+
 		assertThat(notesOnReceived.get(), is(equalTo(2)));
 		assertThat(notesOffReceived.get(), is(equalTo(1)));
 
@@ -52,6 +56,17 @@ public class AsMidiMessageTest {
 
 		assertThat(notesOnReceived.get(), is(equalTo(4)));
 		assertThat(notesOffReceived.get(), is(equalTo(4)));
+	}
+
+	public void noteOn(int channel, int pitch, int velocity) {
+		System.out.println("Channel:" + channel);
+		System.out.println("Pitch:" + pitch);
+		System.out.println("Velocity:" + velocity);
+		notesOnReceived.getAndIncrement();
+	}
+
+	public void noteOff(int channel, int pitch, int velocity) {
+		notesOffReceived.getAndIncrement();
 	}
 
 }

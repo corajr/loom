@@ -1,7 +1,7 @@
 package org.chrisjr.loom.mappings;
 
 public class ObjectMapping<T> implements Mapping<T> {
-	final T[] objects;
+	T[] objects;
 
 	@SuppressWarnings("unchecked")
 	public ObjectMapping(T... objects) {

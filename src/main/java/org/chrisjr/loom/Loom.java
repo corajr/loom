@@ -161,7 +161,7 @@ public class Loom {
 
 	public MidiBus getMidiBus() {
 		if (myBus == null)
-			myBus = new MidiBus(this, -1, "Java Sound Synthesizer");
+			myBus = new MidiBus(this, 0, 0);
 		return myBus;
 	}
 
