@@ -158,7 +158,7 @@ public class PatternTransformations {
 
 		checkIfReversing(2500);
 	}
-	
+
 	@Test
 	public void invert() {
 		pattern.invert();
@@ -181,14 +181,14 @@ public class PatternTransformations {
 		});
 
 		scheduler.setElapsedMillis(1001);
-		assertThat(counter.get(), is(equalTo(3)));
+		assertThat(counter.get(), is(equalTo(4)));
 	}
-	
+
 	@Test
 	public void forEachMultiple() {
 		final AtomicInteger counter1 = new AtomicInteger();
 		final AtomicInteger counter2 = new AtomicInteger();
-		
+
 		Callable<Void> inc1 = new Callable<Void>() {
 			public Void call() {
 				counter1.incrementAndGet();
@@ -204,17 +204,21 @@ public class PatternTransformations {
 		};
 
 		pattern.extend("1111");
-		
-		PrimitivePattern trigger = PrimitivePattern.forEach(pattern, 2);
+
+		PrimitivePattern trigger = PrimitivePattern.forEach(
+				pattern.getPrimitivePattern(), 2);
 		trigger.asStatefulCallable(CallableOnChange.fromCallables(inc1, inc2));
-		
+		trigger.asInt(0, 2);
+
+		System.out.println(trigger);
+
 		scheduler.setElapsedMillis(501);
+		System.out.println(trigger.asInt());
 		assertThat(counter1.get(), is(equalTo(3)));
 		assertThat(counter2.get(), is(equalTo(2)));
 		scheduler.setElapsedMillis(1000);
 		assertThat(counter1.get(), is(equalTo(4)));
 		assertThat(counter2.get(), is(equalTo(4)));
-		
-		
+
 	}
 }

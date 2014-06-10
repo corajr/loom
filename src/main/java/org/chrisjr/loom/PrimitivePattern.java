@@ -114,7 +114,7 @@ public class PrimitivePattern extends Pattern {
 					"Other pattern in forEach is not made of discrete events!");
 
 		EventRewriter rewriter = new SubdivideRewriter(
-				Scheduler.minimumResolution.multiply(other.getTimeScale()),
+				Scheduler.minimumResolution.multiply(other.getTimeScale()).multiply(divisions),
 				divisions);
 
 		return new PrimitivePattern(other.loom, rewriter.apply(other
