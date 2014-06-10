@@ -26,6 +26,38 @@ public class Event {
 		return value;
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((interval == null) ? 0 : interval.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(value);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Event))
+			return false;
+		Event other = (Event) obj;
+		if (interval == null) {
+			if (other.interval != null)
+				return false;
+		} else if (!interval.equals(other.interval))
+			return false;
+		if (Double.doubleToLongBits(value) != Double
+				.doubleToLongBits(other.value))
+			return false;
+		return true;
+	}
+
 	public String toString() {
 		return "Event(" + interval.toString() + " == " + String.valueOf(value) + ")";
 	}

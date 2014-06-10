@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.transforms.Transform;
 import org.chrisjr.loom.transforms.Transforms;
+import org.chrisjr.loom.util.CallableOnChange;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -181,6 +182,39 @@ public class PatternTransformations {
 
 		scheduler.setElapsedMillis(1001);
 		assertThat(counter.get(), is(equalTo(3)));
+	}
+	
+	@Test
+	public void forEachMultiple() {
+		final AtomicInteger counter1 = new AtomicInteger();
+		final AtomicInteger counter2 = new AtomicInteger();
+		
+		Callable<Void> inc1 = new Callable<Void>() {
+			public Void call() {
+				counter1.incrementAndGet();
+				return null;
+			}
+		};
 
+		Callable<Void> inc2 = new Callable<Void>() {
+			public Void call() {
+				counter2.incrementAndGet();
+				return null;
+			}
+		};
+
+		pattern.extend("1111");
+		
+		PrimitivePattern trigger = PrimitivePattern.forEach(pattern, 2);
+		trigger.asStatefulCallable(CallableOnChange.fromCallables(inc1, inc2));
+		
+		scheduler.setElapsedMillis(501);
+		assertThat(counter1.get(), is(equalTo(3)));
+		assertThat(counter2.get(), is(equalTo(2)));
+		scheduler.setElapsedMillis(1000);
+		assertThat(counter1.get(), is(equalTo(4)));
+		assertThat(counter2.get(), is(equalTo(4)));
+		
+		
 	}
 }

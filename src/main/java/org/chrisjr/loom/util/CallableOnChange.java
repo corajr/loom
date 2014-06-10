@@ -1,5 +1,6 @@
 package org.chrisjr.loom.util;
 
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,6 +32,19 @@ public class CallableOnChange extends StatefulCallable {
 		return new StatefulCallable[] { noop, doCall };
 	}
 
+	@SuppressWarnings("unchecked")
+	public static StatefulCallable[] fromCallables(Callable<Void>... callables) {
+		ArrayList<StatefulCallable> result = new ArrayList<StatefulCallable>();
+
+		final AtomicInteger lastValue = new AtomicInteger();
+		result.add(new StatefulNoop(lastValue));
+		for (Callable<Void> callable : callables) {
+			result.add(new CallableOnChange(lastValue, callable));
+		}
+
+		return result.toArray(new StatefulCallable[] {});
+	}
+
 	public static StatefulCallable[] fromTransform(final Transform transform,
 			final Pattern original) {
 		return fromCallable(new Callable<Void>() {
@@ -46,6 +60,7 @@ public class CallableOnChange extends StatefulCallable {
 	}
 
 	public String toString() {
-		return "CallableOnChange(" + inner.toString() + ")" + "@" + Integer.toHexString(hashCode());
+		return "CallableOnChange(" + inner.toString() + ")" + "@"
+				+ Integer.toHexString(hashCode());
 	}
 }

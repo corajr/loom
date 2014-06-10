@@ -11,6 +11,8 @@ import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
+import org.chrisjr.loom.transforms.EventRewriter;
+import org.chrisjr.loom.transforms.SubdivideRewriter;
 import org.chrisjr.loom.util.MathOps;
 
 public class PrimitivePattern extends Pattern {
@@ -103,23 +105,20 @@ public class PrimitivePattern extends Pattern {
 	}
 
 	public static PrimitivePattern forEach(Pattern other) {
+		return forEach(other, 1);
+	}
+
+	public static PrimitivePattern forEach(Pattern other, int divisions) {
 		if (!other.isDiscretePattern())
 			throw new IllegalArgumentException(
 					"Other pattern in forEach is not made of discrete events!");
 
-		EventCollection events = new EventCollection();
+		EventRewriter rewriter = new SubdivideRewriter(
+				Scheduler.minimumResolution.multiply(other.getTimeScale()),
+				divisions);
 
-		for (Event event : other.getEvents().values()) {
-			if (event.getValue() != 0.0) {
-				Interval[] longShort = Interval.shortenBy(event.getInterval(),
-						Scheduler.minimumResolution.multiply(other
-								.getTimeScale()));
-				events.add(new Event(longShort[0], 1.0));
-				events.add(new Event(longShort[1], 0.0));
-			}
-		}
-
-		return new PrimitivePattern(other.loom, events);
+		return new PrimitivePattern(other.loom, rewriter.apply(other
+				.getEvents()));
 	}
 
 	public PrimitivePattern clone() throws CloneNotSupportedException {

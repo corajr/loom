@@ -1,7 +1,7 @@
 package org.chrisjr.loom;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.*;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;

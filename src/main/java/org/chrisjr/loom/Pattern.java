@@ -16,6 +16,7 @@ import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.Scheduler;
+import org.chrisjr.loom.transforms.EventRewriter;
 import org.chrisjr.loom.transforms.Transform;
 import org.chrisjr.loom.util.CallableOnChange;
 import org.chrisjr.loom.util.MidiTools;
@@ -595,10 +596,17 @@ public class Pattern implements Cloneable {
 
 		return this;
 	}
+	
+	public Pattern rewrite(EventRewriter eventRewriter) {
+		EventCollection events = getEvents();
+		if (events != null) {
+			getPrimitivePattern().events = eventRewriter.apply(events);
+		}
+		return this;
+	}
 
 	public Pattern forEach(Callable<Void> callable) {
 
-		getPrimitivePattern();
 		PrimitivePattern primitive = PrimitivePattern
 				.forEach(getPrimitivePattern());
 

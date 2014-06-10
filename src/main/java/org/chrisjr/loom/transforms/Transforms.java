@@ -14,4 +14,16 @@ public class Transforms {
 			return original.reverse();
 		}
 	}
+
+	public class Rewrite extends Transform {
+		EventRewriter eventRewriter;
+
+		public Rewrite(EventRewriter eventRewriter) {
+			this.eventRewriter = eventRewriter;
+		}
+
+		public Pattern call(Pattern original) {
+			return original.rewrite(eventRewriter);
+		}
+	}
 }
