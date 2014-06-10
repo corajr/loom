@@ -191,14 +191,14 @@ public class PatternTransformations {
 
 		Callable<Void> inc1 = new Callable<Void>() {
 			public Void call() {
-				counter1.incrementAndGet();
+				counter1.getAndIncrement();
 				return null;
 			}
 		};
 
 		Callable<Void> inc2 = new Callable<Void>() {
 			public Void call() {
-				counter2.incrementAndGet();
+				counter2.getAndIncrement();
 				return null;
 			}
 		};
@@ -208,14 +208,12 @@ public class PatternTransformations {
 		PrimitivePattern trigger = PrimitivePattern.forEach(
 				pattern.getPrimitivePattern(), 2);
 		trigger.asStatefulCallable(CallableOnChange.fromCallables(inc1, inc2));
-		trigger.asInt(0, 2);
-
-		System.out.println(trigger);
+		
+		pattern.addChild(trigger);
 
 		scheduler.setElapsedMillis(501);
-		System.out.println(trigger.asInt());
-		assertThat(counter1.get(), is(equalTo(3)));
-		assertThat(counter2.get(), is(equalTo(2)));
+		assertThat(counter1.get(), is(equalTo(2)));
+		assertThat(counter2.get(), is(equalTo(3)));
 		scheduler.setElapsedMillis(1000);
 		assertThat(counter1.get(), is(equalTo(4)));
 		assertThat(counter2.get(), is(equalTo(4)));
