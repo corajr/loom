@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.*;
 import java.awt.Color;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.util.StatefulNoop;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +23,7 @@ public class PatternTest {
 
 	@Before
 	public void setUp() throws Exception {
-		loom = new Loom(null); // PApplet is not needed here
+		loom = new Loom(null, new NonRealTimeScheduler()); // PApplet is not needed here
 		pattern = new Pattern(loom, 0.6);
 		loom.play();
 	}
@@ -37,7 +38,7 @@ public class PatternTest {
 	public void hasExternalMappings() {
 		assertThat(pattern.hasExternalMappings(), is(equalTo(false)));
 
-		pattern.asMidi("clap");
+		pattern.asCallable(new StatefulNoop(null));
 		assertThat(pattern.hasExternalMappings(), is(equalTo(true)));
 	}
 

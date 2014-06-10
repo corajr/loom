@@ -84,6 +84,6 @@ public class AsOscMessageTest {
 		pattern.asOscBundle(myRemoteLocation);
 		
 		scheduler.setElapsedMillis(1001);
-		waitForEvents(3, 200);
+		waitForEvents(4, 200);
 	}
 }

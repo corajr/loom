@@ -27,8 +27,10 @@ public class PatternCollectionTest {
 		Pattern pattern = new Pattern(loom);
 		Pattern pattern2 = new Pattern(loom);
 		
-		pattern2.asMidi("clap");
-
+		pattern.extend("1111");
+		pattern2.extend("1111");
+		pattern.asMidiMessage(pattern2);
+		
 		patterns.add(pattern);
 		patterns.add(pattern2);
 

@@ -261,10 +261,8 @@ public class Pattern implements Cloneable {
 	 * @return the updated pattern
 	 */
 	public Pattern asMidi(String instrument) {
-		PrimitivePattern beats = new PrimitivePattern(loom);
-		beats.putMapping(MappingType.MIDI_MESSAGE, new NoopMapping());
-		addChild(beats);
-		return this;
+		// TODO program change message
+		return asMidiMessage(this);
 	}
 
 	public Pattern asMidiCommand(Integer... commands) {
@@ -332,20 +330,21 @@ public class Pattern implements Cloneable {
 
 			final Pattern original = this;
 
-			asStatefulCallable(CallableOnChange
-					.fromCallable(new Callable<Void>() {
-						public Void call() {
-							MidiMessage mess = original.asMidiMessage();
-							System.out.print("sent ");
-							MidiTools.printMidi(mess);
-							loom.getMidiBus().sendMessage(mess);
-							return null;
-						}
-					}));
+			Callable<Void> sendMidi = new Callable<Void>() {
+				public Void call() {
+					MidiMessage mess = original.asMidiMessage();
+					if (mess != null)
+						loom.getMidiBus().sendMessage(mess);
+					return null;
+				}
+			};
+			asStatefulCallable(CallableOnChange.fromCallables(sendMidi,
+					sendMidi));
 		} else {
-			PrimitivePattern midiTrigger = PrimitivePattern
-					.forEach(getPrimitivePattern());
-			midiTrigger.asMidiCommand(ShortMessage.NOTE_OFF,
+			PrimitivePattern midiTrigger = PrimitivePattern.forEach(
+					getPrimitivePattern(), 2);
+			System.out.println(midiTrigger);
+			midiTrigger.asMidiCommand(-1, ShortMessage.NOTE_OFF,
 					ShortMessage.NOTE_ON);
 			midiTrigger.asMidiMessage(midiTrigger, channels, notes, velocities);
 
@@ -596,7 +595,7 @@ public class Pattern implements Cloneable {
 
 		return this;
 	}
-	
+
 	public Pattern rewrite(EventRewriter eventRewriter) {
 		EventCollection events = getEvents();
 		if (events != null) {

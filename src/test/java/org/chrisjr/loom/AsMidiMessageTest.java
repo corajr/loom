@@ -65,7 +65,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		byte[] data = message.getMessage();
 		if ((int) (data[0] & 0x90) == ShortMessage.NOTE_ON)
 			notesOnReceived.getAndIncrement();
-		else if ((int) (data[0] & 0x80) == ShortMessage.NOTE_ON)
+		else if ((int) (data[0] & 0x80) == ShortMessage.NOTE_OFF)
 			notesOffReceived.getAndIncrement();
 		System.out.print("recv ");
 		MidiTools.printMidiRaw(data);
