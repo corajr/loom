@@ -35,6 +35,9 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		myBus = loom.getMidiBus();
 		myBus.addMidiListener(this);
 		loom.play();
+		
+		// allow a little time to initialize midi
+		Thread.sleep(10);
 	}
 
 	@After
@@ -52,10 +55,14 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 		scheduler.setElapsedMillis(251);
 
+		Thread.sleep(1);
+
 		assertThat(notesOnReceived.get(), is(equalTo(2)));
 		assertThat(notesOffReceived.get(), is(equalTo(1)));
 
 		scheduler.setElapsedMillis(1000);
+
+		Thread.sleep(1);
 
 		assertThat(notesOnReceived.get(), is(equalTo(4)));
 		assertThat(notesOffReceived.get(), is(equalTo(4)));

@@ -315,13 +315,16 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asMidiMessage(Pattern notes) {
-		Pattern commands = this;
+		PrimitivePattern commands = PrimitivePattern.forEach(
+				getPrimitivePattern(), 2);
+		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
+
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
 		Pattern velocities = (new Pattern(loom, 1.0)).asMidiData2(0, 127);
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
 
-	public Pattern asMidiMessage(Pattern commands, Pattern channels,
+	public Pattern asMidiMessage(PrimitivePattern commands, Pattern channels,
 			Pattern notes, Pattern velocities) {
 
 		if (isPrimitivePattern()) {
@@ -341,13 +344,9 @@ public class Pattern implements Cloneable {
 			asStatefulCallable(CallableOnChange.fromCallables(sendMidi,
 					sendMidi));
 		} else {
-			PrimitivePattern midiTrigger = PrimitivePattern.forEach(
-					getPrimitivePattern(), 2);
-			midiTrigger.asMidiCommand(-1, ShortMessage.NOTE_OFF,
-					ShortMessage.NOTE_ON);
-			midiTrigger.asMidiMessage(midiTrigger, channels, notes, velocities);
+			commands.asMidiMessage(commands, channels, notes, velocities);
 
-			addChild(midiTrigger);
+			addChild(commands);
 		}
 
 		return this;
