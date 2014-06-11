@@ -19,7 +19,6 @@ import org.chrisjr.loom.time.Scheduler;
 import org.chrisjr.loom.transforms.EventRewriter;
 import org.chrisjr.loom.transforms.Transform;
 import org.chrisjr.loom.util.CallableOnChange;
-import org.chrisjr.loom.util.MidiTools;
 import org.chrisjr.loom.util.StatefulCallable;
 
 import oscP5.OscBundle;
@@ -324,6 +323,7 @@ public class Pattern implements Cloneable {
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Pattern asMidiMessage(PrimitivePattern commands, Pattern channels,
 			Pattern notes, Pattern velocities) {
 

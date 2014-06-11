@@ -30,7 +30,6 @@ package org.chrisjr.loom;
 import javax.sound.midi.MidiMessage;
 
 import org.chrisjr.loom.time.*;
-import org.chrisjr.loom.util.MidiTools;
 
 import oscP5.OscMessage;
 import oscP5.OscP5;
@@ -166,8 +165,9 @@ public class Loom {
 	}
 
 	public MidiBus getMidiBus() {
+		// TODO can a MidiBus be created inside here? Is it even necessary?
 		if (myBus == null)
-			myBus = new MidiBus(this, "Bus 1", "Bus 1");
+			throw new IllegalStateException("MidiBus not set!");
 		return myBus;
 	}
 

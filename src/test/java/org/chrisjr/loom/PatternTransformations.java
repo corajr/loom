@@ -184,6 +184,7 @@ public class PatternTransformations {
 		assertThat(counter.get(), is(equalTo(4)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void forEachMultiple() {
 		final AtomicInteger counter1 = new AtomicInteger();

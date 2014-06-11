@@ -2,7 +2,6 @@ package org.chrisjr.loom.transforms;
 
 import java.util.*;
 
-import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Event;
 import org.chrisjr.loom.EventCollection;
 
