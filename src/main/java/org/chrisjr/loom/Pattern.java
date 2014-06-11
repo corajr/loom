@@ -11,15 +11,12 @@ import javax.sound.midi.*;
 import netP5.NetAddress;
 
 import org.apache.commons.math3.fraction.BigFraction;
-import org.chrisjr.loom.continuous.ConstantFunction;
-import org.chrisjr.loom.continuous.ContinuousFunction;
+
+import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.mappings.*;
-import org.chrisjr.loom.time.Interval;
-import org.chrisjr.loom.time.Scheduler;
-import org.chrisjr.loom.transforms.EventRewriter;
-import org.chrisjr.loom.transforms.Transform;
-import org.chrisjr.loom.util.CallableOnChange;
-import org.chrisjr.loom.util.StatefulCallable;
+import org.chrisjr.loom.time.*;
+import org.chrisjr.loom.transforms.*;
+import org.chrisjr.loom.util.*;
 
 import oscP5.OscBundle;
 import oscP5.OscMessage;
@@ -319,7 +316,10 @@ public class Pattern implements Cloneable {
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
-		Pattern velocities = (new Pattern(loom, 1.0)).asMidiData2(0, 127);
+		ContinuousFunction velocityFunc = new ThresholdFunction(commands, 1.0);
+
+		Pattern velocities = (new Pattern(loom, velocityFunc)).asMidiData2(0,
+				127);
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
 
