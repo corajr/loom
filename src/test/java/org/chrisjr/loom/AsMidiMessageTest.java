@@ -32,7 +32,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
-		myBus = new MidiBus(loom, "Bus 1", "Bus 1");
+		myBus = new MidiBus(null, "Bus 1", "Bus 1");
 		myBus.addMidiListener(this);
 
 		loom.setMidiBus(myBus);
