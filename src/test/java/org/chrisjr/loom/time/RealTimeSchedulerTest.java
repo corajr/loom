@@ -5,9 +5,7 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -17,6 +15,7 @@ import org.chrisjr.loom.util.CallableOnChange;
 import org.chrisjr.loom.util.StatefulCallable;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -38,6 +37,7 @@ public class RealTimeSchedulerTest {
 		loom = new Loom(null, scheduler);
 		testPattern = new Pattern(loom);
 		testPattern.extend(0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
+		testPattern.loop();
 	}
 
 	@After
@@ -116,19 +116,19 @@ public class RealTimeSchedulerTest {
 		double avgError = totalError / expectedTimesMillis.length;
 		assertThat(avgError / 1e6, is(closeTo(0, epsilon)));
 	}
-
-	@Test
-	public void testRelativeTiming() {
+	
+	public void relativeTimings(int repeats) {
 		final ConcurrentLinkedQueue<Long> queue = new ConcurrentLinkedQueue<Long>();
 
-		long[] expectedGapsMillis = new long[] { 200, 200, 200, 200 };
+		long[] expectedGapsMillis = new long[(repeats*5) - 1];
+		Arrays.fill(expectedGapsMillis, 200);
 
 		preparePattern(queue, testPattern);
 
 		long startNanos = System.nanoTime();
 		loom.play();
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(1000 * repeats);
 		} catch (InterruptedException e) {
 		}
 
@@ -138,6 +138,16 @@ public class RealTimeSchedulerTest {
 				expectedGapsMillis);
 		double avgError = totalError / expectedGapsMillis.length;
 		assertThat(avgError / 1e6, is(closeTo(0, epsilon)));
+	}
+
+	@Test
+	public void testRelativeTiming() {
+		relativeTimings(1);
+	}
+
+	@Ignore
+	public void longtermTiming() {
+		relativeTimings(10);
 	}
 
 	@Test
