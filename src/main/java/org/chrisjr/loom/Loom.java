@@ -161,23 +161,31 @@ public class Loom {
 		return oscP5;
 	}
 
+	public void setOscP5(OscP5 oscP5) {
+		this.oscP5 = oscP5;
+	}
+
 	public MidiBus getMidiBus() {
 		if (myBus == null)
 			myBus = new MidiBus(this, "Bus 1", "Bus 1");
 		return myBus;
 	}
 
+	public void setMidiBus(MidiBus midiBus) {
+		this.myBus = midiBus;
+	}
+
 	public void oscEvent(OscMessage theOscMessage) {
 		// TODO handle incoming messages
 		System.out.println(theOscMessage.addrPattern());
 	}
-	
+
 	public void midiMessage(MidiMessage theMidiMessage) {
-//		MidiTools.printMidi(theMidiMessage);
+		// MidiTools.printMidi(theMidiMessage);
 	}
 
 	public void rawMidi(byte[] raw) {
-//		MidiTools.printMidiRaw(raw);		
+		// MidiTools.printMidiRaw(raw);
 	}
 
 	public void dispose() {
