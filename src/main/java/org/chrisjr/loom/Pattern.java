@@ -343,7 +343,6 @@ public class Pattern implements Cloneable {
 		} else {
 			PrimitivePattern midiTrigger = PrimitivePattern.forEach(
 					getPrimitivePattern(), 2);
-			System.out.println(midiTrigger);
 			midiTrigger.asMidiCommand(-1, ShortMessage.NOTE_OFF,
 					ShortMessage.NOTE_ON);
 			midiTrigger.asMidiMessage(midiTrigger, channels, notes, velocities);
