@@ -25,6 +25,8 @@ public class RealTimeScheduler extends Scheduler {
 
 			int waitInNanos = (int) (periodMillis
 					* minimumResolution.doubleValue() * 500000);
+			if (waitInNanos > 999999)
+				waitInNanos = 500000;
 
 			while (true) {
 				try {
