@@ -11,11 +11,9 @@ public class ThresholdFunction extends FollowerFunction {
 		this.threshold = threshold;
 	}
 
+	@Override
 	public double call(BigFraction t) {
-		double otherVal = super.call(t);
-		if (otherVal >= threshold)
-			return 1.0;
-		else
-			return 0.0;
+		double otherValue = super.call(t);
+		return (otherValue >= threshold) ? 1.0 : 0.0;
 	}
 }
