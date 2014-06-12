@@ -206,8 +206,8 @@ public class PatternTransformations {
 
 		pattern.extend("1111");
 
-		PrimitivePattern trigger = PrimitivePattern.forEach(
-				pattern.getPrimitivePattern(), 2);
+		ConcretePattern trigger = ConcretePattern.forEach(
+				pattern.getConcretePattern(), 2);
 		trigger.asStatefulCallable(CallableOnChange.fromCallables(inc1, inc2));
 		
 		pattern.addChild(trigger);

@@ -22,8 +22,9 @@ import oscP5.OscBundle;
 import oscP5.OscMessage;
 
 /**
- * The base class for patterns in Loom. Primitive Patterns may be discrete or
- * continuous, while compound patterns can contain a combination of both.
+ * The base class for patterns in Loom. ConcretePatterns may be discrete or
+ * continuous, while compound patterns (the default) can contain a combination
+ * of both.
  * 
  * @author chrisjr
  */
@@ -43,7 +44,7 @@ public class Pattern implements Cloneable {
 	protected double valueOffset = 0.0;
 	protected double valueScale = 1.0;
 
-	protected boolean isPrimitive;
+	protected boolean isConcrete;
 
 	public enum MappingType {
 		INTEGER, // inclusive range
@@ -87,19 +88,19 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern(Loom loom, EventCollection events,
-			ContinuousFunction function, boolean isPrimitive) {
+			ContinuousFunction function, boolean isConcrete) {
 		this.loom = loom;
-		this.isPrimitive = isPrimitive;
+		this.isConcrete = isConcrete;
 
-		if (this.loom != null && !isPrimitive)
+		if (this.loom != null && !isConcrete)
 			addSelfTo(loom);
 
 		if (events != null || function != null) {
 			this.children = new PatternCollection();
 			if (events != null)
-				addChild(new PrimitivePattern(loom, events));
+				addChild(new ConcretePattern(loom, events));
 			else if (function != null)
-				addChild(new PrimitivePattern(loom, function));
+				addChild(new ConcretePattern(loom, function));
 		}
 	}
 
@@ -132,11 +133,11 @@ public class Pattern implements Cloneable {
 		return children.get(i);
 	}
 
-	protected PrimitivePattern getPrimitivePattern() {
-		if (isPrimitivePattern()) {
-			return (PrimitivePattern) this;
+	protected ConcretePattern getConcretePattern() {
+		if (isConcretePattern()) {
+			return (ConcretePattern) this;
 		} else if (children != null && children.size() > 0) {
-			return (PrimitivePattern) getChild(0);
+			return (ConcretePattern) getChild(0);
 		} else {
 			throw new IllegalStateException("Pattern is empty!");
 		}
@@ -148,7 +149,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public ConcurrentMap<MappingType, Mapping<?>> getOutputMappings() {
-		return getPrimitivePattern().getOutputMappings();
+		return getConcretePattern().getOutputMappings();
 	}
 
 	protected Object getAs(MappingType mapping) throws IllegalStateException {
@@ -181,13 +182,13 @@ public class Pattern implements Cloneable {
 	 */
 	public Pattern extend(String string) {
 		EventCollection newEvents = EventCollection.fromString(string);
-		addChild(new PrimitivePattern(loom, newEvents));
+		addChild(new ConcretePattern(loom, newEvents));
 		return this;
 	}
 
 	public Pattern extend(Integer... values) {
 		EventCollection newEvents = EventCollection.fromInts(values);
-		addChild(new PrimitivePattern(loom, newEvents));
+		addChild(new ConcretePattern(loom, newEvents));
 		return this;
 	}
 
@@ -196,12 +197,12 @@ public class Pattern implements Cloneable {
 	}
 
 	public double getValueFor(Interval now) {
-		PrimitivePattern pattern = getPrimitivePattern();
+		ConcretePattern pattern = getConcretePattern();
 		if (pattern == null)
 			throw new IllegalStateException(
 					"Cannot get value from empty Pattern!");
 
-		return getPrimitivePattern().getValueFor(now);
+		return getConcretePattern().getValueFor(now);
 	}
 
 	public Interval getCurrentInterval() {
@@ -311,8 +312,8 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asMidiMessage(Pattern notes) {
-		PrimitivePattern commands = PrimitivePattern.forEach(
-				getPrimitivePattern(), 2);
+		ConcretePattern commands = ConcretePattern.forEach(
+				getConcretePattern(), 2);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
@@ -324,10 +325,10 @@ public class Pattern implements Cloneable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Pattern asMidiMessage(PrimitivePattern commands, Pattern channels,
+	public Pattern asMidiMessage(ConcretePattern commands, Pattern channels,
 			Pattern notes, Pattern velocities) {
 
-		if (isPrimitivePattern()) {
+		if (isConcretePattern()) {
 			putMapping(MappingType.MIDI_MESSAGE, new MidiMessageMapping(
 					commands, channels, notes, velocities));
 
@@ -361,7 +362,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asOscMessage(String addressPattern, int value) {
-		PrimitivePattern subPattern = new PrimitivePattern(loom, 1.0);
+		ConcretePattern subPattern = new ConcretePattern(loom, 1.0);
 		return asOscMessage(addressPattern, subPattern,
 				new IntMapping(0, value));
 	}
@@ -374,7 +375,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asOscMessage(String addressPattern,
-			PrimitivePattern subPattern, Mapping<?> mapping) {
+			ConcretePattern subPattern, Mapping<?> mapping) {
 		subPattern.asOscMessage(addressPattern, mapping);
 		addChild(subPattern);
 		return this;
@@ -390,7 +391,7 @@ public class Pattern implements Cloneable {
 
 	public Pattern asOscBundle(final NetAddress remoteAddress,
 			final Pattern... patterns) {
-		if (isPrimitivePattern()) {
+		if (isConcretePattern()) {
 			final PatternCollection oscPatterns = new PatternCollection();
 
 			boolean hasOscMapping = false;
@@ -425,8 +426,8 @@ public class Pattern implements Cloneable {
 					}));
 
 		} else {
-			PrimitivePattern bundleTrigger = PrimitivePattern
-					.forEach(getPrimitivePattern());
+			ConcretePattern bundleTrigger = ConcretePattern
+					.forEach(getConcretePattern());
 			bundleTrigger.asOscBundle(remoteAddress, patterns);
 
 			addChild(bundleTrigger);
@@ -488,8 +489,8 @@ public class Pattern implements Cloneable {
 	}
 
 	public Collection<Callable<?>> getExternalMappings() {
-		if (isPrimitivePattern())
-			return getPrimitivePattern().getExternalMappings();
+		if (isConcretePattern())
+			return getConcretePattern().getExternalMappings();
 
 		Collection<Callable<?>> callables = new ArrayList<Callable<?>>();
 		if (children != null) {
@@ -502,13 +503,13 @@ public class Pattern implements Cloneable {
 	}
 
 	public boolean hasMapping(MappingType mapping) {
-		return getPrimitivePattern().hasMapping(mapping);
+		return getConcretePattern().hasMapping(mapping);
 	}
 
 	public Boolean hasExternalMappings() {
 		boolean result = false;
-		if (isPrimitivePattern()) {
-			result = getPrimitivePattern().hasExternalMappings();
+		if (isConcretePattern()) {
+			result = getConcretePattern().hasExternalMappings();
 		} else {
 			if (children != null) {
 				for (Pattern pattern : children) {
@@ -523,8 +524,8 @@ public class Pattern implements Cloneable {
 		return result;
 	}
 
-	public boolean isPrimitivePattern() {
-		return isPrimitive;
+	public boolean isConcretePattern() {
+		return isConcrete;
 	}
 
 	public boolean isDiscretePattern() {
@@ -578,18 +579,18 @@ public class Pattern implements Cloneable {
 		events.add(new Event(longShort[0], 0.0));
 		events.add(new Event(longShort[1], 1.0));
 
-		PrimitivePattern primitive = new PrimitivePattern(loom, events);
-		primitive.loop();
-		primitive.setLoopInterval(interval);
+		ConcretePattern concrete = new ConcretePattern(loom, events);
+		concrete.loop();
+		concrete.setLoopInterval(interval);
 
 		final Pattern original = this;
 
 		StatefulCallable[] ops = CallableOnChange.fromTransform(transform,
 				original);
 
-		primitive.asStatefulCallable(ops);
+		concrete.asStatefulCallable(ops);
 
-		addChild(primitive);
+		addChild(concrete);
 
 		return this;
 	}
@@ -597,20 +598,20 @@ public class Pattern implements Cloneable {
 	public Pattern rewrite(EventRewriter eventRewriter) {
 		EventCollection events = getEvents();
 		if (events != null) {
-			getPrimitivePattern().events = eventRewriter.apply(events);
+			getConcretePattern().events = eventRewriter.apply(events);
 		}
 		return this;
 	}
 
 	public Pattern forEach(Callable<Void> callable) {
 
-		PrimitivePattern primitive = PrimitivePattern
-				.forEach(getPrimitivePattern());
+		ConcretePattern concrete = ConcretePattern
+				.forEach(getConcretePattern());
 
 		StatefulCallable[] ops = CallableOnChange.fromCallable(callable);
-		primitive.asStatefulCallable(ops);
+		concrete.asStatefulCallable(ops);
 
-		addSibling(primitive);
+		addSibling(concrete);
 
 		return this;
 	}
@@ -660,8 +661,8 @@ public class Pattern implements Cloneable {
 
 	public void setValueOffset(double valueOffset) {
 		this.valueOffset = valueOffset;
-		if (!isPrimitivePattern())
-			getPrimitivePattern().setValueOffset(valueOffset);
+		if (!isConcretePattern())
+			getConcretePattern().setValueOffset(valueOffset);
 	}
 
 	public double getValueScale() {
@@ -670,20 +671,20 @@ public class Pattern implements Cloneable {
 
 	public void setValueScale(double valueScale) {
 		this.valueScale = valueScale;
-		if (!isPrimitivePattern())
-			getPrimitivePattern().setValueScale(valueScale);
+		if (!isConcretePattern())
+			getConcretePattern().setValueScale(valueScale);
 	}
 
 	public EventCollection getEvents() {
 		EventCollection events = null;
-		if (isPrimitivePattern())
-			events = getPrimitivePattern().events;
+		if (isConcretePattern())
+			events = getConcretePattern().events;
 		return events;
 	}
 
 	public Pattern clone() throws CloneNotSupportedException {
-		if (isPrimitivePattern())
-			return getPrimitivePattern().clone();
+		if (isConcretePattern())
+			return getConcretePattern().clone();
 
 		Pattern copy = new Pattern(loom);
 

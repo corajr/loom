@@ -15,27 +15,27 @@ import org.chrisjr.loom.transforms.EventRewriter;
 import org.chrisjr.loom.transforms.SubdivideRewriter;
 import org.chrisjr.loom.util.MathOps;
 
-public class PrimitivePattern extends Pattern {
+public class ConcretePattern extends Pattern {
 	protected ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
 
 	protected EventCollection events = null;
 	protected ContinuousFunction function = null;
 
-	public PrimitivePattern(Loom loom) {
+	public ConcretePattern(Loom loom) {
 		super(loom, null, null, true);
 	}
 
-	public PrimitivePattern(Loom loom, double defaultValue) {
+	public ConcretePattern(Loom loom, double defaultValue) {
 		super(loom, null, null, true);
 		this.function = new ConstantFunction(defaultValue);
 	}
 
-	public PrimitivePattern(Loom loom, EventCollection events) {
+	public ConcretePattern(Loom loom, EventCollection events) {
 		super(loom, null, null, true);
 		this.events = events;
 	}
 
-	public PrimitivePattern(Loom loom, ContinuousFunction function) {
+	public ConcretePattern(Loom loom, ContinuousFunction function) {
 		super(loom, null, null, true);
 		this.function = function;
 	}
@@ -104,11 +104,11 @@ public class PrimitivePattern extends Pattern {
 		return value;
 	}
 
-	public static PrimitivePattern forEach(Pattern other) {
+	public static ConcretePattern forEach(Pattern other) {
 		return forEach(other, 1);
 	}
 
-	public static PrimitivePattern forEach(Pattern other, int divisions) {
+	public static ConcretePattern forEach(Pattern other, int divisions) {
 		if (!other.isDiscretePattern())
 			throw new IllegalArgumentException(
 					"Other pattern in forEach is not made of discrete events!");
@@ -117,12 +117,12 @@ public class PrimitivePattern extends Pattern {
 				Scheduler.minimumResolution.multiply(other.getTimeScale()).multiply(divisions),
 				divisions);
 
-		return new PrimitivePattern(other.loom, rewriter.apply(other
+		return new ConcretePattern(other.loom, rewriter.apply(other
 				.getEvents()));
 	}
 
-	public PrimitivePattern clone() throws CloneNotSupportedException {
-		PrimitivePattern copy = new PrimitivePattern(loom);
+	public ConcretePattern clone() throws CloneNotSupportedException {
+		ConcretePattern copy = new ConcretePattern(loom);
 		if (events != null)
 			copy.events = (EventCollection) events.clone();
 		else if (function != null)
@@ -132,7 +132,7 @@ public class PrimitivePattern extends Pattern {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("PrimitivePattern(");
+		sb.append("ConcretePattern(");
 		if (events != null)
 			sb.append(events.toString());
 		else if (function != null)
