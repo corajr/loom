@@ -41,7 +41,7 @@ public class NonRealTimeSchedulerTest {
 		final AtomicInteger totalCount = new AtomicInteger();
 
 		StatefulCallable[] ops = CallableOnChange
-				.fromCallable(new Callable<Void>() {
+				.fromCallables(new Callable<Void>() {
 					public Void call() {
 						totalCount.incrementAndGet();
 						return null;

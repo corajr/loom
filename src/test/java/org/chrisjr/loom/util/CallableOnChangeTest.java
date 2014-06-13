@@ -13,30 +13,69 @@ public class CallableOnChangeTest {
 
 	@Test
 	public void onlyOnce() throws Exception {
-		final AtomicInteger lastValue = new AtomicInteger();
 		final AtomicInteger totalCount = new AtomicInteger();
 
-		StatefulCallable one = new StatefulNoop(lastValue);
-		StatefulCallable add = new CallableOnChange(lastValue,
-				new Callable<Void>() {
+		StatefulCallable[] callables = CallableOnChange
+				.fromCallables(new Callable<Void>() {
 					public Void call() {
 						totalCount.incrementAndGet();
 						return null;
 					}
 				});
 
+		StatefulCallable one = callables[0];
+		StatefulCallable add = callables[1];
+
 		one.call();
 		add.call(); // +1 == 1
 		add.call(); // -- == 1
 
 		assertThat(totalCount.get(), is(equalTo(1)));
-		
+
 		one.call(); // reset
 		add.call(); // +1 == 2
 		add.call(); // -- == 2
 		add.call(); // -- == 2
 
 		assertThat(totalCount.get(), is(equalTo(2)));
+	}
+
+	@Test
+	public void onlyOnceWithTwoCallables() throws Exception {
+		final AtomicInteger count1 = new AtomicInteger();
+		final AtomicInteger count2 = new AtomicInteger();
+
+		Callable<Void> one = new Callable<Void>() {
+			public Void call() {
+				count1.incrementAndGet();
+				return null;
+			}
+		};
+
+		Callable<Void> two = new Callable<Void>() {
+			public Void call() {
+				count2.incrementAndGet();
+				return null;
+			}
+		};
+
+		StatefulCallable[] callables = CallableOnChange.fromCallables(one, two);
+
+		callables[1].call();
+		callables[1].call();
+		assertThat(count1.get(), is(equalTo(1)));
+		assertThat(count2.get(), is(equalTo(0)));
+
+		callables[2].call();
+		callables[1].call();
+		assertThat(count1.get(), is(equalTo(1)));
+		assertThat(count2.get(), is(equalTo(1)));
+
+		callables[0].call();
+		callables[2].call();
+
+		assertThat(count1.get(), is(equalTo(1)));
+		assertThat(count2.get(), is(equalTo(2)));
 	}
 
 }

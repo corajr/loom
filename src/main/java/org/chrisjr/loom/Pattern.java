@@ -417,7 +417,7 @@ public class Pattern implements Cloneable {
 			// works?
 
 			asStatefulCallable(CallableOnChange
-					.fromCallable(new Callable<Void>() {
+					.fromCallables(new Callable<Void>() {
 						public Void call() {
 							loom.getOscP5().send(original.asOscBundle(),
 									remoteAddress);
@@ -600,7 +600,7 @@ public class Pattern implements Cloneable {
 		ConcretePattern concrete = ConcretePattern
 				.forEach(getConcretePattern());
 
-		StatefulCallable[] ops = CallableOnChange.fromCallable(callable);
+		StatefulCallable[] ops = CallableOnChange.fromCallables(callable);
 		concrete.asStatefulCallable(ops);
 
 		addSibling(concrete);

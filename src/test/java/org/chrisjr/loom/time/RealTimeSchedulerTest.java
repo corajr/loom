@@ -53,7 +53,7 @@ public class RealTimeSchedulerTest {
 		 */
 
 		StatefulCallable[] ops = CallableOnChange
-				.fromCallable(new Callable<Void>() {
+				.fromCallables(new Callable<Void>() {
 					public Void call() {
 						long now = System.nanoTime();
 						queue.add(now);
@@ -116,11 +116,11 @@ public class RealTimeSchedulerTest {
 		double avgError = totalError / expectedTimesMillis.length;
 		assertThat(avgError / 1e6, is(closeTo(0, epsilon)));
 	}
-	
+
 	public void relativeTimings(int repeats) {
 		final ConcurrentLinkedQueue<Long> queue = new ConcurrentLinkedQueue<Long>();
 
-		long[] expectedGapsMillis = new long[(repeats*5) - 1];
+		long[] expectedGapsMillis = new long[(repeats * 5) - 1];
 		Arrays.fill(expectedGapsMillis, 200);
 
 		preparePattern(queue, testPattern);

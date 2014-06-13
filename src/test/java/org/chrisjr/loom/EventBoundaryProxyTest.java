@@ -30,13 +30,13 @@ public class EventBoundaryProxyTest {
 	}
 
 	@Test
-	public void noteOnQueries() {
+	public void noteOnAndOffQueries() {
 		double value = 0.0;
 
 		int noteOns = 0;
 		int noteOffs = 0;
 
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i <= 1000; i++) {
 			BigFraction start = new BigFraction(i, 1000);
 			Interval query = new Interval(start.subtract(halfMinimum),
 					start.add(halfMinimum));
@@ -53,8 +53,8 @@ public class EventBoundaryProxyTest {
 
 			value = 0.0;
 		}
-		assertThat(noteOns, is(equalTo(2)));
-		assertThat(noteOffs, is(equalTo(2)));
+		assertThat(noteOns, is(equalTo(4)));
+		assertThat(noteOffs, is(equalTo(3)));
 	}
 
 }
