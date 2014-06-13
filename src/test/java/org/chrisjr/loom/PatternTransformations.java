@@ -168,12 +168,12 @@ public class PatternTransformations {
 	}
 
 	@Test
-	public void forEach() {
+	public void onOnset() {
 		pattern.clear();
 		pattern.extend("1101");
 
 		final AtomicInteger counter = new AtomicInteger();
-		pattern.forEach(new Callable<Void>() {
+		pattern.onOnset(new Callable<Void>() {
 			public Void call() {
 				counter.incrementAndGet();
 				return null;
@@ -206,13 +206,13 @@ public class PatternTransformations {
 
 		pattern.extend("1111");
 
-		ConcretePattern trigger = ConcretePattern.forEach(
-				pattern.getConcretePattern(), 2);
+		ConcretePattern trigger = ConcretePattern.forEach(pattern
+				.getConcretePattern());
 		trigger.asStatefulCallable(CallableOnChange.fromCallables(inc1, inc2));
-		
+
 		pattern.addChild(trigger);
 
-		scheduler.setElapsedMillis(501);
+		scheduler.setElapsedMillis(502);
 		assertThat(counter1.get(), is(equalTo(2)));
 		assertThat(counter2.get(), is(equalTo(3)));
 		scheduler.setElapsedMillis(1000);

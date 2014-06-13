@@ -18,7 +18,7 @@ import org.chrisjr.loom.util.MathOps;
 public class ConcretePattern extends Pattern {
 	protected ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
 
-	protected EventCollection events = null;
+	protected EventQueryable events = null;
 	protected ContinuousFunction function = null;
 
 	public ConcretePattern(Loom loom) {
@@ -30,7 +30,7 @@ public class ConcretePattern extends Pattern {
 		this.function = new ConstantFunction(defaultValue);
 	}
 
-	public ConcretePattern(Loom loom, EventCollection events) {
+	public ConcretePattern(Loom loom, EventQueryable events) {
 		super(loom, null, null, true);
 		this.events = events;
 	}
@@ -103,28 +103,21 @@ public class ConcretePattern extends Pattern {
 	}
 
 	public static ConcretePattern forEach(Pattern other) {
-		return forEach(other, 1);
-	}
-
-	public static ConcretePattern forEach(Pattern other, int divisions) {
 		if (!other.isDiscretePattern())
 			throw new IllegalArgumentException(
 					"Other pattern in forEach is not made of discrete events!");
 
-		EventRewriter rewriter = new SubdivideRewriter(
-				Scheduler.minimumResolution.multiply(other.getTimeScale())
-						.multiply(divisions), divisions);
+		EventQueryable proxy = new EventBoundaryProxy(other);
 
-		return new ConcretePattern(other.loom,
-				rewriter.apply(other.getEvents()));
+		return new ConcretePattern(other.loom, proxy);
 	}
 
 	public ConcretePattern clone() throws CloneNotSupportedException {
 		ConcretePattern copy = new ConcretePattern(loom);
 		if (events != null)
-			copy.events = (EventCollection) events.clone();
+			copy.events = events;
 		else if (function != null)
-			copy.function = function; // immutable
+			copy.function = function;
 		return copy;
 	}
 

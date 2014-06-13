@@ -17,7 +17,7 @@ public class DiscretePatternTest {
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
-	
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -90,7 +90,7 @@ public class DiscretePatternTest {
 	@Test
 	public void canBeOffset() {
 		pattern.extend("0101");
-		pattern.setTimeOffset(new BigFraction(1,4));
+		pattern.setTimeOffset(new BigFraction(1, 4));
 
 		scheduler.setElapsedMillis(501);
 		assertThat(pattern.getValue(), is(equalTo(1.0)));

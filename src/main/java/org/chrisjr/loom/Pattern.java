@@ -312,8 +312,8 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asMidiMessage(Pattern notes) {
-		ConcretePattern commands = ConcretePattern.forEach(
-				getConcretePattern(), 2);
+		ConcretePattern commands = ConcretePattern
+				.forEach(getConcretePattern());
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
@@ -573,7 +573,8 @@ public class Pattern implements Cloneable {
 	public Pattern every(Interval interval, final Transform transform) {
 		EventCollection events = new EventCollection();
 
-		Interval[] longShort = Interval.shortenBy(interval, getMinimumResolution());
+		Interval[] longShort = Interval.shortenBy(interval,
+				getMinimumResolution());
 
 		events.add(new Event(longShort[0], 0.0));
 		events.add(new Event(longShort[1], 1.0));
@@ -602,7 +603,7 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
-	public Pattern forEach(Callable<Void> callable) {
+	public Pattern onOnset(Callable<Void> callable) {
 
 		ConcretePattern concrete = ConcretePattern
 				.forEach(getConcretePattern());
@@ -621,7 +622,7 @@ public class Pattern implements Cloneable {
 	}
 
 	// Time shifts
-	
+
 	public BigFraction getMinimumResolution() {
 		return Scheduler.minimumResolution.multiply(getTimeScale());
 	}
@@ -678,10 +679,11 @@ public class Pattern implements Cloneable {
 			getConcretePattern().setValueScale(valueScale);
 	}
 
-	public EventCollection getEvents() {
+	protected EventCollection getEvents() {
 		EventCollection events = null;
-		if (isConcretePattern())
-			events = getConcretePattern().events;
+		if (isConcretePattern()
+				&& getConcretePattern().events instanceof EventCollection)
+			events = (EventCollection) getConcretePattern().events;
 		return events;
 	}
 
