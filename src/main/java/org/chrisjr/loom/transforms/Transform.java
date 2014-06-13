@@ -1,5 +1,7 @@
 package org.chrisjr.loom.transforms;
 
+import java.util.concurrent.Callable;
+
 import org.chrisjr.loom.Pattern;
 
 public abstract class Transform {
@@ -16,4 +18,18 @@ public abstract class Transform {
 	 * @return an updated Pattern
 	 */
 	public abstract Pattern call(Pattern original);
+
+	public static Callable<Void> toCallable(final Transform transform,
+			final Pattern original) {
+		return new Callable<Void>() {
+			public Void call() {
+				transform.call(original);
+				return null;
+			}
+
+			public String toString() {
+				return transform.toString();
+			}
+		};
+	}
 }

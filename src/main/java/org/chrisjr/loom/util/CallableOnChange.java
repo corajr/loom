@@ -47,16 +47,7 @@ public class CallableOnChange extends StatefulCallable {
 
 	public static StatefulCallable[] fromTransform(final Transform transform,
 			final Pattern original) {
-		return fromCallable(new Callable<Void>() {
-			public Void call() {
-				transform.call(original);
-				return null;
-			}
-
-			public String toString() {
-				return transform.toString();
-			}
-		});
+		return fromCallable(Transform.toCallable(transform, original));
 	}
 
 	public String toString() {

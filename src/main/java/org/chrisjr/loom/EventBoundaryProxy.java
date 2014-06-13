@@ -8,23 +8,18 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 
 public class EventBoundaryProxy implements EventQueryable {
-	final private Pattern parent;
+	final private Pattern timeScaler;
 	final private EventQueryable parentEvents;
 	static final BigFraction DEFAULT_RESOLUTION = new BigFraction(1, 1000);
 
-	public EventBoundaryProxy(Pattern parent) {
-		this.parent = parent;
-		this.parentEvents = parent.getEvents();
-	}
-
-	public EventBoundaryProxy(EventQueryable parentEvents) {
-		this.parent = null;
+	public EventBoundaryProxy(Pattern timeScaler, EventQueryable parentEvents) {
+		this.timeScaler = timeScaler;
 		this.parentEvents = parentEvents;
 	}
 
 	public BigFraction getMinimumResolution() {
-		if (parent != null)
-			return parent.getMinimumResolution().divide(2);
+		if (timeScaler != null)
+			return timeScaler.getMinimumResolution().divide(2);
 		else
 			return DEFAULT_RESOLUTION.divide(2);
 	}

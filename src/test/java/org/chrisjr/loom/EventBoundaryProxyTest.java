@@ -22,7 +22,7 @@ public class EventBoundaryProxyTest {
 	@Before
 	public void setUp() throws Exception {
 		originalEvents = EventCollection.fromString("10");
-		eventProxy = new EventBoundaryProxy(originalEvents);
+		eventProxy = new EventBoundaryProxy(null, originalEvents);
 	}
 
 	@After

@@ -10,9 +10,6 @@ import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.Interval;
-import org.chrisjr.loom.time.Scheduler;
-import org.chrisjr.loom.transforms.EventRewriter;
-import org.chrisjr.loom.transforms.SubdivideRewriter;
 import org.chrisjr.loom.util.MathOps;
 
 public class ConcretePattern extends Pattern {
@@ -107,7 +104,7 @@ public class ConcretePattern extends Pattern {
 			throw new IllegalArgumentException(
 					"Other pattern in forEach is not made of discrete events!");
 
-		EventQueryable proxy = new EventBoundaryProxy(other);
+		EventQueryable proxy = new EventBoundaryProxy(other, other.getEvents());
 
 		return new ConcretePattern(other.loom, proxy);
 	}

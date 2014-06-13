@@ -134,7 +134,7 @@ public class PatternTransformations {
 		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
-		// System.out.println(pattern.getChild(1));
+//		System.out.println(pattern.getChild(1));
 
 		checkIfReversing(50);
 	}
@@ -186,20 +186,20 @@ public class PatternTransformations {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void forEachMultiple() {
-		final AtomicInteger counter1 = new AtomicInteger();
-		final AtomicInteger counter2 = new AtomicInteger();
+	public void noteOnAndOff() {
+		final AtomicInteger noteOffs = new AtomicInteger();
+		final AtomicInteger noteOns = new AtomicInteger();
 
-		Callable<Void> inc1 = new Callable<Void>() {
+		Callable<Void> noteOffInc = new Callable<Void>() {
 			public Void call() {
-				counter1.getAndIncrement();
+				noteOffs.getAndIncrement();
 				return null;
 			}
 		};
 
-		Callable<Void> inc2 = new Callable<Void>() {
+		Callable<Void> noteOnInc = new Callable<Void>() {
 			public Void call() {
-				counter2.getAndIncrement();
+				noteOns.getAndIncrement();
 				return null;
 			}
 		};
@@ -208,16 +208,16 @@ public class PatternTransformations {
 
 		ConcretePattern trigger = ConcretePattern.forEach(pattern
 				.getConcretePattern());
-		trigger.asStatefulCallable(CallableOnChange.fromCallables(inc1, inc2));
-
+		trigger.asStatefulCallable(CallableOnChange.fromCallables(noteOffInc,
+				noteOnInc));
 		pattern.addChild(trigger);
 
-		scheduler.setElapsedMillis(502);
-		assertThat(counter1.get(), is(equalTo(2)));
-		assertThat(counter2.get(), is(equalTo(3)));
+		scheduler.setElapsedMillis(501);
+		assertThat(noteOffs.get(), is(equalTo(2)));
+		assertThat(noteOns.get(), is(equalTo(3)));
 		scheduler.setElapsedMillis(1000);
-		assertThat(counter1.get(), is(equalTo(4)));
-		assertThat(counter2.get(), is(equalTo(4)));
+		assertThat(noteOffs.get(), is(equalTo(4)));
+		assertThat(noteOns.get(), is(equalTo(4)));
 
 	}
 }

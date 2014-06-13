@@ -573,24 +573,16 @@ public class Pattern implements Cloneable {
 	public Pattern every(Interval interval, final Transform transform) {
 		EventCollection events = new EventCollection();
 
-		Interval[] longShort = Interval.shortenBy(interval,
-				getMinimumResolution());
-
-		events.add(new Event(longShort[0], 0.0));
-		events.add(new Event(longShort[1], 1.0));
+		events.add(new Event(interval, 1.0));
 
 		ConcretePattern concrete = new ConcretePattern(loom, events);
 		concrete.loop();
 		concrete.setLoopInterval(interval);
 
 		final Pattern original = this;
-
-		StatefulCallable[] ops = CallableOnChange.fromTransform(transform,
-				original);
-
-		concrete.asStatefulCallable(ops);
-
 		addChild(concrete);
+
+		concrete.onRelease(Transform.toCallable(transform, original));
 
 		return this;
 	}
@@ -613,6 +605,19 @@ public class Pattern implements Cloneable {
 
 		addSibling(concrete);
 
+		return this;
+	}
+
+	public Pattern onRelease(Callable<Void> callable) {
+
+		ConcretePattern concrete = ConcretePattern
+				.forEach(getConcretePattern());
+
+		StatefulCallable[] ops = CallableOnChange.fromCallables(callable,
+				new CallableNoop());
+		concrete.asStatefulCallable(ops);
+
+		addSibling(concrete);
 		return this;
 	}
 
