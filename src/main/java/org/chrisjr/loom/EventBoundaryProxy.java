@@ -24,9 +24,9 @@ public class EventBoundaryProxy implements EventQueryable {
 
 	public BigFraction getMinimumResolution() {
 		if (parent != null)
-			return parent.getMinimumResolution();
+			return parent.getMinimumResolution().divide(2);
 		else
-			return DEFAULT_RESOLUTION;
+			return DEFAULT_RESOLUTION.divide(2);
 	}
 
 	@Override
@@ -40,10 +40,10 @@ public class EventBoundaryProxy implements EventQueryable {
 			BigFraction end = eInterval.getEnd();
 			BigFraction instant = getMinimumResolution();
 
-			Event noteOn = new Event(new Interval(start, start.add(instant)),
-					1.0);
-			Event noteOff = new Event(new Interval(end.subtract(instant), end),
-					0.5);
+			Event noteOn = new Event(new Interval(start.subtract(instant),
+					start.add(instant)), 1.0);
+			Event noteOff = new Event(new Interval(end.subtract(instant),
+					end.add(instant)), 0.5);
 
 			if (noteOn.containedBy(interval))
 				events.add(noteOn);

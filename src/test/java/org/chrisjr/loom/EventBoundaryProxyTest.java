@@ -16,7 +16,8 @@ public class EventBoundaryProxyTest {
 
 	private EventCollection originalEvents;
 	private EventQueryable eventProxy;
-	private BigFraction minimumResolution = new BigFraction(1, 2000);
+	private BigFraction minimumResolution = new BigFraction(1, 1000);
+	private BigFraction halfMinimum = minimumResolution.divide(2);
 
 	@Before
 	public void setUp() throws Exception {
@@ -37,8 +38,8 @@ public class EventBoundaryProxyTest {
 
 		for (int i = 0; i < 1000; i++) {
 			BigFraction start = new BigFraction(i, 1000);
-			BigFraction end = start.add(minimumResolution.divide(2));
-			Interval query = new Interval(start, end);
+			Interval query = new Interval(start.subtract(halfMinimum),
+					start.add(halfMinimum));
 
 			Collection<Event> events = eventProxy.getForInterval(query);
 			for (Event e : events) {
