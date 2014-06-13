@@ -1,7 +1,7 @@
 package org.chrisjr.loom.continuous;
 
-import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Pattern;
+import org.chrisjr.loom.time.Interval;
 
 public class MatchFunction extends FollowerFunction {
 	private final double matchValue;
@@ -13,8 +13,8 @@ public class MatchFunction extends FollowerFunction {
 	}
 
 	@Override
-	public double call(BigFraction t) {
-		double otherValue = super.call(t);
+	public double call(Interval i) {
+		double otherValue = super.call(i);
 		return (Math.abs(otherValue - matchValue) < EPSILON) ? 1.0 : 0.0;
 	}
 }

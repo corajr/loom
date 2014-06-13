@@ -624,6 +624,7 @@ public class Pattern implements Cloneable {
 
 		ConcretePattern concrete = ConcretePattern
 				.forEach(getConcretePattern());
+
 		ConcretePattern concrete2 = new ConcretePattern(loom,
 				new MatchFunction(concrete, 0.5));
 

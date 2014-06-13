@@ -46,8 +46,8 @@ public class EventBoundaryProxy implements EventQueryable {
 			Event[] triggers = new Event[] {
 					new Event(new Interval(start, startPlus), ONSET),
 					new Event(new Interval(endMinus, end), RELEASE) };
-//					new Event(new Interval(startPlus.add(instant),
-//							endMinus.subtract(instant)), SUSTAIN) };
+			// new Event(new Interval(startPlus.add(instant),
+			// endMinus.subtract(instant)), SUSTAIN) };
 
 			for (Event t : triggers) {
 				if (t.containedBy(interval))
