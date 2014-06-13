@@ -81,9 +81,7 @@ public class ConcretePattern extends Pattern {
 		if (this.function != null) {
 			try {
 				// midpoint of function within current interval
-				value = function.call(now.getStart());
-				value += function.call(now.getEnd());
-				value /= 2.0;
+				value = function.call(now);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -114,11 +112,11 @@ public class ConcretePattern extends Pattern {
 					"Other pattern in forEach is not made of discrete events!");
 
 		EventRewriter rewriter = new SubdivideRewriter(
-				Scheduler.minimumResolution.multiply(other.getTimeScale()).multiply(divisions),
-				divisions);
+				Scheduler.minimumResolution.multiply(other.getTimeScale())
+						.multiply(divisions), divisions);
 
-		return new ConcretePattern(other.loom, rewriter.apply(other
-				.getEvents()));
+		return new ConcretePattern(other.loom,
+				rewriter.apply(other.getEvents()));
 	}
 
 	public ConcretePattern clone() throws CloneNotSupportedException {
