@@ -11,7 +11,6 @@ import javax.sound.midi.*;
 import netP5.NetAddress;
 
 import org.apache.commons.math3.fraction.BigFraction;
-
 import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.*;
@@ -544,6 +543,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern reverse() {
+		System.out.println("reversing");
 		return speed(-1);
 	}
 
@@ -575,14 +575,22 @@ public class Pattern implements Cloneable {
 
 		events.add(new Event(interval, 1.0));
 
-		ConcretePattern concrete = new ConcretePattern(loom, events);
+		final ConcretePattern concrete = new ConcretePattern(loom, events);
 		concrete.loop();
 		concrete.setLoopInterval(interval);
 
 		final Pattern original = this;
-		addChild(concrete);
 
-		concrete.onRelease(Transform.toCallable(transform, original));
+		addChild(concrete);
+		final Callable<Void> doTransform = Transform.toCallable(transform,
+				original);
+
+		concrete.onRelease(new Callable<Void>() {
+			public Void call() throws Exception {
+				doTransform.call();
+				return null;
+			}
+		});
 
 		return this;
 	}
@@ -600,10 +608,14 @@ public class Pattern implements Cloneable {
 		ConcretePattern concrete = ConcretePattern
 				.forEach(getConcretePattern());
 
+		ConcretePattern concrete2 = new ConcretePattern(loom,
+				new MatchFunction(concrete, 1.0));
+
 		StatefulCallable[] ops = CallableOnChange.fromCallables(callable);
-		concrete.asStatefulCallable(ops);
+		concrete2.asStatefulCallable(ops);
 
 		addSibling(concrete);
+		addSibling(concrete2);
 
 		return this;
 	}
@@ -612,12 +624,15 @@ public class Pattern implements Cloneable {
 
 		ConcretePattern concrete = ConcretePattern
 				.forEach(getConcretePattern());
+		ConcretePattern concrete2 = new ConcretePattern(loom,
+				new MatchFunction(concrete, 0.5));
 
-		StatefulCallable[] ops = CallableOnChange.fromCallables(callable,
-				new CallableNoop());
-		concrete.asStatefulCallable(ops);
+		StatefulCallable[] ops = CallableOnChange.fromCallables(callable);
+		concrete2.asStatefulCallable(ops);
 
 		addSibling(concrete);
+		addSibling(concrete2);
+
 		return this;
 	}
 
@@ -629,7 +644,7 @@ public class Pattern implements Cloneable {
 	// Time shifts
 
 	public BigFraction getMinimumResolution() {
-		return Scheduler.minimumResolution.multiply(getTimeScale());
+		return Scheduler.minimumResolution.multiply(getTimeScale().abs());
 	}
 
 	public BigFraction getTimeOffset() {

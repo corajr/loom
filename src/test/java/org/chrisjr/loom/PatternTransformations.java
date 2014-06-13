@@ -111,6 +111,7 @@ public class PatternTransformations {
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 4; i++) {
 				long time = (j * beatLength * 4) + (beatLength * i) + 1;
+				System.out.println(time);
 				scheduler.setElapsedMillis(time);
 				assertThat(pattern.asInt(), is(equalTo((i + j) % 2)));
 			}
@@ -119,8 +120,7 @@ public class PatternTransformations {
 
 	@Test
 	public void reverseEveryCycle() {
-		Transform reverse = new Transforms.Reverse();
-		pattern.every(1, reverse);
+		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
 
@@ -134,20 +134,20 @@ public class PatternTransformations {
 		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
-//		System.out.println(pattern.getChild(1));
+		// System.out.println(pattern.getChild(1));
 
 		checkIfReversing(50);
 	}
 
 	@Test
 	public void slowAndReverse() {
-		pattern.speed(0.1);
+		pattern.speed(0.5);
 
 		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
 
-		checkIfReversing(2500);
+		checkIfReversing(500);
 	}
 
 	@Test
@@ -174,6 +174,23 @@ public class PatternTransformations {
 
 		final AtomicInteger counter = new AtomicInteger();
 		pattern.onOnset(new Callable<Void>() {
+			public Void call() {
+				counter.incrementAndGet();
+				return null;
+			}
+		});
+
+		scheduler.setElapsedMillis(1001);
+		assertThat(counter.get(), is(equalTo(4)));
+	}
+
+	@Test
+	public void onRelease() {
+		pattern.clear();
+		pattern.extend("1101");
+
+		final AtomicInteger counter = new AtomicInteger();
+		pattern.onRelease(new Callable<Void>() {
 			public Void call() {
 				counter.incrementAndGet();
 				return null;
