@@ -311,9 +311,10 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asMidiMessage(Pattern notes) {
-		ConcretePattern commands = ConcretePattern
-				.forEach(getConcretePattern());
+		ConcretePattern commands = ConcretePattern.forEach(notes);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
+
+		addChild(commands);
 
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
 		ContinuousFunction velocityFunc = new ThresholdFunction(commands, 1.0);
@@ -323,31 +324,25 @@ public class Pattern implements Cloneable {
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Pattern asMidiMessage(ConcretePattern commands, Pattern channels,
+	public Pattern asMidiMessage(Pattern commands, Pattern channels,
 			Pattern notes, Pattern velocities) {
 
-		if (isConcretePattern()) {
-			putMapping(MappingType.MIDI_MESSAGE, new MidiMessageMapping(
-					commands, channels, notes, velocities));
+		putMapping(MappingType.MIDI_MESSAGE, new MidiMessageMapping(commands,
+				channels, notes, velocities));
 
-			final Pattern original = this;
+		final Pattern original = this;
 
-			Callable<Void> sendMidi = new Callable<Void>() {
-				public Void call() {
-					MidiMessage mess = original.asMidiMessage();
-					if (mess != null)
-						loom.getMidiBus().sendMessage(mess);
-					return null;
-				}
-			};
-			asStatefulCallable(CallableOnChange.fromCallables(sendMidi,
-					sendMidi));
-		} else {
-			commands.asMidiMessage(commands, channels, notes, velocities);
+		Callable<Void> sendMidi = new Callable<Void>() {
+			public Void call() {
+				MidiMessage mess = original.asMidiMessage();
+				if (mess != null)
+					loom.getMidiBus().sendMessage(mess);
+				return null;
+			}
+		};
 
-			addChild(commands);
-		}
+		commands.asStatefulCallable(CallableOnChange.fromCallables(sendMidi,
+				sendMidi));
 
 		return this;
 	}
@@ -603,8 +598,8 @@ public class Pattern implements Cloneable {
 	}
 
 	private Pattern onBoundary(double boundaryType, Callable<Void> callable) {
-		ConcretePattern concrete = ConcretePattern
-				.forEach(getConcretePattern(), parent);
+		ConcretePattern concrete = ConcretePattern.forEach(
+				getConcretePattern(), parent);
 
 		ConcretePattern concrete2 = new ConcretePattern(loom,
 				new MatchFunction(concrete, boundaryType));
@@ -682,8 +677,8 @@ public class Pattern implements Cloneable {
 
 	protected EventCollection getEvents() {
 		EventCollection events = null;
-		if (isConcretePattern()
-				&& getConcretePattern().events instanceof EventCollection)
+		ConcretePattern pat = getConcretePattern();
+		if (pat != null && pat.events instanceof EventCollection)
 			events = (EventCollection) getConcretePattern().events;
 		return events;
 	}

@@ -37,7 +37,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 		loom.setMidiBus(myBus);
 		loom.play();
-		
+
 		// allow a little time to initialize midi
 		Thread.sleep(20);
 	}
@@ -51,8 +51,9 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	public void noteOnAndOffMessagesSent() throws InterruptedException {
 		pattern.extend("0242");
 
-		pattern.asMidiNote(60, 64, 67);
+		pattern.loop();
 
+		pattern.asMidiNote(60, 64, 67);
 		pattern.asMidiMessage(pattern);
 
 		scheduler.setElapsedMillis(251);
@@ -62,12 +63,19 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		assertThat(notesOnReceived.get(), is(equalTo(2)));
 		assertThat(notesOffReceived.get(), is(equalTo(1)));
 
-		scheduler.setElapsedMillis(1000);
+		scheduler.setElapsedMillis(999);
 
 		Thread.sleep(1);
 
 		assertThat(notesOnReceived.get(), is(equalTo(4)));
 		assertThat(notesOffReceived.get(), is(equalTo(4)));
+
+		Thread.sleep(1);
+
+		scheduler.setElapsedMillis(2000);
+
+		assertThat(notesOnReceived.get(), is(equalTo(8)));
+		assertThat(notesOffReceived.get(), is(equalTo(8)));
 	}
 
 	public void midiMessage(MidiMessage message, long timeStamp) {

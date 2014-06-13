@@ -16,7 +16,7 @@ public class MidiMessageMapping implements Mapping<MidiMessage> {
 
 		int command = patterns[0].asMidiCommand();
 
-		if (command == -1)
+		if (command < 0x80)
 			return null;
 		int channel = patterns[1].asMidiChannel();
 		int data1 = patterns[2].asMidiData1();

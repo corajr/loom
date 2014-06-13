@@ -8,7 +8,7 @@ MidiBus myBus;
 void setup() {
   size(400,400);
   
-  loom = new Loom(this);
+  loom = new Loom(this, 120);
   pattern = new Pattern(loom);
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
   

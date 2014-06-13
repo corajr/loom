@@ -8,7 +8,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
-import org.chrisjr.loom.transforms.Transform;
 import org.chrisjr.loom.transforms.Transforms;
 import org.chrisjr.loom.util.CallableOnChange;
 import org.junit.After;

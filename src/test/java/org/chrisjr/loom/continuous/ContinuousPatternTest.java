@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.*;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
-import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.time.*;
 import org.junit.After;
 import org.junit.Before;
