@@ -16,7 +16,8 @@ import org.chrisjr.loom.time.Interval;
 // TODO using a map means no overlapping events in a collection. Is this
 // desirable?
 
-public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
+public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
+		implements EventQueryable {
 	private static final long serialVersionUID = -4270420021705392093L;
 
 	/**
@@ -116,18 +117,9 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event> {
 	}
 
 	public Collection<Event> getForInterval(Interval interval) {
-		BigFraction queryStart = interval.getStart();
-		BigFraction queryEnd = interval.getEnd();
-
 		List<Event> events = new ArrayList<Event>();
 		for (Event e : this.values()) {
-			BigFraction start = e.getInterval().getStart();
-			BigFraction end = e.getInterval().getEnd();
-
-			boolean startsBeforeOrAtQueryEnd = start.compareTo(queryEnd) <= 0;
-			boolean endsAfterQueryStart = end.compareTo(queryStart) > 0;
-
-			if (startsBeforeOrAtQueryEnd && endsAfterQueryStart)
+			if (e.containedBy(interval))
 				events.add(e);
 		}
 		return events;

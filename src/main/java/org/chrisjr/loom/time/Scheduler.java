@@ -46,7 +46,8 @@ public abstract class Scheduler {
 	protected BigFraction getNow() {
 		if (state == State.STOPPED)
 			throw new IllegalStateException(
-					"Tried to retrieve a new time while the scheduler was stopped!");
+					"Tried to retrieve the time while stopped! "
+							+ "Did you remember to call loom.play()?");
 
 		long elapsed = getElapsedMillis();
 

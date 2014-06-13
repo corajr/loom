@@ -1,13 +1,14 @@
 package org.chrisjr.loom;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 
 /**
- * @author chrisjr
- * An Event has a start, an end, and a value. The start and end are expressed
- * as fractions of a cycle, and the value is constant during that time.
+ * @author chrisjr An Event has a start, an end, and a value. The start and end
+ *         are expressed as fractions of a cycle, and the value is constant
+ *         during that time.
  * 
- * (For "events" that vary over time, use a ContinuousPattern.)
+ *         (For "events" that vary over time, use a ContinuousPattern.)
  */
 public class Event {
 	final private Interval interval;
@@ -25,7 +26,20 @@ public class Event {
 	public double getValue() {
 		return value;
 	}
-	
+
+	public boolean containedBy(Interval queryInterval) {
+		BigFraction queryStart = queryInterval.getStart();
+		BigFraction queryEnd = queryInterval.getEnd();
+
+		BigFraction start = interval.getStart();
+		BigFraction end = interval.getEnd();
+
+		boolean startsBeforeOrAtQueryEnd = start.compareTo(queryEnd) <= 0;
+		boolean endsAfterQueryStart = end.compareTo(queryStart) > 0;
+
+		return startsBeforeOrAtQueryEnd && endsAfterQueryStart;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -59,6 +73,7 @@ public class Event {
 	}
 
 	public String toString() {
-		return "Event(" + interval.toString() + " == " + String.valueOf(value) + ")";
+		return "Event(" + interval.toString() + " == " + String.valueOf(value)
+				+ ")";
 	}
 }

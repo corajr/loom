@@ -573,8 +573,7 @@ public class Pattern implements Cloneable {
 	public Pattern every(Interval interval, final Transform transform) {
 		EventCollection events = new EventCollection();
 
-		Interval[] longShort = Interval.shortenBy(interval,
-				Scheduler.minimumResolution.multiply(getTimeScale()));
+		Interval[] longShort = Interval.shortenBy(interval, getMinimumResolution());
 
 		events.add(new Event(longShort[0], 0.0));
 		events.add(new Event(longShort[1], 1.0));
@@ -622,6 +621,10 @@ public class Pattern implements Cloneable {
 	}
 
 	// Time shifts
+	
+	public BigFraction getMinimumResolution() {
+		return Scheduler.minimumResolution.multiply(getTimeScale());
+	}
 
 	public BigFraction getTimeOffset() {
 		return timeOffset;
