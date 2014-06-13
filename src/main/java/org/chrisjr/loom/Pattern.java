@@ -575,22 +575,14 @@ public class Pattern implements Cloneable {
 
 		events.add(new Event(interval, 1.0));
 
-		final ConcretePattern concrete = new ConcretePattern(loom, events);
+		ConcretePattern concrete = new ConcretePattern(loom, events);
 		concrete.loop();
 		concrete.setLoopInterval(interval);
 
 		final Pattern original = this;
 
 		addChild(concrete);
-		final Callable<Void> doTransform = Transform.toCallable(transform,
-				original);
-
-		concrete.onRelease(new Callable<Void>() {
-			public Void call() throws Exception {
-				doTransform.call();
-				return null;
-			}
-		});
+		concrete.onRelease(Transform.toCallable(transform, original));
 
 		return this;
 	}
@@ -604,32 +596,21 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern onOnset(Callable<Void> callable) {
-
-		ConcretePattern concrete = ConcretePattern
-				.forEach(getConcretePattern());
-
-		ConcretePattern concrete2 = new ConcretePattern(loom,
-				new MatchFunction(concrete, 1.0));
-
-		StatefulCallable[] ops = CallableOnChange.fromCallables(callable);
-		concrete2.asStatefulCallable(ops);
-
-		addSibling(concrete);
-		addSibling(concrete2);
-
-		return this;
+		return onBoundary(EventBoundaryProxy.ONSET, callable);
 	}
 
 	public Pattern onRelease(Callable<Void> callable) {
+		return onBoundary(EventBoundaryProxy.RELEASE, callable);
+	}
 
+	private Pattern onBoundary(double boundaryType, Callable<Void> callable) {
 		ConcretePattern concrete = ConcretePattern
 				.forEach(getConcretePattern());
 
 		ConcretePattern concrete2 = new ConcretePattern(loom,
-				new MatchFunction(concrete, 0.5));
+				new MatchFunction(concrete, boundaryType));
 
-		StatefulCallable[] ops = CallableOnChange.fromCallables(callable);
-		concrete2.asStatefulCallable(ops);
+		concrete2.asStatefulCallable(CallableOnChange.fromCallables(callable));
 
 		addSibling(concrete);
 		addSibling(concrete2);
