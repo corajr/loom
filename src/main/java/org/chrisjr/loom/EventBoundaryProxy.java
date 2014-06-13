@@ -14,7 +14,6 @@ public class EventBoundaryProxy implements EventQueryable {
 
 	public static final double ONSET = 1.0;
 	public static final double RELEASE = 0.5;
-	public static final double SUSTAIN = 0.0;
 
 	public EventBoundaryProxy(Pattern timeScaler, EventQueryable parentEvents) {
 		this.timeScaler = timeScaler;
@@ -46,8 +45,6 @@ public class EventBoundaryProxy implements EventQueryable {
 			Event[] triggers = new Event[] {
 					new Event(new Interval(start, startPlus), ONSET),
 					new Event(new Interval(endMinus, end), RELEASE) };
-			// new Event(new Interval(startPlus.add(instant),
-			// endMinus.subtract(instant)), SUSTAIN) };
 
 			for (Event t : triggers) {
 				if (t.containedBy(interval))

@@ -543,7 +543,6 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern reverse() {
-		System.out.println("reversing");
 		return speed(-1);
 	}
 
@@ -605,7 +604,7 @@ public class Pattern implements Cloneable {
 
 	private Pattern onBoundary(double boundaryType, Callable<Void> callable) {
 		ConcretePattern concrete = ConcretePattern
-				.forEach(getConcretePattern());
+				.forEach(getConcretePattern(), parent);
 
 		ConcretePattern concrete2 = new ConcretePattern(loom,
 				new MatchFunction(concrete, boundaryType));

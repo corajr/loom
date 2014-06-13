@@ -100,11 +100,16 @@ public class ConcretePattern extends Pattern {
 	}
 
 	public static ConcretePattern forEach(Pattern other) {
+		return forEach(other, null);
+	}
+
+	public static ConcretePattern forEach(Pattern other, Pattern parent) {
 		if (!other.isDiscretePattern())
 			throw new IllegalArgumentException(
 					"Other pattern in forEach is not made of discrete events!");
 
-		EventQueryable proxy = new EventBoundaryProxy(other, other.getEvents());
+		EventQueryable proxy = new EventBoundaryProxy(parent != null ? parent
+				: other, other.getEvents());
 
 		return new ConcretePattern(other.loom, proxy);
 	}

@@ -111,7 +111,6 @@ public class PatternTransformations {
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 4; i++) {
 				long time = (j * beatLength * 4) + (beatLength * i) + 1;
-				System.out.println(time);
 				scheduler.setElapsedMillis(time);
 				assertThat(pattern.asInt(), is(equalTo((i + j) % 2)));
 			}
@@ -134,7 +133,6 @@ public class PatternTransformations {
 		pattern.every(1, new Transforms.Reverse());
 
 		pattern.loop();
-		// System.out.println(pattern.getChild(1));
 
 		checkIfReversing(50);
 	}
