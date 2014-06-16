@@ -314,13 +314,16 @@ public class Pattern implements Cloneable {
 		ConcretePattern commands = ConcretePattern.forEach(notes);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
-		addChild(commands);
-
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
-		ContinuousFunction velocityFunc = new ThresholdFunction(commands, 1.0);
 
+		ContinuousFunction velocityFunc = new ThresholdFunction(commands, 1.0);
 		Pattern velocities = (new Pattern(loom, velocityFunc)).asMidiData2(0,
 				127);
+
+		addChild(commands);
+		addChild(channels);
+		addChild(velocities);
+
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
 
