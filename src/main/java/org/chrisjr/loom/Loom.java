@@ -27,8 +27,12 @@
 
 package org.chrisjr.loom;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.sound.midi.MidiMessage;
 
+import org.chrisjr.loom.recording.*;
 import org.chrisjr.loom.time.*;
 
 import oscP5.OscMessage;
@@ -130,6 +134,34 @@ public class Loom {
 		scheduler.stop();
 	}
 
+	public void record() throws IOException {
+		record("osc", "midi");
+	}
+
+	public void record(String oscFilePrefix, String midiFilePrefix)
+			throws IOException {
+		String timestamp = Long.toString(System.currentTimeMillis());
+
+		File oscFile = null;
+		File midiFile = null;
+
+		if (oscFilePrefix != null)
+			oscFile = myParent.dataFile(oscFilePrefix + timestamp + ".osc");
+		if (midiFilePrefix != null)
+			midiFile = myParent.dataFile(midiFilePrefix + timestamp + ".mid");
+
+		record(oscFile, midiFile);
+	}
+
+	public void record(File oscFile, File midiFile) throws IOException {
+		if (oscFile != null)
+			setOscP5(new OscP5Recorder(this, oscFile));
+		if (midiFile != null)
+			setMidiBus(new MidiBusRecorder(this, midiFile));
+
+		play();
+	}
+
 	private static int periodToBpm(long period) {
 		return (int) (240000.0 / period);
 	}
@@ -138,7 +170,7 @@ public class Loom {
 		return (long) (240000.0 / bpm);
 	}
 
-	public int getBPM(int bpm) {
+	public int getBPM() {
 		return periodToBpm(getPeriod());
 	}
 
@@ -156,7 +188,7 @@ public class Loom {
 
 	public OscP5 getOscP5() {
 		if (oscP5 == null)
-			oscP5 = new OscP5(this, 12000);
+			throw new IllegalStateException("OscP5 not set!");
 		return oscP5;
 	}
 
@@ -186,6 +218,10 @@ public class Loom {
 
 	public void rawMidi(byte[] raw) {
 		// MidiTools.printMidiRaw(raw);
+	}
+
+	public PApplet getParent() {
+		return myParent;
 	}
 
 	public void dispose() {

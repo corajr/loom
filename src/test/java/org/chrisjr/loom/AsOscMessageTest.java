@@ -34,7 +34,9 @@ public class AsOscMessageTest {
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
-		
+
+		loom.setOscP5(new OscP5(loom, 12000));
+
 		loom.play();
 	}
 
@@ -50,7 +52,7 @@ public class AsOscMessageTest {
 		System.out.print(" ");
 		System.out.println(theOscMessage.get(0).intValue());
 	}
-	
+
 	void waitForEvents(int expected, int timeout) {
 		int millisPassed = 0;
 		while (eventsCounter.get() < expected && millisPassed < timeout) {
@@ -69,10 +71,10 @@ public class AsOscMessageTest {
 		OscMessage myMessage = new OscMessage("/test");
 		myMessage.add(123);
 		oscP5.send(myMessage, myRemoteLocation);
-		
+
 		waitForEvents(1, 100);
 	}
-	
+
 	@Test
 	public void receive() {
 		pattern.extend("1101");
@@ -82,7 +84,7 @@ public class AsOscMessageTest {
 
 		pattern.addChild(messagePat);
 		pattern.asOscBundle(myRemoteLocation);
-		
+
 		scheduler.setElapsedMillis(1001);
 		waitForEvents(4, 200);
 	}
