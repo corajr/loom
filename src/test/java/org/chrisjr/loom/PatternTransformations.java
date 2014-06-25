@@ -124,7 +124,7 @@ public class PatternTransformations {
 	@Test
 	public void shiftLeftEveryHalfCycle() {
 		pattern.loop();
-		pattern.every(0.5, new Transforms.Shift(1, 4));
+		pattern.every(0.5, new Transforms.Shift(-1, 4));
 
 		checkIfShifting(250, -1, 2);
 	}
@@ -132,7 +132,7 @@ public class PatternTransformations {
 	@Test
 	public void shiftLeftEveryOtherCycle() {
 		pattern.loop();
-		pattern.every(2, new Transforms.Shift(1, 4));
+		pattern.every(2, new Transforms.Shift(-1, 4));
 
 		checkIfShifting(250, -1, 8);
 	}
@@ -175,6 +175,15 @@ public class PatternTransformations {
 		pattern.loop();
 
 		checkIfReversing(250, 4);
+	}
+
+	@Test
+	public void slowAndReverseEveryCycle() {
+		pattern.speed(0.1);
+		pattern.every(1, new Transforms.Reverse());
+		pattern.loop();
+
+		checkIfReversing(2500, 4);
 	}
 
 	@Test

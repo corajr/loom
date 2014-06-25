@@ -600,13 +600,10 @@ public class Pattern implements Cloneable {
 		return every(new BigFraction(cycles), transform);
 	}
 
-	public Pattern every(BigFraction fraction, Transform transform) {
-		return every(new Interval(BigFraction.ZERO, fraction), transform);
-	}
-
-	public Pattern every(Interval interval, final Transform transform) {
+	public Pattern every(BigFraction fraction, final Transform transform) {
 		EventCollection events = new EventCollection();
 
+		Interval interval = new Interval(BigFraction.ZERO, fraction);
 		events.add(new Event(interval, 1.0));
 
 		Pattern trigger = new Pattern(loom, events);
