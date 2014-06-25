@@ -205,9 +205,13 @@ public class Pattern implements Cloneable {
 	}
 
 	public Interval getCurrentInterval() {
+		return getCurrentInterval(false);
+	}
+
+	public Interval getCurrentInterval(boolean ignoreOffset) {
 		Interval interval;
 		if (this.parent != null) {
-			interval = parent.getCurrentInterval();
+			interval = parent.getCurrentInterval(true);
 		} else {
 			interval = loom.getCurrentInterval();
 		}
@@ -216,7 +220,9 @@ public class Pattern implements Cloneable {
 			interval = interval.multiply(timeScale);
 		else
 			interval = interval.multiplyMod(timeScale, loopInterval);
-		interval = interval.add(timeOffset);
+
+		if (!ignoreOffset)
+			interval = interval.add(timeOffset);
 
 		if (isLooping) {
 			interval = interval.modulo(loopInterval);

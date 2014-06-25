@@ -83,14 +83,7 @@ public class PatternTransformations {
 			for (int i = 0; i < 4; i++) {
 				int time = (j * 1000) + (250 * i);
 				scheduler.setElapsedMillis(time);
-				System.out.print(time);
-				System.out.print(" ");
-				System.out.print(pattern.getTimeOffset());
-				System.out.print(" ");
-				System.out.print(pattern.asInt());
-				System.out.print(" ");
 				int expected = (i + j) % 4;
-				System.out.println(expected);
 				assertThat(pattern.asInt(), is(equalTo(expected)));
 			}
 		}
