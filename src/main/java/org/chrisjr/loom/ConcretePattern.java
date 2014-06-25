@@ -2,6 +2,7 @@ package org.chrisjr.loom;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -58,6 +59,7 @@ public class ConcretePattern extends Pattern {
 	 * 
 	 * @return true if external mappings are present
 	 */
+	@Override
 	public Boolean hasExternalMappings() {
 		boolean result = false;
 		for (MappingType mapping : externalMappings) {
@@ -69,10 +71,12 @@ public class ConcretePattern extends Pattern {
 		return result;
 	}
 
+	@Override
 	public boolean hasMapping(MappingType mapping) {
 		return outputMappings.containsKey(mapping);
 	}
 
+	@Override
 	public double getValueFor(Interval now) {
 		double value = defaultValue;
 		if (this.function != null) {
@@ -114,15 +118,19 @@ public class ConcretePattern extends Pattern {
 		return new ConcretePattern(other.loom, proxy);
 	}
 
+	@Override
 	public ConcretePattern clone() throws CloneNotSupportedException {
 		ConcretePattern copy = new ConcretePattern(loom);
 		if (events != null)
 			copy.events = events;
 		else if (function != null)
 			copy.function = function;
+
+		copy.outputMappings.putAll(outputMappings);
 		return copy;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("ConcretePattern(");

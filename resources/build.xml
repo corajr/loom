@@ -157,10 +157,7 @@ ${line}
 		<fileset dir="${project.lib}" includes="**/*.jar" />
        	<pathelement location="${project.bin}"/>
        	<pathelement location="${classpath.local.location}/core.jar"/>
-       	<pathelement location="./resources/libs/junit.jar"/>
-       	<pathelement location="./resources/libs/oscP5.jar"/>
-       	<pathelement location="./resources/libs/themidibus.jar"/>
-       	<pathelement location="./resources/libs/hamcrest-all-1.3.jar"/>
+		<fileset dir="./resources/libs" includes="**/*.jar" />
        </classpath>
        <batchtest>
        	<fileset dir="src/test/java" includes="**/*.java" />

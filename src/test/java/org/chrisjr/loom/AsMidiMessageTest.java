@@ -78,11 +78,12 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		assertThat(notesOffReceived.get(), is(equalTo(8)));
 	}
 
+	@Override
 	public void midiMessage(MidiMessage message, long timeStamp) {
 		byte[] data = message.getMessage();
-		if ((int) (data[0] & 0x90) == ShortMessage.NOTE_ON)
+		if ((data[0] & 0x90) == ShortMessage.NOTE_ON)
 			notesOnReceived.getAndIncrement();
-		else if ((int) (data[0] & 0x80) == ShortMessage.NOTE_OFF)
+		else if ((data[0] & 0x80) == ShortMessage.NOTE_OFF)
 			notesOffReceived.getAndIncrement();
 		System.out.print("recv ");
 		MidiTools.printMidiRaw(data);

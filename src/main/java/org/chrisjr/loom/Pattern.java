@@ -261,6 +261,32 @@ public class Pattern implements Cloneable {
 		return asMidiMessage(this);
 	}
 
+	/**
+	 * Set a mapping from the pattern's events to a percussive sound.
+	 * 
+	 * @param sound
+	 *            a MIDI percussion instrument
+	 * @return the updated pattern
+	 */
+	public Pattern asMidi(MidiTools.Percussion sound) {
+		ConcretePattern commands = ConcretePattern.forEach(this);
+		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
+
+		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(9);
+		Pattern notes = (new Pattern(loom, 1.0))
+				.asMidiData1(0, sound.getNote());
+
+		ContinuousFunction velocityFunc = new ThresholdFunction(commands, 1.0);
+		Pattern velocities = (new Pattern(loom, velocityFunc)).asMidiData2(0,
+				127);
+
+		addChild(commands);
+		addChild(channels);
+		addChild(velocities);
+
+		return asMidiMessage(commands, channels, notes, velocities);
+	}
+
 	public Pattern asMidiCommand(Integer... commands) {
 		putMapping(MappingType.MIDI_COMMAND, new MidiCommandMapping(commands));
 		return this;
@@ -336,6 +362,7 @@ public class Pattern implements Cloneable {
 		final Pattern original = this;
 
 		Callable<Void> sendMidi = new Callable<Void>() {
+			@Override
 			public Void call() {
 				MidiMessage mess = original.asMidiMessage();
 				if (mess != null)
@@ -415,6 +442,7 @@ public class Pattern implements Cloneable {
 
 			asStatefulCallable(CallableOnChange
 					.fromCallables(new Callable<Void>() {
+						@Override
 						public Void call() {
 							loom.getOscP5().send(original.asOscBundle(),
 									remoteAddress);
@@ -686,6 +714,7 @@ public class Pattern implements Cloneable {
 		return events;
 	}
 
+	@Override
 	public Pattern clone() throws CloneNotSupportedException {
 		if (isConcretePattern())
 			return getConcretePattern().clone();

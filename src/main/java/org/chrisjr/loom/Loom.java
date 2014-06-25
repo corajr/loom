@@ -57,10 +57,10 @@ public class Loom {
 
 	public PatternCollection patterns = new PatternCollection();
 
-	private Scheduler scheduler;
+	private final Scheduler scheduler;
 
-	private OscP5 oscP5;
-	private MidiBus myBus;
+	private OscP5 oscP5 = null;
+	private MidiBus myBus = null;
 
 	public final static String VERSION = "##library.prettyVersion##";
 

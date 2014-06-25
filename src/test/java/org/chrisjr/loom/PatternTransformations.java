@@ -32,8 +32,8 @@ public class PatternTransformations {
 		scheduler.play();
 
 		pattern = new Pattern(loom);
-		pattern.extend("0101");
-		pattern.asInt(0, 1);
+		pattern.extend("0123");
+		pattern.asInt(0, 3);
 	}
 
 	@After
@@ -49,7 +49,7 @@ public class PatternTransformations {
 
 		for (int i = 0; i < 4; i++) {
 			scheduler.setElapsedMillis((500 * i) + 1);
-			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+			assertThat(pattern.asInt(), is(equalTo(i)));
 		}
 	}
 
@@ -59,7 +59,7 @@ public class PatternTransformations {
 
 		for (int i = 0; i < 4; i++) {
 			scheduler.setElapsedMillis((125 * i) + 1);
-			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+			assertThat(pattern.asInt(), is(equalTo(i)));
 		}
 	}
 
@@ -68,9 +68,31 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.shift(0.25);
 
-		for (int i = 0; i < 4; i++) {
-			scheduler.setElapsedMillis((250 * (i + 1)) + 1);
-			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+		for (int i = 0; i < 8; i++) {
+			scheduler.setElapsedMillis((250 * i) + 1);
+			assertThat(pattern.asInt(), is(equalTo((i + 1) % 4)));
+		}
+	}
+
+	@Test
+	public void shiftRightEveryCycle() {
+		pattern.loop();
+		pattern.every(1, new Transforms.Shift(1, 4));
+
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < 4; i++) {
+				int time = (j * 1000) + (250 * i);
+				scheduler.setElapsedMillis(time);
+				System.out.print(time);
+				System.out.print(" ");
+				System.out.print(pattern.getTimeOffset());
+				System.out.print(" ");
+				System.out.print(pattern.asInt());
+				System.out.print(" ");
+				int expected = (i + j) % 4;
+				System.out.println(expected);
+				assertThat(pattern.asInt(), is(equalTo(expected)));
+			}
 		}
 	}
 
@@ -81,7 +103,7 @@ public class PatternTransformations {
 
 		for (int i = 0; i < 4; i++) {
 			scheduler.setElapsedMillis((250 * i) + 1);
-			assertThat(pattern.asInt(), is(equalTo((i + 1) % 2)));
+			assertThat(pattern.asInt(), is(equalTo((i + 3) % 4)));
 		}
 	}
 
@@ -91,7 +113,7 @@ public class PatternTransformations {
 
 		for (int i = 0; i < 4; i++) {
 			scheduler.setElapsedMillis((250 * i) + 1);
-			assertThat(pattern.asInt(), is(equalTo((i + 1) % 2)));
+			assertThat(pattern.asInt(), is(equalTo((3 - i) % 4)));
 		}
 	}
 
@@ -102,7 +124,7 @@ public class PatternTransformations {
 
 		for (int i = 0; i < 4; i++) {
 			scheduler.setElapsedMillis((250 * i) + 1);
-			assertThat(pattern.asInt(), is(equalTo(i % 2)));
+			assertThat(pattern.asInt(), is(equalTo(i)));
 		}
 	}
 
@@ -110,8 +132,10 @@ public class PatternTransformations {
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 4; i++) {
 				long time = (j * beatLength * 4) + (beatLength * i) + 1;
+				boolean reversed = j % 2 == 1;
 				scheduler.setElapsedMillis(time);
-				assertThat(pattern.asInt(), is(equalTo((i + j) % 2)));
+				assertThat(pattern.asInt(), is(equalTo(reversed ? (3 - i) % 4
+						: i)));
 			}
 		}
 	}
@@ -160,8 +184,10 @@ public class PatternTransformations {
 	public void invert() {
 		pattern.invert();
 
-		scheduler.setElapsedMillis(251);
-		assertThat(pattern.asInt(), is(equalTo(0)));
+		for (int i = 0; i < 4; i++) {
+			scheduler.setElapsedMillis((250 * i) + 1);
+			assertThat(pattern.asInt(), is(equalTo(4 - (i + 1))));
+		}
 	}
 
 	@Test
@@ -171,6 +197,7 @@ public class PatternTransformations {
 
 		final AtomicInteger counter = new AtomicInteger();
 		pattern.onOnset(new Callable<Void>() {
+			@Override
 			public Void call() {
 				counter.incrementAndGet();
 				return null;
@@ -188,6 +215,7 @@ public class PatternTransformations {
 
 		final AtomicInteger counter = new AtomicInteger();
 		pattern.onRelease(new Callable<Void>() {
+			@Override
 			public Void call() {
 				counter.incrementAndGet();
 				return null;
@@ -205,6 +233,7 @@ public class PatternTransformations {
 		final AtomicInteger noteOns = new AtomicInteger();
 
 		Callable<Void> noteOffInc = new Callable<Void>() {
+			@Override
 			public Void call() {
 				noteOffs.getAndIncrement();
 				return null;
@@ -212,6 +241,7 @@ public class PatternTransformations {
 		};
 
 		Callable<Void> noteOnInc = new Callable<Void>() {
+			@Override
 			public Void call() {
 				noteOns.getAndIncrement();
 				return null;
