@@ -205,13 +205,16 @@ public class Pattern implements Cloneable {
 	}
 
 	public Interval getCurrentInterval() {
-		return getCurrentInterval(false);
+		return getCurrentInterval(true, true);
 	}
 
-	public Interval getCurrentInterval(boolean ignoreOffset) {
+	public Interval getCurrentInterval(boolean useOffset, boolean useLooping) {
 		Interval interval;
 		if (this.parent != null) {
-			interval = parent.getCurrentInterval(true);
+			boolean smallerOrEqualLoopToParent = loopInterval.getSize()
+					.compareTo(parent.getLoopInterval().getSize()) <= 0;
+			interval = parent.getCurrentInterval(false,
+					smallerOrEqualLoopToParent);
 		} else {
 			interval = loom.getCurrentInterval();
 		}
@@ -221,10 +224,10 @@ public class Pattern implements Cloneable {
 		else
 			interval = interval.multiplyMod(timeScale, loopInterval);
 
-		if (!ignoreOffset)
+		if (useOffset)
 			interval = interval.add(timeOffset);
 
-		if (isLooping) {
+		if (isLooping && useLooping) {
 			interval = interval.modulo(loopInterval);
 		}
 
@@ -606,14 +609,14 @@ public class Pattern implements Cloneable {
 
 		events.add(new Event(interval, 1.0));
 
-		ConcretePattern concrete = new ConcretePattern(loom, events);
-		concrete.loop();
-		concrete.setLoopInterval(interval);
+		Pattern trigger = new Pattern(loom, events);
+		trigger.loop();
+		trigger.setLoopInterval(interval);
 
 		final Pattern original = this;
 
-		addChild(concrete);
-		concrete.onRelease(Transform.toCallable(transform, original));
+		addChild(trigger);
+		trigger.onRelease(Transform.toCallable(transform, original));
 
 		return this;
 	}

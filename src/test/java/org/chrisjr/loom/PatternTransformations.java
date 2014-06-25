@@ -90,6 +90,36 @@ public class PatternTransformations {
 	}
 
 	@Test
+	public void shiftLeftEveryCycle() {
+		pattern.loop();
+		pattern.every(1, new Transforms.Shift(-1, 4));
+
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < 4; i++) {
+				int time = (j * 1000) + (250 * i);
+				scheduler.setElapsedMillis(time);
+				int expected = (i + (4 - j)) % 4;
+				assertThat(pattern.asInt(), is(equalTo(expected)));
+			}
+		}
+	}
+
+	@Test
+	public void shiftRightEveryOtherCycle() {
+		pattern.loop();
+		pattern.every(2, new Transforms.Shift(1, 4));
+
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < 4; i++) {
+				int time = (j * 1000) + (250 * i);
+				scheduler.setElapsedMillis(time);
+				int expected = (i + (j / 2)) % 4;
+				assertThat(pattern.asInt(), is(equalTo(expected)));
+			}
+		}
+	}
+
+	@Test
 	public void shiftLeft() {
 		pattern.loop();
 		pattern.shift(-0.25);
