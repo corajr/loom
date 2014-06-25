@@ -105,6 +105,20 @@ public class PatternTransformations {
 	}
 
 	@Test
+	public void shiftRightEveryHalfCycle() {
+		pattern.loop();
+		pattern.every(0.5, new Transforms.Shift(1, 4));
+
+		for (int i = 0; i < 16; i++) {
+			int time = i * 250;
+			scheduler.setElapsedMillis(time);
+			int j = i / 2;
+			int expected = (i + j) % 4;
+			assertThat(pattern.asInt(), is(equalTo(expected)));
+		}
+	}
+
+	@Test
 	public void shiftRightEveryOtherCycle() {
 		pattern.loop();
 		pattern.every(2, new Transforms.Shift(1, 4));
@@ -151,15 +165,13 @@ public class PatternTransformations {
 		}
 	}
 
-	public void checkIfReversing(int beatLength) {
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < 4; i++) {
-				long time = (j * beatLength * 4) + (beatLength * i) + 1;
-				boolean reversed = j % 2 == 1;
-				scheduler.setElapsedMillis(time);
-				assertThat(pattern.asInt(), is(equalTo(reversed ? (3 - i) % 4
-						: i)));
-			}
+	public void checkIfReversing(int beatLength, int beatsTillReverse) {
+		for (int i = 0; i < 32; i++) {
+			long time = (beatLength * i) + 1;
+			boolean reversed = (i / beatsTillReverse) % 2 == 1;
+			scheduler.setElapsedMillis(time);
+			int expecting = reversed ? (3 - (i % 4)) % 4 : (i % 4);
+			assertThat(pattern.asInt(), is(equalTo(expecting)));
 		}
 	}
 
@@ -169,7 +181,25 @@ public class PatternTransformations {
 
 		pattern.loop();
 
-		checkIfReversing(250);
+		checkIfReversing(250, 4);
+	}
+
+	@Test
+	public void reverseEveryHalfCycle() {
+		pattern.every(0.5, new Transforms.Reverse());
+
+		pattern.loop();
+
+		checkIfReversing(250, 2);
+	}
+
+	@Test
+	public void reverseEveryOtherCycle() {
+		pattern.every(2, new Transforms.Reverse());
+
+		pattern.loop();
+
+		checkIfReversing(250, 8);
 	}
 
 	@Test
@@ -180,7 +210,7 @@ public class PatternTransformations {
 
 		pattern.loop();
 
-		checkIfReversing(50);
+		checkIfReversing(50, 4);
 	}
 
 	@Test
@@ -191,7 +221,7 @@ public class PatternTransformations {
 
 		pattern.loop();
 
-		checkIfReversing(500);
+		checkIfReversing(500, 4);
 	}
 
 	@Test
@@ -200,7 +230,7 @@ public class PatternTransformations {
 		pattern.speed(0.1);
 		pattern.loop();
 
-		checkIfReversing(2500);
+		checkIfReversing(2500, 4);
 	}
 
 	@Test
