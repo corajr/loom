@@ -23,8 +23,7 @@ public class CallableOnChange extends StatefulCallable {
 		}
 		return null;
 	}
-
-	@SafeVarargs
+	
 	public static StatefulCallable[] fromCallables(Callable<Void>... callables) {
 		ArrayList<StatefulCallable> result = new ArrayList<StatefulCallable>();
 

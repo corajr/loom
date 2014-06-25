@@ -35,9 +35,8 @@ import javax.sound.midi.MidiMessage;
 import org.chrisjr.loom.recording.*;
 import org.chrisjr.loom.time.*;
 
-import oscP5.OscMessage;
-import oscP5.OscP5;
 import processing.core.*;
+import oscP5.*;
 import themidibus.*;
 
 /**
@@ -60,8 +59,8 @@ public class Loom {
 
 	private Scheduler scheduler;
 
-	private OscP5 oscP5 = null;
-	private MidiBus myBus = null;
+	private OscP5 oscP5;
+	private MidiBus myBus;
 
 	public final static String VERSION = "##library.prettyVersion##";
 

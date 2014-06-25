@@ -12,8 +12,6 @@ public class MidiMessageMapping implements Mapping<MidiMessage> {
 	}
 
 	public MidiMessage call(double value) {
-		MidiMessage message = null;
-
 		int command = patterns[0].asMidiCommand();
 
 		if (command == -1)
@@ -22,8 +20,9 @@ public class MidiMessageMapping implements Mapping<MidiMessage> {
 		int data1 = patterns[2].asMidiData1();
 		int data2 = patterns.length > 3 ? patterns[3].asMidiData2() : 0x00;
 
+		ShortMessage message = new ShortMessage();
 		try {
-			message = new ShortMessage(command, channel, data1, data2);
+			message.setMessage(command, channel, data1, data2);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}

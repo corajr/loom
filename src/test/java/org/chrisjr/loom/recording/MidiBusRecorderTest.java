@@ -11,8 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import themidibus.*;
-
 import javax.sound.midi.*;
 
 import org.chrisjr.loom.Loom;

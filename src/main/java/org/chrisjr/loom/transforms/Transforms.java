@@ -1,5 +1,6 @@
 package org.chrisjr.loom.transforms;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Pattern;
 
 public class Transforms {
@@ -24,6 +25,18 @@ public class Transforms {
 
 		public Pattern call(Pattern original) {
 			return original.rewrite(eventRewriter);
+		}
+	}
+
+	public static class Shift extends Transform {
+		BigFraction shiftAmt;
+
+		public Shift(int numerator, int denominator) {
+			shiftAmt = new BigFraction(numerator, denominator);
+		}
+
+		public Pattern call(Pattern original) {
+			return original.shift(shiftAmt);
 		}
 	}
 }

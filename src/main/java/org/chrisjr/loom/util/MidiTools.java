@@ -1,7 +1,6 @@
 package org.chrisjr.loom.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 import javax.sound.midi.*;
@@ -23,7 +22,7 @@ public class MidiTools {
 		Sequence sequence = null;
 		try {
 			sequence = MidiSystem.getSequence(midiFile);
-		} catch (InvalidMidiDataException | IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
