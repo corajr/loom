@@ -63,73 +63,13 @@ public class PatternTransformations {
 		}
 	}
 
-	@Test
-	public void shiftRight() {
-		pattern.loop();
-		pattern.shift(0.25);
-
-		for (int i = 0; i < 8; i++) {
-			scheduler.setElapsedMillis((250 * i) + 1);
-			assertThat(pattern.asInt(), is(equalTo((i + 1) % 4)));
-		}
-	}
-
-	@Test
-	public void shiftRightEveryCycle() {
-		pattern.loop();
-		pattern.every(1, new Transforms.Shift(1, 4));
-
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < 4; i++) {
-				int time = (j * 1000) + (250 * i);
-				scheduler.setElapsedMillis(time);
-				int expected = (i + j) % 4;
-				assertThat(pattern.asInt(), is(equalTo(expected)));
-			}
-		}
-	}
-
-	@Test
-	public void shiftLeftEveryCycle() {
-		pattern.loop();
-		pattern.every(1, new Transforms.Shift(-1, 4));
-
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < 4; i++) {
-				int time = (j * 1000) + (250 * i);
-				scheduler.setElapsedMillis(time);
-				int expected = (i + (4 - j)) % 4;
-				assertThat(pattern.asInt(), is(equalTo(expected)));
-			}
-		}
-	}
-
-	@Test
-	public void shiftRightEveryHalfCycle() {
-		pattern.loop();
-		pattern.every(0.5, new Transforms.Shift(1, 4));
-
-		for (int i = 0; i < 16; i++) {
-			int time = i * 250;
+	public void checkIfShifting(int beatLength, int shiftBy, int beatsTillShift) {
+		for (int i = 0; i < 32; i++) {
+			long time = (beatLength * i) + 1;
+			int shifts = beatsTillShift > 0 ? i / beatsTillShift : 1;
 			scheduler.setElapsedMillis(time);
-			int j = i / 2;
-			int expected = (i + j) % 4;
-			assertThat(pattern.asInt(), is(equalTo(expected)));
-		}
-	}
-
-	@Test
-	public void shiftRightEveryOtherCycle() {
-		pattern.loop();
-		pattern.every(2, new Transforms.Shift(1, 4));
-
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < 4; i++) {
-				int time = (j * 1000) + (250 * i);
-				scheduler.setElapsedMillis(time);
-				int expected = (i + (j / 2)) % 4;
-				assertThat(pattern.asInt(), is(equalTo(expected)));
-			}
+			int expecting = (4 + i + (shiftBy * shifts)) % 4;
+			assertThat(pattern.asInt(), is(equalTo(expecting)));
 		}
 	}
 
@@ -138,10 +78,63 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.shift(-0.25);
 
-		for (int i = 0; i < 4; i++) {
-			scheduler.setElapsedMillis((250 * i) + 1);
-			assertThat(pattern.asInt(), is(equalTo((i + 3) % 4)));
-		}
+		checkIfShifting(250, -1, 0);
+	}
+
+	@Test
+	public void shiftRight() {
+		pattern.loop();
+		pattern.shift(0.25);
+
+		checkIfShifting(250, 1, 0);
+	}
+
+	@Test
+	public void shiftRightEveryCycle() {
+		pattern.loop();
+		pattern.every(1, new Transforms.Shift(1, 4));
+
+		checkIfShifting(250, 1, 4);
+	}
+
+	@Test
+	public void shiftLeftEveryCycle() {
+		pattern.loop();
+		pattern.every(1, new Transforms.Shift(-1, 4));
+
+		checkIfShifting(250, -1, 4);
+	}
+
+	@Test
+	public void shiftRightEveryHalfCycle() {
+		pattern.loop();
+		pattern.every(0.5, new Transforms.Shift(1, 4));
+
+		checkIfShifting(250, 1, 2);
+	}
+
+	@Test
+	public void shiftRightEveryOtherCycle() {
+		pattern.loop();
+		pattern.every(2, new Transforms.Shift(1, 4));
+
+		checkIfShifting(250, 1, 8);
+	}
+
+	@Test
+	public void shiftLeftEveryHalfCycle() {
+		pattern.loop();
+		pattern.every(0.5, new Transforms.Shift(1, 4));
+
+		checkIfShifting(250, -1, 2);
+	}
+
+	@Test
+	public void shiftLeftEveryOtherCycle() {
+		pattern.loop();
+		pattern.every(2, new Transforms.Shift(1, 4));
+
+		checkIfShifting(250, -1, 8);
 	}
 
 	@Test
