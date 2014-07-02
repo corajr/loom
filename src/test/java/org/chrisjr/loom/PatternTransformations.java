@@ -69,6 +69,8 @@ public class PatternTransformations {
 			int shifts = beatsTillShift > 0 ? i / beatsTillShift : 1;
 			scheduler.setElapsedMillis(time);
 			int expecting = (4 + i + (shiftBy * shifts)) % 4;
+			// System.out.format("%d %d %s %d\n", pattern.asInt(), expecting,
+			// pattern.getTimeOffset(), time);
 			assertThat(pattern.asInt(), is(equalTo(expecting)));
 		}
 	}
@@ -164,6 +166,8 @@ public class PatternTransformations {
 			boolean reversed = (i / beatsTillReverse) % 2 == 1;
 			scheduler.setElapsedMillis(time);
 			int expecting = reversed ? (3 - (i % 4)) % 4 : (i % 4);
+			// System.out.format("%d %d %s %d\n", pattern.asInt(), expecting,
+			// pattern.getTimeScale(), time);
 			assertThat(pattern.asInt(), is(equalTo(expecting)));
 		}
 	}

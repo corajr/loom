@@ -208,29 +208,40 @@ public class Pattern implements Cloneable {
 		return getCurrentInterval(true, true);
 	}
 
-	public Interval getCurrentInterval(boolean useOffset, boolean useLooping) {
+	public Interval getCurrentInterval(boolean useOffset, boolean useLoop) {
 		Interval interval;
 		if (this.parent != null) {
-			boolean smallerOrEqualLoopToParent = loopInterval.getSize()
-					.compareTo(parent.getLoopInterval().getSize()) <= 0;
-			interval = parent.getCurrentInterval(false,
-					smallerOrEqualLoopToParent);
+			Interval myLoop = loopInterval.multiply(timeScale);
+			boolean biggerOrEqualLoop = myLoop.getSize().compareTo(
+					parent.getLoopInterval().getSize()) >= 0;
+			interval = parent.getCurrentInterval(false, biggerOrEqualLoop);
 		} else {
 			interval = loom.getCurrentInterval();
 		}
 
-		if (timeScale.compareTo(BigFraction.ZERO) > 0)
+		boolean positiveScale = timeScale.compareTo(BigFraction.ZERO) > 0;
+
+		if (positiveScale) {
 			interval = interval.multiply(timeScale);
-		else
-			interval = interval.multiplyMod(timeScale, loopInterval);
+		} else {
+			if (useLoop) {
+				interval = interval.multiplyMod(timeScale, loopInterval);
+			} else {
+				// TODO what?
+			}
+		}
 
 		if (useOffset)
 			interval = interval.add(timeOffset);
 
-		if (isLooping && useLooping) {
+		if (isLooping && useLoop && positiveScale) {
 			interval = interval.modulo(loopInterval);
 		}
 
+		/*
+		 * if (parent != null) System.out.format("%s %s %s\n",
+		 * parent.getCurrentInterval(), interval, getTimeScale());
+		 */
 		return interval;
 	}
 
@@ -606,12 +617,14 @@ public class Pattern implements Cloneable {
 	public Pattern every(BigFraction fraction, final Transform transform) {
 		EventCollection events = new EventCollection();
 
-		Interval interval = new Interval(BigFraction.ZERO, fraction);
+		// Interval interval = new Interval(BigFraction.ZERO, fraction);
+		Interval interval = new Interval(0, 1);
 		events.add(new Event(interval, 1.0));
 
 		Pattern trigger = new Pattern(loom, events);
 		trigger.loop();
-		trigger.setLoopInterval(interval);
+		trigger.setTimeScale(fraction.reciprocal());
+		// trigger.setLoopInterval(interval);
 
 		final Pattern original = this;
 
@@ -646,8 +659,8 @@ public class Pattern implements Cloneable {
 
 		concrete2.asStatefulCallable(CallableOnChange.fromCallables(callable));
 
-		addSibling(concrete);
-		addSibling(concrete2);
+		addChild(concrete);
+		addChild(concrete2);
 
 		return this;
 	}

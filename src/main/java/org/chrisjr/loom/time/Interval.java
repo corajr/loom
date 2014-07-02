@@ -6,15 +6,15 @@ public class Interval {
 	private final BigFraction start;
 	private final BigFraction end;
 
-	public Interval(double _start, double _end) {
-		this(new BigFraction(_start), new BigFraction(_end));
+	public Interval(double start, double end) {
+		this(new BigFraction(start), new BigFraction(end));
 	}
 
-	public Interval(BigFraction _start, BigFraction _end) {
-		if (_end.compareTo(_start) <= 0)
+	public Interval(BigFraction start, BigFraction end) {
+		if (end.compareTo(start) <= 0)
 			throw new IllegalArgumentException("Must end after start!");
-		start = _start;
-		end = _end;
+		this.start = start;
+		this.end = end;
 	}
 
 	public BigFraction getStart() {
@@ -172,6 +172,7 @@ public class Interval {
 		return true;
 	}
 
+	@Override
 	public String toString() {
 		String s = "[" + start.toString() + "," + end.toString() + "]";
 		return s.replaceAll(" ", "");
