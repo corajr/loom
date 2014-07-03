@@ -5,12 +5,14 @@ import org.chrisjr.loom.Pattern;
 
 public class Transforms {
 	public static class Noop extends Transform {
+		@Override
 		public Pattern call(Pattern original) {
 			return original;
 		}
 	}
 
 	public static class Reverse extends Transform {
+		@Override
 		public Pattern call(Pattern original) {
 			return original.reverse();
 		}
@@ -23,6 +25,7 @@ public class Transforms {
 			this.eventRewriter = eventRewriter;
 		}
 
+		@Override
 		public Pattern call(Pattern original) {
 			return original.rewrite(eventRewriter);
 		}
@@ -35,6 +38,7 @@ public class Transforms {
 			shiftAmt = new BigFraction(numerator, denominator);
 		}
 
+		@Override
 		public Pattern call(Pattern original) {
 			return original.shift(shiftAmt);
 		}
