@@ -118,7 +118,7 @@ public class Pattern implements Cloneable {
 		if (parent != null)
 			parent.addChild(sibling);
 		else
-			loom.patterns.add(sibling);
+			sibling.addSelfTo(loom);
 	}
 
 	protected void removeChild(Pattern child) {
@@ -607,13 +607,14 @@ public class Pattern implements Cloneable {
 		EventCollection events = new EventCollection();
 
 		Interval interval = new Interval(BigFraction.ZERO, fraction);
+
 		events.add(new Event(interval, 1.0));
 
 		Pattern trigger = new Pattern(loom, events);
 		trigger.loop();
 		trigger.setLoopInterval(interval);
 
-		addChild(trigger);
+		addSibling(trigger);
 
 		final Pattern original = this;
 
@@ -647,8 +648,8 @@ public class Pattern implements Cloneable {
 
 		concrete2.asStatefulCallable(CallableOnChange.fromCallables(callable));
 
-		addSibling(concrete);
-		addSibling(concrete2);
+		addChild(concrete);
+		addChild(concrete2);
 
 		return this;
 	}
