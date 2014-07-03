@@ -33,6 +33,8 @@ public class Pattern implements Cloneable {
 	protected PatternCollection children = null;
 	protected Pattern parent = null;
 
+	protected Pattern timeScaleMatch = null;
+
 	protected double defaultValue;
 
 	boolean isLooping = false;
@@ -216,12 +218,14 @@ public class Pattern implements Cloneable {
 			interval = loom.getCurrentInterval();
 		}
 
-		boolean positiveScale = timeScale.compareTo(BigFraction.ZERO) > 0;
+		BigFraction scale = getTimeScale();
+
+		boolean positiveScale = scale.compareTo(BigFraction.ZERO) > 0;
 
 		if (positiveScale) {
-			interval = interval.multiply(timeScale);
+			interval = interval.multiply(scale);
 		} else {
-			interval = interval.multiplyMod(timeScale, loopInterval);
+			interval = interval.multiplyMod(scale, loopInterval);
 		}
 
 		if (useOffset)
@@ -616,6 +620,8 @@ public class Pattern implements Cloneable {
 
 		addSibling(trigger);
 
+		trigger.setTimeScaleMatch(this);
+
 		final Pattern original = this;
 
 		trigger.onRelease(Transform.toCallable(transform, original));
@@ -641,7 +647,7 @@ public class Pattern implements Cloneable {
 
 	private Pattern onBoundary(double boundaryType, Callable<Void> callable) {
 		ConcretePattern concrete = ConcretePattern.forEach(
-				getConcretePattern(), parent);
+				getConcretePattern(), this);
 
 		ConcretePattern concrete2 = new ConcretePattern(loom,
 				new MatchFunction(concrete, boundaryType));
@@ -678,7 +684,10 @@ public class Pattern implements Cloneable {
 	}
 
 	public BigFraction getTimeScale() {
-		return timeScale;
+		if (timeScaleMatch != null)
+			return timeScaleMatch.getTimeScale().abs();
+		else
+			return timeScale;
 	}
 
 	public void setTimeScale(double i) {
@@ -687,6 +696,10 @@ public class Pattern implements Cloneable {
 
 	public void setTimeScale(BigFraction timeScale) {
 		this.timeScale = timeScale;
+	}
+
+	public void setTimeScaleMatch(Pattern pattern) {
+		this.timeScaleMatch = pattern;
 	}
 
 	public Interval getLoopInterval() {
