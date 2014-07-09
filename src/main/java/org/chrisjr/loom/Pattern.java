@@ -20,6 +20,8 @@ import org.chrisjr.loom.util.*;
 import oscP5.OscBundle;
 import oscP5.OscMessage;
 
+import ddf.minim.*;
+
 /**
  * The base class for patterns in Loom. ConcretePatterns may be discrete or
  * continuous, while compound patterns (the default) can contain a combination
@@ -58,6 +60,7 @@ public class Pattern implements Cloneable {
 		MIDI_MESSAGE, // javax.sound.midi.MidiMessage suitable for sending
 		OSC_MESSAGE, // OscMessage with arbitrary data
 		OSC_BUNDLE, // collection of OscMessages
+		AUDIO_SAMPLE, // ddf.minim.AudioSample
 		CALLABLE, // a function object
 		STATEFUL_CALLABLE, // a function object that has internal state
 		OBJECT // generic object
@@ -479,6 +482,23 @@ public class Pattern implements Cloneable {
 
 	public OscBundle asOscBundle() {
 		return (OscBundle) getAs(MappingType.OSC_BUNDLE);
+	}
+
+	public Pattern asSample(final AudioSample sample) {
+		EventRewriter hitsOnly = new MatchRewriter(1.0);
+		Pattern hits = this.rewrite(hitsOnly);
+
+		hits.onOnset(new Callable<Void>() {
+			@Override
+			public Void call() {
+				sample.trigger();
+				return null;
+			}
+		});
+
+		addChild(hits);
+
+		return this;
 	}
 
 	/**

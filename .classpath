@@ -9,5 +9,7 @@
 	<classpathentry kind="lib" path="resources/libs/junit.jar"/>
 	<classpathentry kind="lib" path="resources/libs/oscP5.jar"/>
 	<classpathentry kind="lib" path="resources/libs/themidibus.jar"/>
+	<classpathentry kind="lib" path="resources/libs/minim.jar" sourcepath="/Users/chrisjr/Downloads/Minim-2.2.0/src"/>
+	<classpathentry kind="lib" path="resources/libs/jsminim.jar"/>
 	<classpathentry kind="output" path="resources/code"/>
 </classpath>
