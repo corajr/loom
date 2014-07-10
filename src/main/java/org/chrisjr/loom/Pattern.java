@@ -60,7 +60,6 @@ public class Pattern implements Cloneable {
 		MIDI_MESSAGE, // javax.sound.midi.MidiMessage suitable for sending
 		OSC_MESSAGE, // OscMessage with arbitrary data
 		OSC_BUNDLE, // collection of OscMessages
-		AUDIO_SAMPLE, // ddf.minim.AudioSample
 		CALLABLE, // a function object
 		STATEFUL_CALLABLE, // a function object that has internal state
 		OBJECT // generic object
@@ -485,8 +484,8 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asSample(final AudioSample sample) {
-		EventRewriter hitsOnly = new MatchRewriter(1.0);
-		Pattern hits = this.rewrite(hitsOnly);
+		Pattern hits = new Pattern(loom,
+				new MatchRewriter(1.0).apply(getEvents()));
 
 		hits.onOnset(new Callable<Void>() {
 			@Override

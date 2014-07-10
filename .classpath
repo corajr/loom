@@ -9,7 +9,11 @@
 	<classpathentry kind="lib" path="resources/libs/junit.jar"/>
 	<classpathentry kind="lib" path="resources/libs/oscP5.jar"/>
 	<classpathentry kind="lib" path="resources/libs/themidibus.jar"/>
-	<classpathentry kind="lib" path="resources/libs/minim.jar" sourcepath="/Users/chrisjr/Downloads/Minim-2.2.0/src"/>
-	<classpathentry kind="lib" path="resources/libs/jsminim.jar"/>
+	<classpathentry kind="lib" path="resources/libs/minim/jl1.0.jar"/>
+	<classpathentry kind="lib" path="resources/libs/minim/jsminim.jar"/>
+	<classpathentry kind="lib" path="resources/libs/minim/minim.jar"/>
+	<classpathentry kind="lib" path="resources/libs/minim/mp3spi1.9.4.jar"/>
+	<classpathentry kind="lib" path="resources/libs/minim/tritonus_aos.jar"/>
+	<classpathentry kind="lib" path="resources/libs/minim/tritonus_share.jar"/>
 	<classpathentry kind="output" path="resources/code"/>
 </classpath>

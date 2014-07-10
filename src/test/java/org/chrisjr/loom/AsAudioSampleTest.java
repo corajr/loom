@@ -27,7 +27,23 @@ public class AsAudioSampleTest {
 	}
 
 	public InputStream createInput(String fileName) {
-		return getClass().getResourceAsStream(fileName);
+		File resources_code;
+		try {
+			resources_code = new File(getClass().getResource("/").toURI());
+		} catch (URISyntaxException e1) {
+			throw new IllegalStateException("Could not get resource directory.");
+		}
+		File datadir = new File(resources_code.getParentFile().getParentFile(),
+				"data");
+		File file = new File(datadir, fileName);
+		System.out.println(file.toString());
+		InputStream is = null;
+		try {
+			is = new FileInputStream(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return is;
 	}
 
 	@Before
