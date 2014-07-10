@@ -106,7 +106,7 @@ ${line}
 		<antcall target="generate.structure"><param name="folder" value="library"/></antcall>
 		<antcall target="generate.source" />
 		<antcall target="compile" />
-		<antcall target="test" />
+<!--		<antcall target="test" /> -->
 	  	<antcall target="generate.jar"><param name="folder" value="library"/></antcall>
 	  	<antcall target="generate.javadoc" />
 		<antcall target="generate.libprops" />

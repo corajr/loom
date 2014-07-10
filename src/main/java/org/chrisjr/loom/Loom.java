@@ -36,8 +36,10 @@ import org.chrisjr.loom.recording.*;
 import org.chrisjr.loom.time.*;
 
 import processing.core.*;
-import oscP5.*;
-import themidibus.*;
+
+import org.chrisjr.loom.util.*;
+import org.chrisjr.loom.wrappers.MidiBusWrapper;
+import org.chrisjr.loom.wrappers.OscP5Wrapper;
 
 /**
  * This is a template class and can be used to start a new processing library or
@@ -59,8 +61,8 @@ public class Loom {
 
 	private final Scheduler scheduler;
 
-	private OscP5 oscP5 = null;
-	private MidiBus myBus = null;
+	public OscP5Wrapper oscP5Wrapper = new OscP5Wrapper();
+	public MidiBusWrapper midiBusWrapper = new MidiBusWrapper();
 
 	public final static String VERSION = "##library.prettyVersion##";
 
@@ -154,9 +156,9 @@ public class Loom {
 
 	public void record(File oscFile, File midiFile) throws IOException {
 		if (oscFile != null)
-			setOscP5(new OscP5Recorder(this, oscFile));
+			oscP5Wrapper = new OscP5Wrapper(this, oscFile);
 		if (midiFile != null)
-			setMidiBus(new MidiBusRecorder(this, midiFile));
+			midiBusWrapper = new MidiBusWrapper(this, midiFile);
 
 		play();
 	}
@@ -185,32 +187,6 @@ public class Loom {
 		scheduler.setPeriod(millis);
 	}
 
-	public OscP5 getOscP5() {
-		if (oscP5 == null)
-			throw new IllegalStateException("OscP5 not set!");
-		return oscP5;
-	}
-
-	public void setOscP5(OscP5 oscP5) {
-		this.oscP5 = oscP5;
-	}
-
-	public MidiBus getMidiBus() {
-		// TODO can a MidiBus be created inside here? Is it even necessary?
-		if (myBus == null)
-			throw new IllegalStateException("MidiBus not set!");
-		return myBus;
-	}
-
-	public void setMidiBus(MidiBus midiBus) {
-		this.myBus = midiBus;
-	}
-
-	public void oscEvent(OscMessage theOscMessage) {
-		// TODO handle incoming messages
-		System.out.println(theOscMessage.addrPattern());
-	}
-
 	public void midiMessage(MidiMessage theMidiMessage) {
 		// MidiTools.printMidi(theMidiMessage);
 	}
@@ -224,9 +200,9 @@ public class Loom {
 	}
 
 	public void dispose() {
-		if (oscP5 != null)
-			oscP5.dispose();
-		if (myBus != null)
-			myBus.dispose();
+		if (oscP5Wrapper != null)
+			oscP5Wrapper.dispose();
+		if (midiBusWrapper != null)
+			midiBusWrapper.dispose();
 	}
 }

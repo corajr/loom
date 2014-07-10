@@ -7,11 +7,12 @@ import javax.sound.midi.*;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.*;
+import org.chrisjr.loom.wrappers.*;
 import org.chrisjr.loom.time.Interval;
 
 import themidibus.MidiBus;
 
-public class MidiBusRecorder extends MidiBus {
+public class MidiBusRecorder extends MidiBus implements IMidiBus {
 	Loom loom;
 	Sequence sequence;
 	Track track;
@@ -32,6 +33,7 @@ public class MidiBusRecorder extends MidiBus {
 		track = sequence.createTrack();
 	}
 
+	@Override
 	public void sendMessage(MidiMessage message) {
 		Interval currentInterval = loom.getCurrentInterval();
 		BigFraction now = currentInterval.getStart().add(
@@ -41,6 +43,7 @@ public class MidiBusRecorder extends MidiBus {
 		track.add(new MidiEvent(message, ticks));
 	}
 
+	@Override
 	public void dispose() {
 		try {
 			MidiSystem.write(sequence, 0, midiFile);

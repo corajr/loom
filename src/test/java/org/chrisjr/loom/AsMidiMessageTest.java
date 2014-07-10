@@ -11,6 +11,8 @@ import javax.sound.midi.ShortMessage;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.util.MidiTools;
+import org.chrisjr.loom.wrappers.MidiBusImpl;
+import org.chrisjr.loom.wrappers.MidiBusWrapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +37,8 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		myBus = new MidiBus(null, "Bus 1", "Bus 1");
 		myBus.addMidiListener(this);
 
-		loom.setMidiBus(myBus);
+		MidiBusImpl midiBus = new MidiBusImpl(myBus);
+		loom.midiBusWrapper.set(midiBus);
 		loom.play();
 
 		// allow a little time to initialize midi

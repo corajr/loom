@@ -30,7 +30,7 @@ public class MidiBusRecorderTest {
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
 
-		midiFile = File.createTempFile("recording", "mid");
+		midiFile = File.createTempFile("recording", ".mid");
 		loom.record(null, midiFile);
 	}
 
@@ -51,7 +51,7 @@ public class MidiBusRecorderTest {
 		scheduler.setElapsedMillis(1001);
 
 		loom.dispose(); // must call this in order to save!
-		
+
 		List<MidiEvent> events = MidiTools.readFile(midiFile);
 		assertThat(events.size(), is(equalTo(10)));
 	}

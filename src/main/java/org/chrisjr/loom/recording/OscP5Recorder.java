@@ -1,13 +1,14 @@
 package org.chrisjr.loom.recording;
 
 import org.chrisjr.loom.*;
+import org.chrisjr.loom.wrappers.*;
 
 import oscP5.*;
 import netP5.*;
 
 import java.io.*;
 
-public class OscP5Recorder extends OscP5 {
+public class OscP5Recorder extends OscP5 implements IOscP5 {
 	File outputFile;
 	PrintWriter output;
 
@@ -21,6 +22,7 @@ public class OscP5Recorder extends OscP5 {
 		this(loom, new File(outputFilename));
 	}
 
+	@Override
 	public void send(OscPacket packet, NetAddress addr) {
 
 	}
@@ -28,9 +30,9 @@ public class OscP5Recorder extends OscP5 {
 	private void write(OscPacket packet) {
 		if (!(packet instanceof OscBundle))
 			return;
-		
+
 		OscBundle bundle = (OscBundle) packet;
-		
+
 		for (int i = 0; i < bundle.size(); i++) {
 			OscMessage message = bundle.getMessage(i);
 		}

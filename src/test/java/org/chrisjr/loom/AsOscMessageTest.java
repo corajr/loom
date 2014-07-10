@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import netP5.NetAddress;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.wrappers.OscP5Impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -19,13 +20,14 @@ import oscP5.OscP5;
 
 public class AsOscMessageTest {
 	private OscP5 oscP5;
-	private NetAddress myRemoteLocation = new NetAddress("127.0.0.1", 12001);
+	private final NetAddress myRemoteLocation = new NetAddress("127.0.0.1",
+			12001);
 
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
 
-	private AtomicInteger eventsCounter = new AtomicInteger();
+	private final AtomicInteger eventsCounter = new AtomicInteger();
 
 	@Before
 	public void setUp() throws Exception {
@@ -35,8 +37,8 @@ public class AsOscMessageTest {
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
 
-		loom.setOscP5(new OscP5(loom, 12000));
-
+		OscP5Impl oscP52 = new OscP5Impl(new OscP5(loom, 12000));
+		loom.oscP5Wrapper.set(oscP52);
 		loom.play();
 	}
 

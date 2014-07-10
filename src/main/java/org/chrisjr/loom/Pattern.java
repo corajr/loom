@@ -384,7 +384,7 @@ public class Pattern implements Cloneable {
 			public Void call() {
 				MidiMessage mess = original.asMidiMessage();
 				if (mess != null)
-					loom.getMidiBus().sendMessage(mess);
+					loom.midiBusWrapper.get().sendMessage(mess);
 				return null;
 			}
 		};
@@ -462,8 +462,8 @@ public class Pattern implements Cloneable {
 					.fromCallables(new Callable<Void>() {
 						@Override
 						public Void call() {
-							loom.getOscP5().send(original.asOscBundle(),
-									remoteAddress);
+							loom.oscP5Wrapper.get().send(
+									original.asOscBundle(), remoteAddress);
 							return null;
 						}
 					}));
