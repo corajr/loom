@@ -63,12 +63,14 @@ public class PatternTransformations {
 		}
 	}
 
-	public void checkIfShifting(int beatLength, int shiftBy, int beatsTillShift) {
-		for (int i = 0; i < 32; i++) {
-			long time = (beatLength * i) + 1;
+	public void checkIfShifting(int measureLength, float beatLength,
+			int shiftBy, int beatsTillShift) {
+		for (int i = 0; i < beatsTillShift * 4; i++) {
+			long time = (long) (beatLength * i) + 1;
 			int shifts = beatsTillShift > 0 ? i / beatsTillShift : 1;
 			scheduler.setElapsedMillis(time);
-			int expecting = (4 + i + (shiftBy * shifts)) % 4;
+			int expecting = (measureLength + i + (shiftBy * shifts))
+					% measureLength;
 			// System.out.format("%d %d %s %d\n", pattern.asInt(), expecting,
 			// pattern.getTimeOffset(), time);
 			assertThat(pattern.asInt(), is(equalTo(expecting)));
@@ -80,7 +82,7 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.shift(-0.25);
 
-		checkIfShifting(250, -1, 0);
+		checkIfShifting(4, 250, -1, 0);
 	}
 
 	@Test
@@ -88,7 +90,7 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.shift(0.25);
 
-		checkIfShifting(250, 1, 0);
+		checkIfShifting(4, 250, 1, 0);
 	}
 
 	@Test
@@ -96,7 +98,7 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.every(1, new Transforms.Shift(1, 4));
 
-		checkIfShifting(250, 1, 4);
+		checkIfShifting(4, 250, 1, 4);
 	}
 
 	@Test
@@ -104,7 +106,7 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.every(1, new Transforms.Shift(-1, 4));
 
-		checkIfShifting(250, -1, 4);
+		checkIfShifting(4, 250, -1, 4);
 	}
 
 	@Test
@@ -112,7 +114,7 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.every(0.5, new Transforms.Shift(1, 4));
 
-		checkIfShifting(250, 1, 2);
+		checkIfShifting(4, 250, 1, 2);
 	}
 
 	@Test
@@ -120,7 +122,7 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.every(2, new Transforms.Shift(1, 4));
 
-		checkIfShifting(250, 1, 8);
+		checkIfShifting(4, 250, 1, 8);
 	}
 
 	@Test
@@ -128,7 +130,7 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.every(0.5, new Transforms.Shift(-1, 4));
 
-		checkIfShifting(250, -1, 2);
+		checkIfShifting(4, 250, -1, 2);
 	}
 
 	@Test
@@ -136,7 +138,18 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.every(2, new Transforms.Shift(-1, 4));
 
-		checkIfShifting(250, -1, 8);
+		checkIfShifting(4, 250, -1, 8);
+	}
+
+	@Test
+	public void shiftLeftEveryTwelveCycles() {
+		pattern.clear();
+		pattern.extend("0123456789AB");
+		pattern.asInt(0, 11);
+		pattern.loop();
+		pattern.every(12, new Transforms.Shift(-1, 12));
+
+		checkIfShifting(12, 1000 / 12.0f, -1, 144);
 	}
 
 	@Test
