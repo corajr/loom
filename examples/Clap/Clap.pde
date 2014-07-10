@@ -27,7 +27,7 @@ void setup() {
           .loop();
   }
 
-  patterns[1].every(12, new Transforms.Shift(-1, 12));
+  patterns[1].every(4, new Transforms.Shift(-1, 12));
 
   loom.play();
 }

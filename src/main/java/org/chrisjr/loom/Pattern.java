@@ -35,7 +35,8 @@ public class Pattern implements Cloneable {
 	protected PatternCollection children = null;
 	protected Pattern parent = null;
 
-	protected Pattern timeScaleMatch = null;
+	protected Pattern timeMatch = null;
+	protected boolean useParentOffset = true;
 
 	protected double defaultValue;
 
@@ -215,7 +216,7 @@ public class Pattern implements Cloneable {
 	public Interval getCurrentInterval(boolean useOffset) {
 		Interval interval;
 		if (this.parent != null) {
-			interval = parent.getCurrentInterval(false);
+			interval = parent.getCurrentInterval(useParentOffset);
 		} else {
 			interval = loom.getCurrentInterval();
 		}
@@ -231,7 +232,7 @@ public class Pattern implements Cloneable {
 		}
 
 		if (useOffset)
-			interval = interval.add(timeOffset);
+			interval = interval.add(getTimeOffset());
 
 		if (isLooping && positiveScale) {
 			interval = interval.modulo(loopInterval);
@@ -287,7 +288,7 @@ public class Pattern implements Cloneable {
 		EventRewriter hitsOnly = new MatchRewriter(1.0);
 		Pattern hits = this.rewrite(hitsOnly);
 
-		ConcretePattern commands = ConcretePattern.forEach(hits);
+		ConcretePattern commands = ConcretePattern.forEach(this);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(9);
@@ -639,7 +640,7 @@ public class Pattern implements Cloneable {
 
 		addSibling(trigger);
 
-		trigger.setTimeScaleMatch(this);
+		trigger.setTimeMatch(this);
 
 		final Pattern original = this;
 
@@ -673,6 +674,9 @@ public class Pattern implements Cloneable {
 
 		concrete2.asStatefulCallable(CallableOnChange.fromCallables(callable));
 
+		concrete.useParentOffset = false;
+		concrete2.useParentOffset = false;
+
 		addChild(concrete);
 		addChild(concrete2);
 
@@ -691,7 +695,10 @@ public class Pattern implements Cloneable {
 	}
 
 	public BigFraction getTimeOffset() {
-		return timeOffset;
+		if (timeMatch != null)
+			return timeMatch.getTimeOffset();
+		else
+			return timeOffset;
 	}
 
 	public void setTimeOffset(double i) {
@@ -703,8 +710,8 @@ public class Pattern implements Cloneable {
 	}
 
 	public BigFraction getTimeScale() {
-		if (timeScaleMatch != null)
-			return timeScaleMatch.getTimeScale().abs();
+		if (timeMatch != null)
+			return timeMatch.getTimeScale().abs();
 		else
 			return timeScale;
 	}
@@ -717,8 +724,8 @@ public class Pattern implements Cloneable {
 		this.timeScale = timeScale;
 	}
 
-	public void setTimeScaleMatch(Pattern pattern) {
-		this.timeScaleMatch = pattern;
+	public void setTimeMatch(Pattern pattern) {
+		this.timeMatch = pattern;
 	}
 
 	public Interval getLoopInterval() {
