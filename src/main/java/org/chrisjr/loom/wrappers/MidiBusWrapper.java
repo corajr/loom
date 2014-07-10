@@ -6,8 +6,6 @@ import java.io.IOException;
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.recording.MidiBusRecorder;
 
-import themidibus.*;
-
 /**
  * @author chrisjr
  * 

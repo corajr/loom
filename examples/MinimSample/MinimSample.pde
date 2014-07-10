@@ -10,10 +10,12 @@ void setup() {
   
   loom = new Loom(this);
   pattern = new Pattern(loom);
+
   minim = new Minim(this);
 
-  snare = minim.loadSample("snare.aif");
+  AudioSample snare = minim.loadSample("snare.aif");
   pattern.extend("0101");
+  pattern.asColor(#000000, #FFFFFF);
   pattern.asSample(snare);
 
   pattern.loop();

@@ -1,4 +1,5 @@
 import org.chrisjr.loom.*;
+import org.chrisjr.loom.wrappers.*;
 import themidibus.*;
 
 Loom loom;
@@ -12,7 +13,7 @@ void setup() {
   pattern = new Pattern(loom);
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
   
-  loom.setMidiBus(myBus);
+  loom.midiBusWrapper.set(new MidiBusImpl(myBus));
 
   pattern.extend("0242");
   pattern.asColor(#000000, #FFFFFF);

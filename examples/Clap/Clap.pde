@@ -1,7 +1,7 @@
 import themidibus.*;
-import oscP5.*;
 
 import org.chrisjr.loom.*;
+import org.chrisjr.loom.wrappers.*;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.util.MidiTools.Percussion;
@@ -15,7 +15,7 @@ void setup() {
 
   loom = new Loom(this, 120);
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
-  loom.setMidiBus(myBus);
+  loom.midiBusWrapper.set(new MidiBusImpl(myBus));
 
   patterns = new Pattern[2];
 

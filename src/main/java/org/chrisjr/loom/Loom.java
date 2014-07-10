@@ -38,8 +38,7 @@ import org.chrisjr.loom.time.*;
 import processing.core.*;
 
 import org.chrisjr.loom.util.*;
-import org.chrisjr.loom.wrappers.MidiBusWrapper;
-import org.chrisjr.loom.wrappers.OscP5Wrapper;
+import org.chrisjr.loom.wrappers.*;
 
 /**
  * This is a template class and can be used to start a new processing library or
