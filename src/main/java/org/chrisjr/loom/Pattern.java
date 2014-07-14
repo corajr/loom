@@ -19,7 +19,7 @@ import org.chrisjr.loom.util.*;
 
 import oscP5.OscBundle;
 import oscP5.OscMessage;
-
+import processing.core.PApplet;
 import ddf.minim.*;
 
 /**
@@ -241,12 +241,14 @@ public class Pattern implements Cloneable {
 		return interval;
 	}
 
-	public void once() {
+	public Pattern once() {
 		isLooping = false;
+		return this;
 	}
 
-	public void loop() {
+	public Pattern loop() {
 		isLooping = true;
+		return this;
 	}
 
 	// Mappings
@@ -762,6 +764,30 @@ public class Pattern implements Cloneable {
 		if (pat != null && pat.events instanceof EventCollection)
 			events = (EventCollection) getConcretePattern().events;
 		return events;
+	}
+
+	public void rect(float x, float y, float width, float height) {
+		rect(x, y, width, height, loopInterval);
+	}
+
+	public void rect(float x, float y, float width, float height,
+			Interval interval) {
+		if (!hasMapping(MappingType.COLOR))
+			throw new IllegalStateException("Must have colors defined to draw!");
+
+		PApplet sketch = loom.myParent;
+
+		BigFraction unit = interval.getSize().divide(new BigFraction(width));
+		BigFraction start = interval.getStart();
+
+		Interval currentInterval = new Interval(start, start.add(unit));
+		for (int i = 0; i < width; i++) {
+			int color = ((Integer) (getAs(MappingType.COLOR,
+					getValueFor(currentInterval))));
+			sketch.stroke(color);
+			sketch.line(x + i, y, x + i, y + height);
+			currentInterval = currentInterval.add(unit);
+		}
 	}
 
 	@Override
