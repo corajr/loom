@@ -43,7 +43,7 @@ public abstract class Scheduler {
 
 	public abstract long getElapsedMillis();
 
-	protected BigFraction getNow() {
+	public BigFraction getNow() {
 		if (state == State.STOPPED)
 			throw new IllegalStateException(
 					"Tried to retrieve the time while stopped! "

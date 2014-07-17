@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import javax.sound.midi.MidiMessage;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.recording.*;
 import org.chrisjr.loom.time.*;
 
@@ -116,6 +117,10 @@ public class Loom {
 	 */
 	public static String version() {
 		return VERSION;
+	}
+
+	public BigFraction getNow() {
+		return scheduler.getNow();
 	}
 
 	public Interval getCurrentInterval() {
