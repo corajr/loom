@@ -221,6 +221,14 @@ public class Pattern implements Cloneable {
 			interval = loom.getCurrentInterval();
 		}
 
+		return transform(interval, useOffset);
+	}
+
+	public Interval transform(Interval interval) {
+		return transform(interval, true);
+	}
+
+	public Interval transform(Interval interval, boolean useOffset) {
 		BigFraction scale = getTimeScale();
 
 		boolean positiveScale = scale.compareTo(BigFraction.ZERO) > 0;
@@ -783,7 +791,7 @@ public class Pattern implements Cloneable {
 		Interval currentInterval = new Interval(start, start.add(unit));
 		for (int i = 0; i < width; i++) {
 			int color = ((Integer) (getAs(MappingType.COLOR,
-					getValueFor(currentInterval))));
+					getValueFor(transform(currentInterval)))));
 			sketch.stroke(color);
 			sketch.line(x + i, y, x + i, y + height);
 			currentInterval = currentInterval.add(unit);
