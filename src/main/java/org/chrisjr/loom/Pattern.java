@@ -447,6 +447,10 @@ public class Pattern implements Cloneable {
 
 		final Pattern original = this;
 
+		Pattern hits = new Pattern(loom,
+				new MatchRewriter(1.0).apply(getEvents()));
+		addChild(hits);
+
 		PatternCollection oscPatterns = new PatternCollection();
 
 		boolean hasOscMapping = false;
@@ -463,7 +467,7 @@ public class Pattern implements Cloneable {
 
 		putMapping(MappingType.OSC_BUNDLE, new OscBundleMapping(oscPatterns));
 
-		onOnset(new Callable<Void>() {
+		hits.onOnset(new Callable<Void>() {
 			@Override
 			public Void call() {
 				loom.oscP5Wrapper.get().send(original.asOscBundle(),

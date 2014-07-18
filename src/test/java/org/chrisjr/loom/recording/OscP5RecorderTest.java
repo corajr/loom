@@ -11,9 +11,7 @@ import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.util.MidiTools;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 public class OscP5RecorderTest {
 	private Loom loom;
@@ -27,7 +25,8 @@ public class OscP5RecorderTest {
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
 
-		oscFile = File.createTempFile("recording", "osc");
+		oscFile = new File("/Users/chrisjr/Desktop/osc"); // File.createTempFile("recording",
+															// "osc");
 		loom.record(oscFile, null);
 	}
 
@@ -35,6 +34,13 @@ public class OscP5RecorderTest {
 	public void tearDown() throws Exception {
 		oscFile.delete();
 		loom.dispose();
+	}
+
+	@Test
+	public void reader() {
+		OscScore testScore = OscScore.fromFile(new File(
+				"/Users/chrisjr/Desktop/score-test.osc"));
+		assertThat(testScore.size(), is(greaterThan(0)));
 	}
 
 	@Test

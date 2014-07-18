@@ -27,8 +27,14 @@ public class OscP5Recorder implements IOscP5 {
 	public void send(OscPacket packet, NetAddress addr) {
 		if (!(packet instanceof OscBundle))
 			return;
-		OscBundle bundle = (OscBundle) packet;
+		TaggedOscBundle bundle = new TaggedOscBundle((OscBundle) packet);
+
 		double timestamp = loom.getNow().doubleValue();
+
+		long seconds = (long) timestamp;
+		long fraction = (long) ((timestamp - seconds) * (1L << 32));
+		long time = seconds << 32 | fraction;
+		bundle.setTimetag(time);
 
 		score.put(timestamp, bundle);
 	}

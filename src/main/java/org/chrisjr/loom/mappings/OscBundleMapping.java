@@ -11,6 +11,7 @@ public class OscBundleMapping implements Mapping<OscBundle> {
 		this.oscPatterns = oscPatterns;
 	}
 
+	@Override
 	public OscBundle call(double value) {
 		OscBundle bundle = new OscBundle();
 		for (Pattern pat : oscPatterns) {
