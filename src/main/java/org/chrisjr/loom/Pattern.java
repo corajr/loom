@@ -444,48 +444,33 @@ public class Pattern implements Cloneable {
 
 	public Pattern asOscBundle(final NetAddress remoteAddress,
 			final Pattern... patterns) {
-		if (isConcretePattern()) {
-			final PatternCollection oscPatterns = new PatternCollection();
 
-			boolean hasOscMapping = false;
-			for (Pattern pat : patterns) {
-				if (pat.hasMapping(MappingType.OSC_MESSAGE)) {
-					hasOscMapping = true;
-					oscPatterns.add(pat);
-				}
+		final Pattern original = this;
+
+		PatternCollection oscPatterns = new PatternCollection();
+
+		boolean hasOscMapping = false;
+		for (Pattern pat : patterns) {
+			if (pat.hasMapping(MappingType.OSC_MESSAGE)) {
+				hasOscMapping = true;
+				oscPatterns.add(pat);
 			}
-
-			if (!hasOscMapping)
-				throw new IllegalArgumentException(
-						"None of the patterns have an OSC mapping!");
-
-			putMapping(MappingType.OSC_BUNDLE,
-					new OscBundleMapping(oscPatterns));
-
-			final Pattern original = this;
-
-			// It seemed like this might be overriding whatever else is set as a
-			// StatefulCallable, but in fact the current pattern would have been
-			// created especially to trigger the bundle sending. Clumsy but it
-			// works?
-
-			asStatefulCallable(CallableOnChange
-					.fromCallables(new Callable<Void>() {
-						@Override
-						public Void call() {
-							loom.oscP5Wrapper.get().send(
-									original.asOscBundle(), remoteAddress);
-							return null;
-						}
-					}));
-
-		} else {
-			ConcretePattern bundleTrigger = ConcretePattern
-					.forEach(getConcretePattern());
-			bundleTrigger.asOscBundle(remoteAddress, patterns);
-
-			addChild(bundleTrigger);
 		}
+
+		if (!hasOscMapping)
+			throw new IllegalArgumentException(
+					"None of the patterns have an OSC mapping!");
+
+		putMapping(MappingType.OSC_BUNDLE, new OscBundleMapping(oscPatterns));
+
+		onOnset(new Callable<Void>() {
+			@Override
+			public Void call() {
+				loom.oscP5Wrapper.get().send(original.asOscBundle(),
+						remoteAddress);
+				return null;
+			}
+		});
 
 		return this;
 	}

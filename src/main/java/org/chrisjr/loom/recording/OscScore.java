@@ -20,6 +20,8 @@ public class OscScore extends ConcurrentSkipListMap<Double, OscBundle> {
 		for (Map.Entry<Double, OscBundle> entry : this.entrySet()) {
 			double timestamp = entry.getKey();
 			OscBundle bundle = entry.getValue();
+
+			// TODO this surely isn't enough
 			out.write(bundle.getBytes());
 		}
 

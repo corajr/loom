@@ -44,8 +44,7 @@ public class OscP5RecorderTest {
 		Pattern messagePat = new Pattern(loom);
 		messagePat.asOscMessage("/test", 123);
 
-		// pattern.addChild(messagePat);
-		pattern.asOscBundle(null);
+		pattern.asOscBundle(null, messagePat);
 
 		scheduler.setElapsedMillis(1001);
 

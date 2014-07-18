@@ -84,8 +84,7 @@ public class AsOscMessageTest {
 		Pattern messagePat = new Pattern(loom);
 		messagePat.asOscMessage("/test", 123);
 
-		pattern.addChild(messagePat);
-		pattern.asOscBundle(myRemoteLocation);
+		pattern.asOscBundle(myRemoteLocation, messagePat);
 
 		scheduler.setElapsedMillis(1001);
 		waitForEvents(4, 200);
