@@ -17,9 +17,9 @@ import org.chrisjr.loom.time.*;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
 
-import oscP5.OscBundle;
-import oscP5.OscMessage;
+import oscP5.*;
 import processing.core.PApplet;
+import supercollider.*;
 import ddf.minim.*;
 
 /**
@@ -275,6 +275,16 @@ public class Pattern implements Cloneable {
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
+	public Pattern asFloat(float lo, float hi) {
+		putMapping(MappingType.FLOAT, new FloatMapping(lo, hi));
+		return this;
+	}
+
+	public float asFloat() {
+		Float result = (Float) getAs(MappingType.FLOAT);
+		return result.floatValue();
+	}
+
 	/**
 	 * Set a mapping from the pattern's events to sounds
 	 * 
@@ -481,6 +491,27 @@ public class Pattern implements Cloneable {
 
 	public OscBundle asOscBundle() {
 		return (OscBundle) getAs(MappingType.OSC_BUNDLE);
+	}
+
+	public Pattern asSynthParam(final Synth synth, final String param,
+			float lo, float hi) {
+
+		// ensure that the "server" is set to our local server
+		Server.osc = (OscP5) loom.oscP5Wrapper.get();
+
+		final Pattern follow = new Pattern(loom, new FollowerFunction(this));
+		follow.asFloat(lo, hi);
+		follow.asCallable(new Callable<Void>() {
+			@Override
+			public Void call() {
+				synth.set(param, follow.asFloat());
+				return null;
+			}
+		});
+
+		addChild(follow);
+
+		return this;
 	}
 
 	public Pattern asSample(final AudioSample sample) {
