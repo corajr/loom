@@ -16,6 +16,7 @@ import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.*;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
+import org.chrisjr.loom.wrappers.OscP5Impl;
 
 import oscP5.*;
 import processing.core.PApplet;
@@ -496,8 +497,16 @@ public class Pattern implements Cloneable {
 	public Pattern asSynthParam(final Synth synth, final String param,
 			float lo, float hi) {
 
-		// ensure that the "server" is set to our local server
-		Server.osc = (OscP5) loom.oscP5Wrapper.get();
+		// ensure that the "server" is set to the local OscP5 wrapper
+		// TODO this method wouldn't obviously have this as a side effect
+		// should move into separate function
+		try {
+			Server.osc = (OscP5) loom.oscP5Wrapper.get();
+		} catch (IllegalStateException e) {
+			OscP5 osc = new OscP5(loom, 57110);
+			loom.oscP5Wrapper.set(new OscP5Impl(loom, osc));
+			Server.osc = osc;
+		}
 
 		final Pattern follow = new Pattern(loom, new FollowerFunction(this));
 		follow.asFloat(lo, hi);

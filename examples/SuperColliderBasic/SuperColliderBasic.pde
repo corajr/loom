@@ -12,7 +12,7 @@ void setup() {
   loom = new Loom(this);
   pattern = new Pattern(loom);
 
-  synth = new Synth("sine", loom.oscP5Wrapper.get());
+  synth = new Synth("sine");
 
   synth.set("amp", 0.5);
   synth.set("freq", 220);
@@ -22,6 +22,7 @@ void setup() {
 
   pattern.asSynthParam(synth, "freq", 220, 440);
 
+  synth.create();
   pattern.loop();
 
   loom.play();
@@ -31,3 +32,7 @@ void draw() {
   background(pattern.asColor());
 }
 
+void exit() {
+  synth.free();
+  super.exit();
+}
