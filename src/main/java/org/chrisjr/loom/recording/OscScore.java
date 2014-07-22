@@ -2,14 +2,21 @@ package org.chrisjr.loom.recording;
 
 import java.io.*;
 import java.nio.*;
-import java.util.*;
 import java.util.concurrent.*;
-import java.net.DatagramPacket;
 
 import oscP5.*;
 import netP5.*;
 
+/**
+ * @author chrisjr
+ * 
+ *         A map from double-precision timestamps (where 1.0 == one cycle) to
+ *         OscBundles.
+ * 
+ */
 public class OscScore extends ConcurrentSkipListMap<Double, OscBundle> {
+	private static final long serialVersionUID = 6403752578380975901L;
+
 	public static final Byte[] BUNDLE_BYTES = new Byte[] { 0x23, 0x62, 0x75,
 			0x6e, 0x64, 0x6c, 0x65, 0x00 };
 	public static final int BUNDLE_HEADER_SIZE = 16;

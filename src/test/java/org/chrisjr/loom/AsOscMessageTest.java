@@ -37,7 +37,7 @@ public class AsOscMessageTest {
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
 
-		OscP5Impl oscP52 = new OscP5Impl(this, new OscP5(loom, 12000));
+		OscP5Impl oscP52 = new OscP5Impl(loom, new OscP5(loom, 12000));
 		loom.oscP5Wrapper.set(oscP52);
 		loom.play();
 	}

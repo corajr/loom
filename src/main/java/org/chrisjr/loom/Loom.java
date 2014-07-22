@@ -55,7 +55,7 @@ import org.chrisjr.loom.wrappers.*;
  */
 
 public class Loom {
-	PApplet myParent;
+	public PApplet myParent;
 
 	public PatternCollection patterns = new PatternCollection();
 

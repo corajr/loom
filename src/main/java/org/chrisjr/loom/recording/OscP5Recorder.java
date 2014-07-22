@@ -8,12 +8,13 @@ import netP5.*;
 
 import java.io.*;
 
-public class OscP5Recorder implements IOscP5 {
+public class OscP5Recorder extends OscP5 implements IOscP5 {
 	Loom loom;
 	File outputFile;
 	OscScore score;
 
 	public OscP5Recorder(Loom loom, File outputFile) throws IOException {
+		super(loom, 13000);
 		this.outputFile = outputFile;
 		this.loom = loom;
 		score = new OscScore();
