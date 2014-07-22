@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.chrisjr.loom.recording.OscScore;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.wrappers.OscP5Impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +20,7 @@ import oscP5.OscP5;
 import supercollider.Synth;
 
 public class AsSCSynthParamTest {
-	private OscP5 oscP5;
+	private OscP5 oscP5, oscP52;
 	private File oscFile;
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
@@ -36,6 +38,10 @@ public class AsSCSynthParamTest {
 		pattern = new Pattern(loom);
 
 		synth = new Synth("sine");
+		synth.set("amp", 0.5f);
+		synth.set("freq", 220);
+
+		pattern.extend("0101");
 	}
 
 	@After
@@ -45,13 +51,7 @@ public class AsSCSynthParamTest {
 	}
 
 	@Test
-	public void synthSetFreq() {
-		synth.set("amp", 0.5f);
-		synth.set("freq", 220);
-
-		pattern.extend("0101");
-		pattern.asColor(0x000000, 0xFFFFFF);
-
+	public void synthSetFreqRecorded() {
 		try {
 			oscFile = File.createTempFile("recording", "osc");
 			loom.record(oscFile, null);
@@ -59,6 +59,25 @@ public class AsSCSynthParamTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		pattern.asSynthParam(synth, "freq", 220, 440);
+
+		scheduler.setElapsedMillis(1001);
+		loom.dispose();
+
+		OscScore result = OscScore.fromFile(oscFile);
+
+		assertThat(result.size(), is(greaterThan(0)));
+
+	}
+
+	@Test
+	public void synthSetFreqLive() {
+		oscP52 = new OscP5(this, 57151);
+
+		loom.oscP5Wrapper.set(new OscP5Impl(loom, oscP52));
+
+		loom.play();
 
 		pattern.asSynthParam(synth, "freq", 220, 440);
 
