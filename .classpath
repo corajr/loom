@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="resources/libs/minim/mp3spi1.9.4.jar"/>
 	<classpathentry kind="lib" path="resources/libs/minim/tritonus_aos.jar"/>
 	<classpathentry kind="lib" path="resources/libs/minim/tritonus_share.jar"/>
+	<classpathentry kind="lib" path="resources/libs/supercollider.jar"/>
 	<classpathentry kind="output" path="resources/code"/>
 </classpath>
