@@ -37,7 +37,7 @@ public class AsOscMessageTest {
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
 
-		OscP5Impl oscP52 = new OscP5Impl(new OscP5(loom, 12000));
+		OscP5Impl oscP52 = new OscP5Impl(this, new OscP5(loom, 12000));
 		loom.oscP5Wrapper.set(oscP52);
 		loom.play();
 	}
@@ -87,6 +87,6 @@ public class AsOscMessageTest {
 		pattern.asOscBundle(myRemoteLocation, messagePat);
 
 		scheduler.setElapsedMillis(1001);
-		waitForEvents(4, 200);
+		waitForEvents(3, 200);
 	}
 }

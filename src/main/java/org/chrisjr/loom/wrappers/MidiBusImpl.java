@@ -4,7 +4,7 @@ import javax.sound.midi.MidiMessage;
 
 import themidibus.MidiBus;
 
-public class MidiBusImpl implements IMidiBus {
+public class MidiBusImpl extends MidiBus implements IMidiBus {
 	private final MidiBus midiBus;
 
 	public MidiBusImpl(MidiBus midiBus) {
