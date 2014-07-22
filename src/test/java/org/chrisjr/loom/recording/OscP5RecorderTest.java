@@ -25,8 +25,7 @@ public class OscP5RecorderTest {
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
 
-		oscFile = new File("/Users/chrisjr/Desktop/osc"); // File.createTempFile("recording",
-															// "osc");
+		oscFile = File.createTempFile("recording", "osc");
 		loom.record(oscFile, null);
 	}
 
