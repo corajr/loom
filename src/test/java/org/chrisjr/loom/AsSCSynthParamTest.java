@@ -62,6 +62,8 @@ public class AsSCSynthParamTest {
 
 		pattern.asSynthParam(synth, "freq", 220, 440);
 
+		synth.create();
+
 		scheduler.setElapsedMillis(1001);
 		loom.dispose();
 
@@ -79,6 +81,8 @@ public class AsSCSynthParamTest {
 
 		loom.play();
 
+		synth.create();
+
 		pattern.asSynthParam(synth, "freq", 220, 440);
 
 		scheduler.setElapsedMillis(1001);
@@ -88,9 +92,6 @@ public class AsSCSynthParamTest {
 
 	void oscEvent(OscMessage theOscMessage) {
 		eventsCounter.incrementAndGet();
-		System.out.print(theOscMessage.addrPattern());
-		System.out.print(" ");
-		System.out.println(theOscMessage.get(0).intValue());
 	}
 
 }
