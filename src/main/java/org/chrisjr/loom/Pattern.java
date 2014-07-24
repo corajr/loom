@@ -109,6 +109,10 @@ public class Pattern implements Cloneable {
 		}
 	}
 
+	public static Pattern fromABC(Loom loom, String tune) {
+		return AbcTools.fromString(loom, tune);
+	}
+
 	protected void addSelfTo(Loom loom) {
 		loom.patterns.add(this);
 	}
