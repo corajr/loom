@@ -109,6 +109,23 @@ public class Pattern implements Cloneable {
 		}
 	}
 
+	/**
+	 * Takes an ABC tune as input and creates a new pattern suitable for MIDI
+	 * output. For a quick overview of ABC, see:
+	 * <http://trillian.mit.edu/~jc/doc/doc/ABCprimer.html>.
+	 * 
+	 * A minimal valid tune must contain three header lines: "X:" (a reference
+	 * number), "T:" (a title) and "K:" (a key signature), followed by the
+	 * notes. Tempo, meter, and other headers are currently ignored.
+	 * 
+	 * Examples: A rising scale in C natural minor: "X:1\nT:\nK:Cm\nCDEF|GABc"
+	 * 
+	 * @param loom
+	 *            the Loom on which the new pattern should be created
+	 * @param tune
+	 *            a string containing a valid ABC tune
+	 * @return a new pattern constructed from the tune
+	 */
 	public static Pattern fromABC(Loom loom, String tune) {
 		return AbcTools.fromString(loom, tune);
 	}
