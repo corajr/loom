@@ -37,8 +37,8 @@ public class AbcToolsTest {
 	public void fromString() {
 		NonRealTimeScheduler scheduler = new NonRealTimeScheduler();
 		Loom loom = new Loom(null, scheduler);
+
 		Pattern notes = Pattern.fromABC(loom, tuneString);
-		notes.asMidiNote(0, 127);
 		loom.play();
 
 		for (int i = 0; i < 8; i++) {
@@ -47,5 +47,35 @@ public class AbcToolsTest {
 		}
 
 		loom.dispose();
+	}
+
+	@Test
+	public void patternsFromVariousStrings() {
+		NonRealTimeScheduler scheduler = new NonRealTimeScheduler();
+		Loom loom = new Loom(null, scheduler);
+
+		Pattern[] patterns = new Pattern[] {
+				Pattern.fromABC(loom, "CDEF|GABc"),
+				Pattern.fromABC(loom, "_BAc=B") };
+
+		int[][] notes = new int[][] {
+				new int[] { 60, 62, 64, 65, 67, 69, 71, 72 },
+				new int[] { 70, 69, 72, 71 } };
+
+		loom.play();
+
+		for (int i = 0; i < patterns.length; i++) {
+			for (int j = 0; j < notes[i].length; j++) {
+				scheduler.setElapsedMillis(j * 250);
+				assertThat(patterns[i].asMidiNote(), is(equalTo(notes[i][j])));
+			}
+		}
+	}
+
+	@Test
+	public void complexWithTuples() {
+		EventCollection events = AbcTools
+				.eventsFromString("C|^FG2C|(3^FGA(3FGA|GA2||");
+		assertThat(events.size(), is(equalTo(12)));
 	}
 }

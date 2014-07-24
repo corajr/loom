@@ -6,11 +6,10 @@ import org.chrisjr.loom.Loom;
 
 import themidibus.MidiBus;
 
-public class MidiBusImpl extends MidiBus implements IMidiBus {
+public class MidiBusImpl implements IMidiBus {
 	private final MidiBus midiBus;
 
-	public MidiBusImpl(Loom parent, MidiBus midiBus) {
-		super(parent.myParent);
+	public MidiBusImpl(MidiBus midiBus) {
 		this.midiBus = midiBus;
 	}
 

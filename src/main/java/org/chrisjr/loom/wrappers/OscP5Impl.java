@@ -4,12 +4,11 @@ import oscP5.*;
 import netP5.*;
 import org.chrisjr.loom.*;
 
-public class OscP5Impl extends OscP5 implements IOscP5 {
+public class OscP5Impl implements IOscP5 {
 
 	private final OscP5 oscP5;
 
-	public OscP5Impl(Loom parent, OscP5 oscP5) {
-		super(parent, 13000);
+	public OscP5Impl(OscP5 oscP5) {
 		this.oscP5 = oscP5;
 	}
 

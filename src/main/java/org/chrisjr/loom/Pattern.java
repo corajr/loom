@@ -116,9 +116,15 @@ public class Pattern implements Cloneable {
 	 * 
 	 * A minimal valid tune must contain three header lines: "X:" (a reference
 	 * number), "T:" (a title) and "K:" (a key signature), followed by the
-	 * notes. Tempo, meter, and other headers are currently ignored.
+	 * notes. The key must be last; tempo, meter, and other headers are
+	 * currently ignored. If the headers are omitted, the parser will do its
+	 * best to add them appropriately.
 	 * 
-	 * Examples: A rising scale in C natural minor: "X:1\nT:\nK:Cm\nCDEF|GABc"
+	 * Examples: A rising scale in C natural minor: "K:Cm\nCDEF|GABc"
+	 * 
+	 * The BACH motive (B-flat, A, C, B natural): "_BAc=B"
+	 * 
+	 * Beginning to "Maria" from West Side Story: "C|^FG2C|(3^FGA(3FGA|GA2||"
 	 * 
 	 * @param loom
 	 *            the Loom on which the new pattern should be created
@@ -525,7 +531,7 @@ public class Pattern implements Cloneable {
 			Server.osc = (OscP5) loom.oscP5Wrapper.get();
 		} catch (IllegalStateException e) {
 			OscP5 osc = new OscP5(loom, 57110);
-			loom.oscP5Wrapper.set(new OscP5Impl(loom, osc));
+			loom.oscP5Wrapper.set(new OscP5Impl(osc));
 			Server.osc = osc;
 		}
 

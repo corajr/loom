@@ -14,17 +14,27 @@ public class AbcTools {
 
 	public static Pattern fromString(Loom loom, String tuneString) {
 		EventCollection tuneEvents = eventsFromString(tuneString);
-		return new Pattern(loom, tuneEvents);
+		Pattern pat = new Pattern(loom, tuneEvents);
+		return pat.asMidiNote(0, 127);
 	}
 
 	public static EventCollection eventsFromString(String tuneString) {
 		EventCollection events = new EventCollection();
+
+		if (!tuneString.startsWith("X:")) {
+			if (tuneString.startsWith("K:")) {
+				tuneString = "X:1\nT:\n" + tuneString;
+			} else {
+				tuneString = "X:1\nT:\nK:C\n" + tuneString;
+			}
+		}
 
 		Tune tune = null;
 		try {
 			tune = parser.parse(tuneString);
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new IllegalArgumentException("Tune could not be parsed!");
 		}
 
 		if (tune != null) {

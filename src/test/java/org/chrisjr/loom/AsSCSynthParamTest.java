@@ -77,7 +77,7 @@ public class AsSCSynthParamTest {
 	public void synthSetFreqLive() {
 		oscP52 = new OscP5(this, 57151);
 
-		loom.oscP5Wrapper.set(new OscP5Impl(loom, oscP52));
+		loom.oscP5Wrapper.set(new OscP5Impl(oscP52));
 
 		loom.play();
 
