@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="resources/libs/minim/tritonus_aos.jar"/>
 	<classpathentry kind="lib" path="resources/libs/minim/tritonus_share.jar"/>
 	<classpathentry kind="lib" path="resources/libs/supercollider.jar"/>
+	<classpathentry kind="lib" path="lib/abc4j_v0.5.jar"/>
 	<classpathentry kind="output" path="resources/code"/>
 </classpath>
