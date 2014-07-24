@@ -15,6 +15,7 @@ public class AbcTools {
 	public static Pattern fromString(Loom loom, String tuneString) {
 		EventCollection tuneEvents = eventsFromString(tuneString);
 		Pattern pat = new Pattern(loom, tuneEvents);
+		pat.setLoopInterval(tuneEvents.getTotalInterval());
 		return pat.asMidiNote(0, 127);
 	}
 

@@ -124,7 +124,7 @@ public class Pattern implements Cloneable {
 	 * 
 	 * The BACH motive (B-flat, A, C, B natural): "_BAc=B"
 	 * 
-	 * Beginning to "Maria" from West Side Story: "C|^FG2C|(3^FGA(3FGA|GA2||"
+	 * Beginning to "Maria" from West Side Story: "C|^FG2C|(3^FGA(3^FGA|^FG2||"
 	 * 
 	 * @param loom
 	 *            the Loom on which the new pattern should be created

@@ -9,12 +9,11 @@ import org.chrisjr.loom.time.Interval;
 /**
  * @author chrisjr
  * 
- *         Events are stored as a sorted map indexed by start position.
+ *         Stores events as a sorted map indexed by start position. Events
+ *         cannot overlap within a single collection; polyphony can be achieved
+ *         by having multiple child patterns each with its own set of events.
  * 
  */
-
-// TODO using a map means no overlapping events in a collection. Is this
-// desirable?
 
 public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		implements EventQueryable {
@@ -116,6 +115,13 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 				: new BigFraction(0);
 	}
 
+	public Interval getTotalInterval() {
+		BigFraction start = this.firstKey();
+		BigFraction end = getLatestEnd();
+		return new Interval(start, end);
+	}
+
+	@Override
 	public Collection<Event> getForInterval(Interval interval) {
 		List<Event> events = new ArrayList<Event>();
 		for (Event e : this.values()) {
@@ -125,6 +131,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		return events;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("EventCollection(\n\t");

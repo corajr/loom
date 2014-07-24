@@ -85,4 +85,12 @@ public class EventCollectionTest {
 		Collection<Event> results = events.getForInterval(interval);
 		assertThat(results.size(), is(equalTo(2)));
 	}
+
+	@Test
+	public void getTotalInterval() {
+		events = new EventCollection();
+		events.add(new Event(new Interval(0, 1), 0.0));
+		events.add(new Event(new Interval(99, 100), 0.0));
+		assertThat(events.getTotalInterval(), is(equalTo(new Interval(0, 100))));
+	}
 }

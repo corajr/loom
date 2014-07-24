@@ -75,7 +75,7 @@ public class AbcToolsTest {
 	@Test
 	public void complexWithTuples() {
 		EventCollection events = AbcTools
-				.eventsFromString("C|^FG2C|(3^FGA(3FGA|GA2||");
+				.eventsFromString("C|^FG2C|(3^FGA(3^FGA|^FG2||");
 		assertThat(events.size(), is(equalTo(12)));
 	}
 }
