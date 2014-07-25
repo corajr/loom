@@ -43,15 +43,21 @@ public class DrawCommandsTest {
 		}
 
 		@Override
+		public void line(float x1, float y1, float x2, float y2) {
+			commands.add(String.format("line(%1.0f, %1.0f, %1.0f, %1.0f);", x1,
+					y1, x2, y2));
+		}
+
+		@Override
 		public void rect(float x, float y, float w, float h) {
 			commands.add(String.format("rect(%1.0f, %1.0f, %1.0f, %1.0f);", x,
 					y, w, h));
 		}
 
 		@Override
-		public void line(float x1, float y1, float x2, float y2) {
-			commands.add(String.format("line(%1.0f, %1.0f, %1.0f, %1.0f);", x1,
-					y1, x2, y2));
+		public void ellipse(float x, float y, float w, float h) {
+			commands.add(String.format("ellipse(%1.0f, %1.0f, %1.0f, %1.0f);",
+					x, y, w, h));
 		}
 	}
 
@@ -60,6 +66,7 @@ public class DrawCommandsTest {
 		testApp = new MockPApplet();
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(testApp, scheduler);
+		pattern = new Pattern(loom);
 
 		testApp.init();
 
@@ -74,17 +81,31 @@ public class DrawCommandsTest {
 
 	@Test
 	public void line() {
-		pattern = new Pattern(loom);
 		pattern.extend("0");
-		pattern.asDrawCommand(new DrawCommand() {
-			@Override
-			public void draw() {
-				parent.line(0, 0, 100, 100);
-			}
-		});
+		pattern.asDrawCommand(Draw.line(0, 0, 100, 100));
 
 		loom.draw();
 
 		assertThat(testApp.commands, contains("line(0, 0, 100, 100);"));
+	}
+
+	@Test
+	public void rect() {
+		pattern.extend("0");
+		pattern.asDrawCommand(Draw.rect(0, 0, 100, 100));
+
+		loom.draw();
+
+		assertThat(testApp.commands, contains("rect(0, 0, 100, 100);"));
+	}
+
+	@Test
+	public void ellipse() {
+		pattern.extend("0");
+		pattern.asDrawCommand(Draw.ellipse(0, 0, 100, 100));
+
+		loom.draw();
+
+		assertThat(testApp.commands, contains("ellipse(0, 0, 100, 100);"));
 	}
 }
