@@ -1,10 +1,10 @@
 package org.chrisjr.loom.mappings;
 
-import java.util.*;
+import java.util.concurrent.*;
 
 import processing.core.PApplet;
 
-public class Turtle extends ArrayList<DrawCommand> {
+public class Turtle extends CopyOnWriteArrayList<DrawCommand> {
 	PApplet parent;
 
 	public Turtle(PApplet parent) {
