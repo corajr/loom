@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 import processing.core.PApplet;
 
 public abstract class DrawCommand {
-	public PApplet parent;
+	PApplet parent;
 
 	/**
 	 * Does the actual drawing of the shape/line/etc. Color is handled
@@ -14,4 +14,8 @@ public abstract class DrawCommand {
 	 * 
 	 */
 	public abstract void draw();
+
+	public void setParent(PApplet parent) {
+		this.parent = parent;
+	}
 }

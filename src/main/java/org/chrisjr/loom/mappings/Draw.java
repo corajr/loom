@@ -1,6 +1,31 @@
 package org.chrisjr.loom.mappings;
 
+import processing.core.*;
+
 public class Draw {
+	public static class Compound extends DrawCommand {
+		DrawCommand[] commands;
+
+		public Compound(DrawCommand... commands) {
+			this.commands = commands;
+		}
+
+		@Override
+		public void setParent(PApplet parent) {
+			super.setParent(parent);
+			for (DrawCommand command : commands) {
+				command.setParent(parent);
+			}
+		}
+
+		@Override
+		public void draw() {
+			for (DrawCommand command : commands) {
+				command.draw();
+			}
+		}
+	}
+
 	public static class Line extends DrawCommand {
 		float x1, y1, x2, y2;
 
@@ -49,6 +74,47 @@ public class Draw {
 		}
 	}
 
+	public static class Forward extends DrawCommand {
+		float drawLength;
+
+		public Forward(float drawLength) {
+			this.drawLength = drawLength;
+		}
+
+		@Override
+		public void draw() {
+			parent.line(0, 0, 0, -drawLength);
+			parent.translate(0, -drawLength);
+		}
+	}
+
+	public static class Rotate extends DrawCommand {
+		float theta;
+
+		public Rotate(float theta) {
+			this.theta = theta;
+		}
+
+		@Override
+		public void draw() {
+			parent.rotate(theta);
+		}
+	}
+
+	public static class Push extends DrawCommand {
+		@Override
+		public void draw() {
+			parent.pushMatrix();
+		}
+	}
+
+	public static class Pop extends DrawCommand {
+		@Override
+		public void draw() {
+			parent.popMatrix();
+		}
+	}
+
 	public static Line line(float x1, float y1, float x2, float y2) {
 		return new Line(x1, y1, x2, y2);
 	}
@@ -59,5 +125,33 @@ public class Draw {
 
 	public static Ellipse ellipse(float x, float y, float w, float h) {
 		return new Ellipse(x, y, w, h);
+	}
+
+	public static Forward forward(float drawLength) {
+		return new Forward(drawLength);
+	}
+
+	public static Rotate rotate(float theta) {
+		return new Rotate(theta);
+	}
+
+	public static Push push() {
+		return new Push();
+	}
+
+	public static Pop pop() {
+		return new Pop();
+	}
+
+	/**
+	 * Shorthand to combine multiple DrawCommands into a single command.
+	 * 
+	 * @param commands
+	 *            the DrawCommands to be combined
+	 * @return a compound command that calls `draw()` on all members when
+	 *         called.
+	 */
+	public static Compound c(DrawCommand... commands) {
+		return new Compound(commands);
 	}
 }

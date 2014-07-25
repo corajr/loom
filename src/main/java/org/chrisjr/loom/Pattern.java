@@ -588,7 +588,7 @@ public class Pattern implements Cloneable {
 
 	public Pattern asDrawCommand(DrawCommand... commands) {
 		for (int i = 0; i < commands.length; i++) {
-			commands[i].parent = loom.getParent();
+			commands[i].setParent(loom.getParent());
 		}
 		putMapping(MappingType.DRAW_COMMAND, new ObjectMapping<DrawCommand>(
 				commands));

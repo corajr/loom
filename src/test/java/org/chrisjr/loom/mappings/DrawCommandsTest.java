@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 public class DrawCommandsTest {
 	private MockPApplet testApp;
@@ -40,6 +41,26 @@ public class DrawCommandsTest {
 		@Override
 		public void fill(int rgb) {
 			commands.add(String.format("fill(%s);", Integer.toHexString(rgb)));
+		}
+
+		@Override
+		public void translate(float x, float y) {
+			commands.add(String.format("translate(%1.0f, %1.0f);", x, y));
+		}
+
+		@Override
+		public void rotate(float theta) {
+			commands.add(String.format("rotate(%1.3f);", theta));
+		}
+
+		@Override
+		public void pushMatrix() {
+			commands.add("pushMatrix();");
+		}
+
+		@Override
+		public void popMatrix() {
+			commands.add("popMatrix();");
 		}
 
 		@Override
@@ -107,5 +128,22 @@ public class DrawCommandsTest {
 		loom.draw();
 
 		assertThat(testApp.commands, contains("ellipse(0, 0, 100, 100);"));
+	}
+
+	@Test
+	public void turtle() {
+		pattern.extend("0123");
+		pattern.asDrawCommand(Draw.forward(100),
+				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)),
+				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)),
+				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)));
+
+		int[] sizes = new int[] { 2, 5, 8, 11 };
+		for (int i = 0; i < sizes.length; i++) {
+			scheduler.setElapsedMillis(i * 250);
+			loom.draw();
+			assertThat(testApp.commands, hasSize(sizes[i]));
+
+		}
 	}
 }
