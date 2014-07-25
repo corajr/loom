@@ -12,10 +12,10 @@ public class LsysRewriter extends EventRewriter {
 	public String alphabet;
 
 	public static class LsysRule extends Rule {
-		double matchOn;
-		double[] replaceWith;
+		Double matchOn;
+		Double[] replaceWith;
 
-		public LsysRule(double matchOn, double[] replaceWith) {
+		public LsysRule(Double matchOn, Double[] replaceWith) {
 			this.matchOn = matchOn;
 			this.replaceWith = replaceWith;
 		}
@@ -49,10 +49,14 @@ public class LsysRewriter extends EventRewriter {
 	}
 
 	public LsysRewriter(int generations, String... ruleStrings) {
-		this(generations, getAlphabetFrom(ruleStrings), makeRules(ruleStrings));
+		this(getAlphabetFrom(ruleStrings), generations, ruleStrings);
 	}
 
-	public LsysRewriter(int generations, String alphabet, ArrayList<Rule> rules) {
+	public LsysRewriter(String alphabet, int generations, String... ruleStrings) {
+		this(alphabet, generations, makeRules(alphabet, ruleStrings));
+	}
+
+	public LsysRewriter(String alphabet, int generations, ArrayList<Rule> rules) {
 		super(rules);
 		this.alphabet = alphabet;
 		this.generations = generations;
@@ -66,8 +70,8 @@ public class LsysRewriter extends EventRewriter {
 				alphabet, out));
 	}
 
-	public static double[] toDoubles(String alphabet, String s) {
-		double[] values = new double[s.length()];
+	public static Double[] toDoubles(String alphabet, String s) {
+		Double[] values = new Double[s.length()];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = (double) alphabet.indexOf(s.charAt(i))
 					/ (alphabet.length() - 1);
@@ -97,13 +101,36 @@ public class LsysRewriter extends EventRewriter {
 		return alphabet;
 	}
 
-	public static ArrayList<Rule> makeRules(String[] strings) {
+	public static ArrayList<Rule> makeRules(String alphabet, String[] strings) {
 		ArrayList<Rule> rules = new ArrayList<Rule>();
-		String alphabet = getAlphabetFrom(strings);
+		Set<Character> predecessors = new HashSet<Character>();
+
 		for (String rule : strings) {
+			String[] from_to = rule.split("->");
+			if (from_to[0].length() != 1) {
+				throw new IllegalArgumentException(
+						"Rules must have exactly one symbol as predecessor. Invalid rule:\n"
+								+ rule);
+			}
+			Character predecessor = from_to[0].charAt(0);
+			predecessors.add(predecessor);
+
 			rules.add(ruleFrom(alphabet, rule));
 		}
+
+		// add constant rules
+
+		for (Character c : alphabet.toCharArray()) {
+			if (!predecessors.contains(c)) {
+				rules.add(ruleFrom(alphabet, c + "->" + c));
+			}
+		}
+
 		return rules;
+	}
+
+	public EventCollection makeAxiom(String axiom) {
+		return EventCollection.fromDoubles(toDoubles(alphabet, axiom));
 	}
 
 	@Override

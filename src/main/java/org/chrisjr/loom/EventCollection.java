@@ -22,8 +22,10 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	/**
 	 * Creates a series of events from a string.
 	 * 
-	 * For now, only "0" and "1" will be accepted. The length of the string, N,
-	 * is considered one cycle, so each value is 1/N in duration.
+	 * The syntax is simple: digits from "0" through "F" (hexadecimal) will be
+	 * accepted, with the values being scaled so that the maximum present is
+	 * equal to 1.0. The length of the string, N, is considered one cycle, so
+	 * each value is 1/N cycles in duration.
 	 * 
 	 * @param string
 	 * @return a new EventCollection
@@ -48,6 +50,8 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 
 	public static EventCollection fromInts(List<Integer> intValues) {
 		int max = Collections.max(intValues);
+		if (max == 0)
+			max = 1;
 		int n = intValues.size();
 
 		List<Double> doubleValues = new ArrayList<Double>(n);

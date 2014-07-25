@@ -49,6 +49,13 @@ public class EventCollectionTest {
 	}
 
 	@Test
+	public void initializeFromSingleZero() {
+		String sample = "0";
+		events = EventCollection.fromString(sample);
+		assertThat(events.size(), is(equalTo(sample.length())));
+	}
+
+	@Test
 	public void initializeFromString() {
 		String sample = "0101";
 		events = EventCollection.fromString(sample);

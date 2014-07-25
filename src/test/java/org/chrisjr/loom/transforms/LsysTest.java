@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 
 import org.chrisjr.loom.*;
 import org.chrisjr.loom.time.*;
+import java.util.*;
 import org.junit.Test;
 
 public class LsysTest {
@@ -26,8 +27,7 @@ public class LsysTest {
 
 	@Test
 	public void algae() {
-		EventCollection events = new EventCollection();
-		events.add(new Event(new Interval(0, 1), 0.0));
+		EventCollection events = EventCollection.fromString("0");
 
 		LsysRewriter rewriter = new LsysRewriter("A->AB", "B->A");
 		EventCollection oneGen = rewriter.apply(events);
@@ -47,5 +47,41 @@ public class LsysTest {
 		assertThat(rewriter.alphabet, is(equalTo("AB")));
 		assertThat(rewriter.fromDouble(0.0), is(equalTo("A")));
 		assertThat(rewriter.fromDouble(1.0), is(equalTo("B")));
+	}
+
+	public String eventsToString(LsysRewriter rewriter, Collection<Event> events) {
+		StringBuilder sb = new StringBuilder();
+		for (Event e : events) {
+			sb.append(rewriter.fromDouble(e.getValue()));
+		}
+
+		return sb.toString();
+	}
+
+	@Test
+	public void getAxiom() {
+		LsysRewriter rewriter = new LsysRewriter("XF+-[]", 1,
+				"X->F-[[X]+X]+F[+FX]-X", "F->FF");
+		EventCollection axiom = rewriter.makeAxiom("X");
+
+		assertThat(axiom.size(), is(equalTo(1)));
+		assertThat(eventsToString(rewriter, axiom.values()), is(equalTo("X")));
+	}
+
+	@Test
+	public void moreComplex() {
+		LsysRewriter rewriter = new LsysRewriter("XYF+-", 1, "X->X+YF",
+				"Y->FX-Y");
+
+		EventCollection gen0 = rewriter.makeAxiom("FX");
+
+		String gen0s = eventsToString(rewriter, gen0.values());
+
+		System.out.println(gen0s);
+		EventCollection gen1 = rewriter.apply(gen0);
+
+		String gen1s = eventsToString(rewriter, gen1.values());
+
+		System.out.println(gen1s);
 	}
 }
