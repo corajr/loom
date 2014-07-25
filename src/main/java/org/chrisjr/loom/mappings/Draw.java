@@ -2,7 +2,27 @@ package org.chrisjr.loom.mappings;
 
 import processing.core.*;
 
+/**
+ * Classes for various drawing commands. When added to a pattern, these commands
+ * will be attached to the current PApplet and will execute in its graphics
+ * context.
+ * 
+ * @author chrisjr
+ */
 public class Draw {
+
+	/**
+	 * NOOP is useful for instructions that are to be ignored, i.e. constants in
+	 * an L-system that do not draw anything.
+	 */
+	public static final Noop NOOP = new Noop();
+
+	public static class Noop extends DrawCommand {
+		@Override
+		public void draw() {
+		}
+	}
+
 	public static class Compound extends DrawCommand {
 		DrawCommand[] commands;
 
@@ -74,6 +94,20 @@ public class Draw {
 		}
 	}
 
+	public static class Translate extends DrawCommand {
+		float x, y;
+
+		public Translate(float x, float y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public void draw() {
+			parent.translate(x, y);
+		}
+	}
+
 	public static class Forward extends DrawCommand {
 		float drawLength;
 
@@ -125,6 +159,10 @@ public class Draw {
 
 	public static Ellipse ellipse(float x, float y, float w, float h) {
 		return new Ellipse(x, y, w, h);
+	}
+
+	public static Translate translate(float x, float y) {
+		return new Translate(x, y);
 	}
 
 	public static Forward forward(float drawLength) {

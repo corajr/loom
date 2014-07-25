@@ -5,11 +5,14 @@ import java.util.*;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Event;
 import org.chrisjr.loom.EventCollection;
+import org.chrisjr.loom.mappings.Draw;
+import org.chrisjr.loom.mappings.DrawCommand;
 import org.chrisjr.loom.time.Interval;
 
 public class LsysRewriter extends EventRewriter {
 	public int generations;
 	public String alphabet;
+	public Map<String, DrawCommand> drawCommands = new HashMap<String, DrawCommand>();
 
 	public static class LsysRule extends Rule {
 		Double matchOn;
@@ -131,6 +134,20 @@ public class LsysRewriter extends EventRewriter {
 
 	public EventCollection makeAxiom(String axiom) {
 		return EventCollection.fromDoubles(toDoubles(alphabet, axiom));
+	}
+
+	public void setCommand(String symbol, DrawCommand command) {
+		drawCommands.put(symbol, command);
+	}
+
+	public DrawCommand[] getDrawCommands() {
+		DrawCommand[] commands = new DrawCommand[alphabet.length()];
+		for (int i = 0; i < commands.length; i++) {
+			DrawCommand command = drawCommands.get(alphabet.charAt(i));
+			commands[i] = command != null ? command : Draw.NOOP;
+		}
+
+		return commands;
 	}
 
 	@Override

@@ -131,6 +131,14 @@ public class DrawCommandsTest {
 	}
 
 	@Test
+	public void translate() {
+		pattern.extend("0");
+		pattern.asDrawCommand(Draw.translate(50, 50));
+		loom.draw();
+		assertThat(testApp.commands, hasItem("translate(50, 50);"));
+	}
+
+	@Test
 	public void turtle() {
 		pattern.extend("0123");
 		pattern.asDrawCommand(Draw.forward(100),

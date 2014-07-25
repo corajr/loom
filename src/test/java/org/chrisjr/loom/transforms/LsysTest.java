@@ -5,8 +5,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import org.chrisjr.loom.*;
+import org.chrisjr.loom.mappings.Draw;
+import org.chrisjr.loom.mappings.DrawCommand;
 import org.chrisjr.loom.time.*;
+
 import java.util.*;
+
 import org.junit.Test;
 
 public class LsysTest {
@@ -60,8 +64,8 @@ public class LsysTest {
 
 	@Test
 	public void getAxiom() {
-		LsysRewriter rewriter = new LsysRewriter("XF+-[]", 1,
-				"X->F-[[X]+X]+F[+FX]-X", "F->FF");
+		LsysRewriter rewriter = new LsysRewriter("X->F-[[X]+X]+F[+FX]-X",
+				"F->FF");
 		EventCollection axiom = rewriter.makeAxiom("X");
 
 		assertThat(axiom.size(), is(equalTo(1)));
@@ -70,18 +74,28 @@ public class LsysTest {
 
 	@Test
 	public void moreComplex() {
-		LsysRewriter rewriter = new LsysRewriter("XYF+-", 1, "X->X+YF",
-				"Y->FX-Y");
+		LsysRewriter rewriter = new LsysRewriter("X->X+YF", "Y->FX-Y");
 
 		EventCollection gen0 = rewriter.makeAxiom("FX");
 
 		String gen0s = eventsToString(rewriter, gen0.values());
 
-		System.out.println(gen0s);
+		assertThat(gen0s.length(), is(equalTo(2)));
 		EventCollection gen1 = rewriter.apply(gen0);
 
 		String gen1s = eventsToString(rewriter, gen1.values());
+		assertThat(gen1s.length(), is(equalTo(5)));
 
-		System.out.println(gen1s);
+	}
+
+	@Test
+	public void drawCommandAdd() {
+		LsysRewriter lsys = new LsysRewriter("X->X+YF", "Y->FX-Y");
+		lsys.setCommand("F", Draw.forward(10));
+		lsys.setCommand("+", Draw.rotate((float) Math.PI / 2));
+		lsys.setCommand("-", Draw.rotate((float) -Math.PI / 2));
+
+		DrawCommand[] commands = lsys.getDrawCommands();
+		assertThat(commands.length, is(equalTo(5)));
 	}
 }
