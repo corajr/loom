@@ -55,6 +55,7 @@ public class Pattern implements Cloneable {
 		INTEGER, // inclusive range
 		FLOAT, // inclusive range
 		COLOR, // 32-bit integer (ARGB) format
+		DRAW_COMMAND, // instruction to draw a shape, line, etc.
 		MIDI_COMMAND, // NOTE_ON, NOTE_OFF, etc.
 		MIDI_CHANNEL, // 0-15
 		MIDI_DATA1, // byte 1 of command
@@ -585,6 +586,15 @@ public class Pattern implements Cloneable {
 		return getIntOrElse(result, 0x00000000);
 	}
 
+	public Pattern asDrawCommand(DrawCommand... commands) {
+		for (int i = 0; i < commands.length; i++) {
+			commands[i].parent = loom.getParent();
+		}
+		putMapping(MappingType.DRAW_COMMAND, new ObjectMapping<DrawCommand>(
+				commands));
+		return this;
+	}
+
 	public Pattern asObject(Object... objects) {
 		putMapping(MappingType.OBJECT, new ObjectMapping<Object>(objects));
 		return this;
@@ -613,6 +623,20 @@ public class Pattern implements Cloneable {
 	@SuppressWarnings("unchecked")
 	public Callable<Object> asCallable() {
 		return (Callable<Object>) getAs(MappingType.CALLABLE);
+	}
+
+	public Collection<DrawCommand> getDrawCommands() {
+		if (isConcretePattern())
+			return getConcretePattern().getDrawCommands();
+
+		Collection<DrawCommand> commands = new ArrayList<DrawCommand>();
+		if (children != null) {
+			for (Pattern child : children) {
+				commands.addAll(child.getDrawCommands());
+			}
+		}
+
+		return commands;
 	}
 
 	public Collection<Callable<?>> getExternalMappings() {
@@ -828,6 +852,13 @@ public class Pattern implements Cloneable {
 		if (pat != null && pat.events instanceof EventCollection)
 			events = (EventCollection) getConcretePattern().events;
 		return events;
+	}
+
+	public void draw() {
+		Collection<DrawCommand> commands = getDrawCommands();
+		for (DrawCommand command : commands) {
+			command.draw();
+		}
 	}
 
 	public void rect(float x, float y, float width, float height) {

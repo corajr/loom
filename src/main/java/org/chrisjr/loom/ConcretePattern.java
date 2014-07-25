@@ -2,6 +2,7 @@ package org.chrisjr.loom;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,6 +52,15 @@ public class ConcretePattern extends Pattern {
 				callbacks.add((Callable<?>) getAs(mapping));
 		}
 		return callbacks;
+	}
+
+	@Override
+	public Collection<DrawCommand> getDrawCommands() {
+		if (outputMappings.containsKey(MappingType.DRAW_COMMAND))
+			return Collections
+					.singletonList((DrawCommand) getAs(MappingType.DRAW_COMMAND));
+		else
+			return Collections.emptyList();
 	}
 
 	/**

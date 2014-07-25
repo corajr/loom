@@ -167,6 +167,12 @@ public class Loom {
 		play();
 	}
 
+	public void draw() {
+		for (Pattern pattern : patterns) {
+			pattern.draw();
+		}
+	}
+
 	private static int periodToBpm(long period) {
 		return (int) (240000.0 / period);
 	}
