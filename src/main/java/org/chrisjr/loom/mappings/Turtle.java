@@ -13,7 +13,7 @@ public class Turtle extends ArrayList<DrawCommand> {
 
 	public void draw() {
 		for (DrawCommand command : this) {
-			command.draw();
+			command.draw(parent);
 		}
 	}
 }

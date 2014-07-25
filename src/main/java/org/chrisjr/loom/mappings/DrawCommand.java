@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 import processing.core.PApplet;
 
 public abstract class DrawCommand implements Callable<Void> {
-	PApplet parent;
+	private PApplet parent;
 	Turtle turtle = null;
 
 	/**

@@ -39,6 +39,14 @@ public class Draw {
 		}
 
 		@Override
+		public void setTurtle(Turtle turtle) {
+			super.setTurtle(turtle);
+			for (DrawCommand command : commands) {
+				command.setTurtle(turtle);
+			}
+		}
+
+		@Override
 		public void draw(PApplet parent) {
 			for (DrawCommand command : commands) {
 				command.draw(parent);

@@ -22,11 +22,9 @@ void setup() {
 
   EventCollection events = lsys.apply(axiom);
   pattern = new Pattern(loom, events);
-  pattern.asDrawCommand(lsys.getDrawCommands());
+  pattern.asTurtleDrawCommand(lsys.getDrawCommands());
   
   loom.play();
-  
-  stroke(0);
 }
 
 void draw() {
