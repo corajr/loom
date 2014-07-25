@@ -7,22 +7,29 @@ Pattern pattern;
 
 void setup() {
   size(800, 600);
+  
+  loom = new Loom(this);
 
   LsysRewriter lsys = new LsysRewriter("X->F-[[X]+X]+F[+FX]-X", "F->FF");
   EventCollection axiom = lsys.makeAxiom("X");
 
-  lsys.generations = 10;
+  lsys.generations = 5;
   lsys.setCommand("F", Draw.forward(10));
   lsys.setCommand("+", Draw.rotate(radians(35)));
   lsys.setCommand("-", Draw.rotate(radians(-35)));
   lsys.setCommand("[", Draw.push());
   lsys.setCommand("]", Draw.pop());
 
-  pattern = new Pattern(loom, lsys.apply(axiom));
+  EventCollection events = lsys.apply(axiom);
+  pattern = new Pattern(loom, events);
   pattern.asDrawCommand(lsys.getDrawCommands());
+  
+  loom.play();
+  
+  stroke(0);
 }
 
 void draw() {
+  translate(width/2, height/2);
   loom.draw();
 }
-

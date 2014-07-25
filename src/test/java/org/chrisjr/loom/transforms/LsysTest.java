@@ -85,7 +85,15 @@ public class LsysTest {
 
 		String gen1s = eventsToString(rewriter, gen1.values());
 		assertThat(gen1s.length(), is(equalTo(5)));
+	}
 
+	@Test
+	public void manyGenerations() {
+		LsysRewriter lsys = new LsysRewriter("X->F-[[X]+X]+F[+FX]-X", "F->FF");
+		EventCollection axiom = lsys.makeAxiom("X");
+
+		lsys.generations = 5;
+		lsys.apply(axiom);
 	}
 
 	@Test
