@@ -107,7 +107,7 @@ public class DrawCommandsTest {
 
 		loom.draw();
 
-		assertThat(testApp.commands, contains("line(0, 0, 100, 100);"));
+		assertThat(testApp.commands, hasItem("line(0, 0, 100, 100);"));
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class DrawCommandsTest {
 
 		loom.draw();
 
-		assertThat(testApp.commands, contains("rect(0, 0, 100, 100);"));
+		assertThat(testApp.commands, hasItem("rect(0, 0, 100, 100);"));
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class DrawCommandsTest {
 
 		loom.draw();
 
-		assertThat(testApp.commands, contains("ellipse(0, 0, 100, 100);"));
+		assertThat(testApp.commands, hasItem("ellipse(0, 0, 100, 100);"));
 	}
 
 	@Test
@@ -138,12 +138,11 @@ public class DrawCommandsTest {
 				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)),
 				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)));
 
-		int[] sizes = new int[] { 2, 5, 8, 11 };
+		int[] sizes = new int[] { 4, 9, 14, 19 };
 		for (int i = 0; i < sizes.length; i++) {
 			scheduler.setElapsedMillis(i * 250);
 			loom.draw();
 			assertThat(testApp.commands, hasSize(sizes[i]));
-
 		}
 	}
 }

@@ -857,7 +857,9 @@ public class Pattern implements Cloneable {
 	public void draw() {
 		Collection<DrawCommand> commands = getDrawCommands();
 		for (DrawCommand command : commands) {
+			loom.getParent().pushMatrix();
 			command.draw();
+			loom.getParent().popMatrix();
 		}
 	}
 
