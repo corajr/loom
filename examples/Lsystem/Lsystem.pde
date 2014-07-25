@@ -14,7 +14,7 @@ void setup() {
   EventCollection axiom = lsys.makeAxiom("X");
 
   lsys.generations = 5;
-  lsys.setCommand("F", Draw.forward(10));
+  lsys.setCommand("F", Draw.forward(100));
   lsys.setCommand("+", Draw.rotate(radians(35)));
   lsys.setCommand("-", Draw.rotate(radians(-35)));
   lsys.setCommand("[", Draw.push());

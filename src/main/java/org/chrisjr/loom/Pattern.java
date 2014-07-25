@@ -13,6 +13,7 @@ import netP5.NetAddress;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.mappings.*;
+import org.chrisjr.loom.mappings.Draw.Compound;
 import org.chrisjr.loom.time.*;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
@@ -597,14 +598,43 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	public DrawCommand asDrawCommand() {
+		DrawCommand result = null;
+		Collection<DrawCommand> commands = getDrawCommands();
+		switch (commands.size()) {
+		case 0:
+			result = Draw.NOOP;
+			break;
+		case 1:
+			result = commands.iterator().next();
+			break;
+		default:
+			result = new Draw.Compound(commands);
+		}
+
+		result.setParent(loom.getParent());
+
+		return result;
+	}
+
 	public Pattern asTurtleDrawCommand(DrawCommand... commands) {
 		turtle = new Turtle(loom.getParent());
 
 		for (int i = 0; i < commands.length; i++) {
-			commands[i].setTurtle(turtle);
+			commands[i].setParent(loom.getParent());
 		}
 		putMapping(MappingType.DRAW_COMMAND, new ObjectMapping<DrawCommand>(
 				commands));
+
+		final Pattern original = this;
+
+		onOnset(new Callable<Void>() {
+			@Override
+			public Void call() {
+				turtle.add(original.asDrawCommand());
+				return null;
+			}
+		});
 
 		every(1, new Callable<Void>() {
 			@Override
@@ -879,13 +909,11 @@ public class Pattern implements Cloneable {
 	}
 
 	public void draw() {
-		Collection<DrawCommand> commands = getDrawCommands();
-		for (DrawCommand command : commands) {
-			command.call();
-		}
-
-		if (turtle != null)
+		if (turtle != null) {
 			turtle.draw();
+		} else {
+			asDrawCommand().draw();
+		}
 	}
 
 	public void rect(float x, float y, float width, float height) {

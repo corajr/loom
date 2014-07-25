@@ -1,0 +1,29 @@
+import org.chrisjr.loom.*;
+import org.chrisjr.loom.mappings.*;
+
+Loom loom;
+Pattern pattern;
+
+void setup() {
+  size(800, 600);
+
+  loom = new Loom(this);
+  pattern = new Pattern(loom);
+
+  pattern.extend("0123");
+  DrawCommand forwardAndTurn = 
+    Draw.c(Draw.forward(100), Draw.rotate(HALF_PI));
+
+  pattern.asTurtleDrawCommand(forwardAndTurn);
+  pattern.loop();
+  
+  loom.play();
+}
+
+void draw() {
+  background(255);
+  translate(width/2, height/2);
+
+  loom.draw();
+}
+

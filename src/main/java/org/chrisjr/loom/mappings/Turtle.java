@@ -1,6 +1,6 @@
 package org.chrisjr.loom.mappings;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import processing.core.PApplet;
 

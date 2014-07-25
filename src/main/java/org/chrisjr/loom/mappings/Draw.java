@@ -1,5 +1,6 @@
 package org.chrisjr.loom.mappings;
 
+import java.util.*;
 import processing.core.*;
 
 /**
@@ -30,19 +31,15 @@ public class Draw {
 			this.commands = commands;
 		}
 
+		public Compound(Collection<DrawCommand> commands) {
+			this(commands.toArray(new DrawCommand[] {}));
+		}
+
 		@Override
 		public void setParent(PApplet parent) {
 			super.setParent(parent);
 			for (DrawCommand command : commands) {
 				command.setParent(parent);
-			}
-		}
-
-		@Override
-		public void setTurtle(Turtle turtle) {
-			super.setTurtle(turtle);
-			for (DrawCommand command : commands) {
-				command.setTurtle(turtle);
 			}
 		}
 

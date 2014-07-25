@@ -5,9 +5,8 @@ import java.util.concurrent.Callable;
 
 import processing.core.PApplet;
 
-public abstract class DrawCommand implements Callable<Void> {
+public abstract class DrawCommand {
 	private PApplet parent;
-	Turtle turtle = null;
 
 	/**
 	 * Does the actual drawing of the shape/line/etc. Color is handled
@@ -21,20 +20,7 @@ public abstract class DrawCommand implements Callable<Void> {
 		draw(parent);
 	}
 
-	@Override
-	public Void call() {
-		if (turtle != null)
-			turtle.add(this);
-		else
-			draw();
-		return null;
-	}
-
 	public void setParent(PApplet parent) {
 		this.parent = parent;
-	}
-
-	public void setTurtle(Turtle turtle) {
-		this.turtle = turtle;
 	}
 }
