@@ -47,7 +47,7 @@ public abstract class Scheduler {
 		if (state == State.STOPPED)
 			throw new IllegalStateException(
 					"Tried to retrieve the time while stopped! "
-							+ "Did you remember to call loom.play()?");
+							+ "Please call loom.play() or loom.record().");
 
 		long elapsed = getElapsedMillis();
 
