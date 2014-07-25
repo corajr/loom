@@ -15,7 +15,7 @@ void setup() {
 
   loom = new Loom(this, 120);
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
-  loom.midiBusWrapper.set(new MidiBusImpl(myBus));
+  loom.setMidiBus(myBus);
 
   patterns = new Pattern[2];
 

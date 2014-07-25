@@ -530,8 +530,8 @@ public class Pattern implements Cloneable {
 		// should move into separate function
 		try {
 			Server.osc = (OscP5) loom.oscP5Wrapper.get();
-		} catch (IllegalStateException e) {
-			OscP5 osc = new OscP5(loom, 57110);
+		} catch (Exception e) {
+			OscP5 osc = new OscP5(loom, 57151);
 			loom.oscP5Wrapper.set(new OscP5Impl(osc));
 			Server.osc = osc;
 		}

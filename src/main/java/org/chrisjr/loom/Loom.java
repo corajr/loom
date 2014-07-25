@@ -37,9 +37,12 @@ import org.chrisjr.loom.recording.*;
 import org.chrisjr.loom.time.*;
 
 import processing.core.*;
+import themidibus.MidiBus;
 
 import org.chrisjr.loom.util.*;
 import org.chrisjr.loom.wrappers.*;
+
+import oscP5.OscP5;
 
 /**
  * This is a template class and can be used to start a new processing library or
@@ -165,6 +168,14 @@ public class Loom {
 			midiBusWrapper = new MidiBusWrapper(this, midiFile);
 
 		play();
+	}
+
+	public void setOscP5(OscP5 oscP5) {
+		oscP5Wrapper.set(new OscP5Impl(oscP5));
+	}
+
+	public void setMidiBus(MidiBus midiBus) {
+		midiBusWrapper.set(new MidiBusImpl(midiBus));
 	}
 
 	public void draw() {

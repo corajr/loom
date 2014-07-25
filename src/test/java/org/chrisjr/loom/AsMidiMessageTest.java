@@ -37,12 +37,11 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		myBus = new MidiBus(null, "Bus 1", "Bus 1");
 		myBus.addMidiListener(this);
 
-		MidiBusImpl midiBus = new MidiBusImpl(myBus);
-		loom.midiBusWrapper.set(midiBus);
+		loom.setMidiBus(myBus);
 		loom.play();
 
 		// allow a little time to initialize midi
-		Thread.sleep(20);
+		Thread.sleep(30);
 	}
 
 	@After

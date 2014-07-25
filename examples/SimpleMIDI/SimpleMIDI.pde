@@ -13,7 +13,7 @@ void setup() {
   pattern = new Pattern(loom);
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
   
-  loom.midiBusWrapper.set(new MidiBusImpl(myBus));
+  loom.setMidiBus(myBus);
 
   pattern.extend("0242");
   pattern.asColor(#000000, #FFFFFF);
