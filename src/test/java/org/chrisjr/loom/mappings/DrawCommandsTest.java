@@ -141,12 +141,12 @@ public class DrawCommandsTest {
 	@Test
 	public void turtle() {
 		pattern.extend("0123");
-		pattern.asDrawCommand(Draw.forward(100),
+		pattern.asTurtleDrawCommand(Draw.forward(100),
 				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)),
 				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)),
 				Draw.c(Draw.rotate(PConstants.HALF_PI), Draw.forward(100)));
 
-		int[] sizes = new int[] { 4, 9, 14, 19 };
+		int[] sizes = new int[] { 2, 7, 15, 26 };
 		for (int i = 0; i < sizes.length; i++) {
 			scheduler.setElapsedMillis(i * 250);
 			loom.draw();

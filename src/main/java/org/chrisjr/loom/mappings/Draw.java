@@ -19,7 +19,7 @@ public class Draw {
 
 	public static class Noop extends DrawCommand {
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 		}
 	}
 
@@ -39,9 +39,9 @@ public class Draw {
 		}
 
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			for (DrawCommand command : commands) {
-				command.draw();
+				command.draw(parent);
 			}
 		}
 	}
@@ -57,7 +57,7 @@ public class Draw {
 		}
 
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.line(x1, y1, x2, y2);
 		}
 	}
@@ -73,7 +73,7 @@ public class Draw {
 		}
 
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.rect(x, y, w, h);
 		}
 	}
@@ -89,7 +89,7 @@ public class Draw {
 		}
 
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.ellipse(x, y, w, h);
 		}
 	}
@@ -103,7 +103,7 @@ public class Draw {
 		}
 
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.translate(x, y);
 		}
 	}
@@ -116,7 +116,7 @@ public class Draw {
 		}
 
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.line(0, 0, 0, -drawLength);
 			parent.translate(0, -drawLength);
 		}
@@ -130,21 +130,21 @@ public class Draw {
 		}
 
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.rotate(theta);
 		}
 	}
 
 	public static class Push extends DrawCommand {
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.pushMatrix();
 		}
 	}
 
 	public static class Pop extends DrawCommand {
 		@Override
-		public void draw() {
+		public void draw(PApplet parent) {
 			parent.popMatrix();
 		}
 	}

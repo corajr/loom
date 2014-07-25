@@ -33,6 +33,8 @@ import ddf.minim.*;
 public class Pattern implements Cloneable {
 	Loom loom;
 
+	public Turtle turtle = null;
+
 	protected PatternCollection children = null;
 	protected Pattern parent = null;
 
@@ -595,6 +597,26 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	public Pattern asTurtleDrawCommand(DrawCommand... commands) {
+		turtle = new Turtle(loom.getParent());
+
+		for (int i = 0; i < commands.length; i++) {
+			commands[i].setParent(loom.getParent());
+			commands[i].setTurtle(turtle);
+		}
+		putMapping(MappingType.DRAW_COMMAND, new ObjectMapping<DrawCommand>(
+				commands));
+
+		every(1, new Callable<Void>() {
+			@Override
+			public Void call() {
+				turtle.clear();
+				return null;
+			}
+		});
+		return this;
+	}
+
 	public Pattern asObject(Object... objects) {
 		putMapping(MappingType.OBJECT, new ObjectMapping<Object>(objects));
 		return this;
@@ -714,10 +736,15 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern every(double cycles, Transform transform) {
-		return every(new BigFraction(cycles), transform);
+		Callable<Void> callable = Transform.toCallable(transform, this);
+		return every(cycles, callable);
 	}
 
-	public Pattern every(BigFraction fraction, final Transform transform) {
+	public Pattern every(double cycles, Callable<Void> callable) {
+		return every(new BigFraction(cycles), callable);
+	}
+
+	public Pattern every(BigFraction fraction, Callable<Void> callable) {
 		EventCollection events = new EventCollection();
 
 		Interval interval = new Interval(BigFraction.ZERO, fraction);
@@ -732,9 +759,7 @@ public class Pattern implements Cloneable {
 
 		trigger.setTimeMatch(this);
 
-		final Pattern original = this;
-
-		trigger.onRelease(Transform.toCallable(transform, original));
+		trigger.onRelease(callable);
 
 		return this;
 	}
@@ -857,10 +882,11 @@ public class Pattern implements Cloneable {
 	public void draw() {
 		Collection<DrawCommand> commands = getDrawCommands();
 		for (DrawCommand command : commands) {
-			loom.getParent().pushMatrix();
-			command.draw();
-			loom.getParent().popMatrix();
+			command.call();
 		}
+
+		if (turtle != null)
+			turtle.draw();
 	}
 
 	public void rect(float x, float y, float width, float height) {
