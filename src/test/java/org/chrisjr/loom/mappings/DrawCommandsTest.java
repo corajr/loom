@@ -6,9 +6,11 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.*;
 
+import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.transforms.LsysRewriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -155,6 +157,36 @@ public class DrawCommandsTest {
 			loom.draw();
 
 			assertThat(testApp.commands, hasSize(sizes[i % sizes.length]));
+		}
+	}
+
+	@Test
+	public void turtleWithLsys() {
+		LsysRewriter lsys = new LsysRewriter("X->F-[[X]+X]+F[+FX]-X", "F->FF");
+		EventCollection axiom = lsys.makeAxiom("X");
+
+		lsys.generations = 2;
+		lsys.setCommand("F", Draw.forward(100));
+		lsys.setCommand("+", Draw.rotate(PApplet.radians(35)));
+		lsys.setCommand("-", Draw.rotate(PApplet.radians(-35)));
+		lsys.setCommand("[", Draw.push());
+		lsys.setCommand("]", Draw.pop());
+
+		DrawCommand[] commands = lsys.getDrawCommands();
+
+		EventCollection events = lsys.apply(axiom);
+
+		pattern = new Pattern(loom, events);
+		pattern.asTurtleDrawCommand(commands);
+		pattern.loop();
+
+		for (int i = 0; i < 10; i++) {
+			testApp.commands.clear();
+
+			scheduler.setElapsedMillis(i * 250);
+			loom.draw();
+
+			assertThat(testApp.commands.size(), is(greaterThan(0)));
 		}
 	}
 }

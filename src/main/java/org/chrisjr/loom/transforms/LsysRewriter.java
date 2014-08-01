@@ -143,7 +143,8 @@ public class LsysRewriter extends EventRewriter {
 	public DrawCommand[] getDrawCommands() {
 		DrawCommand[] commands = new DrawCommand[alphabet.length()];
 		for (int i = 0; i < commands.length; i++) {
-			DrawCommand command = drawCommands.get(alphabet.charAt(i));
+			DrawCommand command = drawCommands
+					.get(alphabet.substring(i, i + 1));
 			commands[i] = command != null ? command : Draw.NOOP;
 		}
 
