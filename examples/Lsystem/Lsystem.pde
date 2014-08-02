@@ -8,13 +8,13 @@ Pattern pattern;
 void setup() {
   size(800, 600);
   
-  loom = new Loom(this);
+  loom = new Loom(this, 10);
 
   LsysRewriter lsys = new LsysRewriter("X->F-[[X]+X]+F[+FX]-X", "F->FF");
   EventCollection axiom = lsys.makeAxiom("X");
 
-  lsys.generations = 5;
-  lsys.setCommand("F", TurtleDraw.forward(10));
+  lsys.generations = 4;
+  lsys.setCommand("F", TurtleDraw.forward(20));
   lsys.setCommand("+", TurtleDraw.turn(radians(35)));
   lsys.setCommand("-", TurtleDraw.turn(radians(-35)));
   lsys.setCommand("[", TurtleDraw.push());
@@ -28,6 +28,6 @@ void setup() {
 }
 
 void draw() {
-  translate(width/2, height/2);
+  translate(width/2, height);
   loom.draw();
 }
