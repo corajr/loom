@@ -7,12 +7,13 @@ import org.chrisjr.loom.Event;
 import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.mappings.Draw;
 import org.chrisjr.loom.mappings.DrawCommand;
+import org.chrisjr.loom.mappings.TurtleDrawCommand;
 import org.chrisjr.loom.time.Interval;
 
 public class LsysRewriter extends EventRewriter {
 	public int generations;
 	public String alphabet;
-	public Map<String, DrawCommand> drawCommands = new HashMap<String, DrawCommand>();
+	public Map<String, TurtleDrawCommand> turtleDrawCommands = new HashMap<String, TurtleDrawCommand>();
 
 	public static class LsysRule extends Rule {
 		Double matchOn;
@@ -136,15 +137,15 @@ public class LsysRewriter extends EventRewriter {
 		return EventCollection.fromDoubles(toDoubles(alphabet, axiom));
 	}
 
-	public void setCommand(String symbol, DrawCommand command) {
-		drawCommands.put(symbol, command);
+	public void setCommand(String symbol, TurtleDrawCommand command) {
+		turtleDrawCommands.put(symbol, command);
 	}
 
-	public DrawCommand[] getDrawCommands() {
-		DrawCommand[] commands = new DrawCommand[alphabet.length()];
+	public TurtleDrawCommand[] getTurtleDrawCommands() {
+		TurtleDrawCommand[] commands = new TurtleDrawCommand[alphabet.length()];
 		for (int i = 0; i < commands.length; i++) {
-			DrawCommand command = drawCommands
-					.get(alphabet.substring(i, i + 1));
+			TurtleDrawCommand command = turtleDrawCommands.get(alphabet
+					.substring(i, i + 1));
 			commands[i] = command != null ? command : Draw.NOOP;
 		}
 

@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.*;
 import org.chrisjr.loom.*;
 import org.chrisjr.loom.mappings.Draw;
 import org.chrisjr.loom.mappings.DrawCommand;
+import org.chrisjr.loom.mappings.TurtleDraw;
+import org.chrisjr.loom.mappings.TurtleDrawCommand;
 import org.chrisjr.loom.time.*;
 
 import java.util.*;
@@ -99,11 +101,11 @@ public class LsysTest {
 	@Test
 	public void drawCommandAdd() {
 		LsysRewriter lsys = new LsysRewriter("X->X+YF", "Y->FX-Y");
-		lsys.setCommand("F", Draw.forward(10));
-		lsys.setCommand("+", Draw.rotate((float) Math.PI / 2));
-		lsys.setCommand("-", Draw.rotate((float) -Math.PI / 2));
+		lsys.setCommand("F", TurtleDraw.forward(10));
+		lsys.setCommand("+", TurtleDraw.turn((float) Math.PI / 2));
+		lsys.setCommand("-", TurtleDraw.turn((float) -Math.PI / 2));
 
-		DrawCommand[] commands = lsys.getDrawCommands();
+		TurtleDrawCommand[] commands = lsys.getTurtleDrawCommands();
 		assertThat(commands.length, is(equalTo(5)));
 	}
 }

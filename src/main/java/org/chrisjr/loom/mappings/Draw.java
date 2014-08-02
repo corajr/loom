@@ -18,7 +18,7 @@ public class Draw {
 	 */
 	public static final Noop NOOP = new Noop();
 
-	public static class Noop extends DrawCommand {
+	public static class Noop extends TurtleDrawCommand {
 		@Override
 		public void draw(PApplet parent) {
 		}
