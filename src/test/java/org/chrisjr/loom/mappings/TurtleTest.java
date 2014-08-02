@@ -10,7 +10,8 @@ import processing.core.PConstants;
 import processing.core.PVector;
 
 public class TurtleTest {
-	static final double EPSILON = 1E-5;
+	static final double EPSILON = 1E-4;
+	static final PVector START = TurtleState.DEFAULT_POSITION.getPosition();
 
 	@Test
 	public void positionHeadingTurn() {
@@ -31,6 +32,44 @@ public class TurtleTest {
 		assertThat((double) posHeadMoved.getPosition().dist(dest),
 				is(closeTo(0.0, EPSILON)));
 		assertThat(posHeadMoved.getAngle(), is(equalTo(PConstants.HALF_PI)));
+	}
+
+	@Test
+	public void turtleStatePushPop() {
+		// trace out a 3:4:5 triangle, with turns
+		TurtleState state = TurtleState.defaultState();
+
+		assertThat((double) state.getPosition().dist(START),
+				is(closeTo(0.0, EPSILON)));
+
+		state = state.move(100).turn(PConstants.PI);
+		assertThat((double) state.getPosition().dist(START),
+				is(closeTo(100.0, EPSILON)));
+
+		state = state.pushPositionHeading();
+
+		state = state.turn(PConstants.PI).move(200);
+		assertThat((double) state.getPosition().dist(START),
+				is(closeTo(300.0, EPSILON)));
+
+		state = state.pushPositionHeading();
+
+		state = state.turn(PConstants.HALF_PI).move(400);
+		assertThat((double) state.getPosition().dist(START),
+				is(closeTo(500.0, EPSILON)));
+
+		state = state.popPositionHeading();
+
+		assertThat((double) state.getPosition().dist(START),
+				is(closeTo(300.0, EPSILON)));
+
+		state = state.popPositionHeading();
+		assertThat((double) state.getPosition().dist(START),
+				is(closeTo(100.0, EPSILON)));
+
+		state = state.move(100);
+		assertThat((double) state.getPosition().dist(START),
+				is(closeTo(0.0, EPSILON)));
 	}
 
 	@Test
