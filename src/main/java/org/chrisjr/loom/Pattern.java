@@ -623,7 +623,6 @@ public class Pattern implements Cloneable {
 
 		for (int i = 0; i < commands.length; i++) {
 			commands[i].setParent(loom.getParent());
-			commands[i].setTurtle(turtle);
 		}
 		putMapping(MappingType.TURTLE_DRAW_COMMAND,
 				new ObjectMapping<TurtleDrawCommand>(commands));

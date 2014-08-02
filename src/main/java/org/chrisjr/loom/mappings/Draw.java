@@ -1,6 +1,7 @@
 package org.chrisjr.loom.mappings;
 
 import java.util.*;
+
 import processing.core.*;
 
 /**
@@ -20,7 +21,8 @@ public class Draw {
 
 	public static class Noop extends TurtleDrawCommand {
 		@Override
-		public void draw(PApplet parent) {
+		public TurtleState draw(PApplet parent, TurtleState state) {
+			return state;
 		}
 	}
 

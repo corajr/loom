@@ -28,18 +28,11 @@ public class TurtleDraw {
 		}
 
 		@Override
-		public void setTurtle(Turtle turtle) {
-			super.setTurtle(turtle);
+		public TurtleState draw(PApplet parent, TurtleState state) {
 			for (TurtleDrawCommand command : commands) {
-				command.setTurtle(turtle);
+				state = command.draw(parent, state);
 			}
-		}
-
-		@Override
-		public void draw(PApplet parent) {
-			for (TurtleDrawCommand command : commands) {
-				command.draw(parent);
-			}
+			return state;
 		}
 	}
 
@@ -51,8 +44,8 @@ public class TurtleDraw {
 		}
 
 		@Override
-		public PositionHeading updatedPositionHeading(PositionHeading current) {
-			return current.move(drawLength);
+		public TurtleState draw(PApplet parent, TurtleState state) {
+			return state.move(drawLength);
 		}
 	}
 
@@ -62,17 +55,15 @@ public class TurtleDraw {
 		}
 
 		@Override
-		public void draw(PApplet parent) {
-			PositionHeading posHead = turtle.getPositionHeading();
+		public TurtleState draw(PApplet parent, TurtleState state) {
+			PVector pos = state.getPosition();
 
-			PVector pos = posHead.getPosition();
-
-			PositionHeading newPosHead = updatedPositionHeading(posHead);
-			PVector newPos = newPosHead.getPosition();
+			TurtleState nextState = state.move(drawLength);
+			PVector newPos = nextState.getPosition();
 
 			parent.line(pos.x, pos.y, newPos.x, newPos.y);
 
-			turtle.setPositionHeading(newPosHead);
+			return nextState;
 		}
 	}
 
@@ -84,22 +75,22 @@ public class TurtleDraw {
 		}
 
 		@Override
-		public PositionHeading updatedPositionHeading(PositionHeading current) {
-			return current.turn(angle);
+		public TurtleState draw(PApplet parent, TurtleState state) {
+			return state.turn(angle);
 		}
 	}
 
 	public static class Push extends TurtleDrawCommand {
 		@Override
-		public void draw(PApplet parent) {
-			turtle.pushPositionHeading();
+		public TurtleState draw(PApplet parent, TurtleState state) {
+			return state.pushPositionHeading();
 		}
 	}
 
 	public static class Pop extends TurtleDrawCommand {
 		@Override
-		public void draw(PApplet parent) {
-			turtle.popPositionHeading();
+		public TurtleState draw(PApplet parent, TurtleState state) {
+			return state.popPositionHeading();
 		}
 	}
 
