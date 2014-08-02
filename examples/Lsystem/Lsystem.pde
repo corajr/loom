@@ -14,15 +14,15 @@ void setup() {
   EventCollection axiom = lsys.makeAxiom("X");
 
   lsys.generations = 5;
-  lsys.setCommand("F", Draw.forward(100));
-  lsys.setCommand("+", Draw.rotate(radians(35)));
-  lsys.setCommand("-", Draw.rotate(radians(-35)));
-  lsys.setCommand("[", Draw.push());
-  lsys.setCommand("]", Draw.pop());
+  lsys.setCommand("F", TurtleDraw.forward(10));
+  lsys.setCommand("+", TurtleDraw.turn(radians(35)));
+  lsys.setCommand("-", TurtleDraw.turn(radians(-35)));
+  lsys.setCommand("[", TurtleDraw.push());
+  lsys.setCommand("]", TurtleDraw.pop());
 
   EventCollection events = lsys.apply(axiom);
   pattern = new Pattern(loom, events);
-  pattern.asTurtleDrawCommand(lsys.getDrawCommands());
+  pattern.asTurtleDrawCommand(lsys.getTurtleDrawCommands());
   
   loom.play();
 }

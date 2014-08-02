@@ -45,7 +45,10 @@ public class TurtleTest {
 				TurtleDraw.forward(100)));
 		turtle.draw();
 
-		System.out.println(testApp.commands);
+		assertThat(testApp.commands, hasSize(2));
+		assertThat(testApp.commands.get(0), is(equalTo("line(0, 0, 0, -100);")));
+		assertThat(testApp.commands.get(1),
+				is(equalTo("line(0, -100, 100, -100);")));
 
 		testApp.dispose();
 	}

@@ -93,14 +93,24 @@ public class DrawCommandsTest {
 				TurtleDraw.c(TurtleDraw.turn(PConstants.HALF_PI),
 						TurtleDraw.forward(100)));
 
-		int[] sizes = new int[] { 1, 2, 3, 4 };
-		for (int i = 0; i < sizes.length * 2; i++) {
+		String[][] expectedCommands = new String[][] {
+				new String[] { "line(0, 0, 0, -100);" },
+				new String[] { "line(0, 0, 0, -100);",
+						"line(0, -100, 100, -100);" },
+				new String[] { "line(0, 0, 0, -100);",
+						"line(0, -100, 100, -100);", "line(100, -100, 100, 0);" },
+				new String[] { "line(0, 0, 0, -100);",
+						"line(0, -100, 100, -100);",
+						"line(100, -100, 100, 0);", "line(100, 0, -0, 0);" } };
+
+		for (int i = 0; i < expectedCommands.length * 2; i++) {
 			testApp.commands.clear();
 
 			scheduler.setElapsedMillis(i * 250);
 			loom.draw();
 
-			assertThat(testApp.commands, hasSize(sizes[i % sizes.length]));
+			assertThat(testApp.commands, contains(expectedCommands[i
+					% expectedCommands.length]));
 		}
 	}
 

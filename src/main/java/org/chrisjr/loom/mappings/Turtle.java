@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class Turtle extends CopyOnWriteArrayList<DrawCommand> {
+public class Turtle extends CopyOnWriteArrayList<TurtleDrawCommand> {
 	public static final PositionHeading DEFAULT_POSITION = new PositionHeading(
 			new PVector(0.0f, 0.0f), 0.0f);
 
@@ -22,13 +22,15 @@ public class Turtle extends CopyOnWriteArrayList<DrawCommand> {
 		this.positionHeading = positionHeading;
 	}
 
-	public void add(TurtleDrawCommand command) {
+	@Override
+	public boolean add(TurtleDrawCommand command) {
 		command.setTurtle(this);
-		super.add(command);
+		return super.add(command);
 	}
 
 	public void draw() {
-		for (DrawCommand command : this) {
+		setPositionHeading(DEFAULT_POSITION);
+		for (TurtleDrawCommand command : this) {
 			command.draw(parent);
 		}
 	}

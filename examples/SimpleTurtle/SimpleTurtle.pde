@@ -11,8 +11,8 @@ void setup() {
   pattern = new Pattern(loom);
 
   pattern.extend("0123");
-  DrawCommand forwardAndTurn = 
-    Draw.c(Draw.forward(100), Draw.rotate(HALF_PI));
+  TurtleDrawCommand forwardAndTurn = 
+    TurtleDraw.c(TurtleDraw.forward(100), TurtleDraw.turn(HALF_PI));
 
   pattern.asTurtleDrawCommand(forwardAndTurn);
   pattern.loop();

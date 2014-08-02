@@ -59,6 +59,7 @@ public class Pattern implements Cloneable {
 		FLOAT, // inclusive range
 		COLOR, // 32-bit integer (ARGB) format
 		DRAW_COMMAND, // instruction to draw a shape, line, etc.
+		TURTLE_DRAW_COMMAND, // stateful instruction to draw
 		MIDI_COMMAND, // NOTE_ON, NOTE_OFF, etc.
 		MIDI_CHANNEL, // 0-15
 		MIDI_DATA1, // byte 1 of command
@@ -624,15 +625,15 @@ public class Pattern implements Cloneable {
 			commands[i].setParent(loom.getParent());
 			commands[i].setTurtle(turtle);
 		}
-		putMapping(MappingType.DRAW_COMMAND, new ObjectMapping<DrawCommand>(
-				commands));
+		putMapping(MappingType.TURTLE_DRAW_COMMAND,
+				new ObjectMapping<TurtleDrawCommand>(commands));
 
 		final Pattern original = this;
 
 		onOnset(new Callable<Void>() {
 			@Override
 			public Void call() {
-				turtle.add(original.asDrawCommand());
+				turtle.add(original.asTurtleDrawCommand());
 				return null;
 			}
 		});
@@ -645,6 +646,10 @@ public class Pattern implements Cloneable {
 			}
 		});
 		return this;
+	}
+
+	public TurtleDrawCommand asTurtleDrawCommand() {
+		return (TurtleDrawCommand) getAs(MappingType.TURTLE_DRAW_COMMAND);
 	}
 
 	public Pattern asObject(Object... objects) {

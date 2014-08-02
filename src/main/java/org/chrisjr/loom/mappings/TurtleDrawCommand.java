@@ -19,5 +19,6 @@ public abstract class TurtleDrawCommand extends DrawCommand {
 
 	@Override
 	public void draw(PApplet parent) {
+		turtle.setPositionHeading(updatedPositionHeading());
 	}
 }
