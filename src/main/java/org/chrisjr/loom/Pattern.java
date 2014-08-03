@@ -619,6 +619,11 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asTurtleDrawCommand(TurtleDrawCommand... commands) {
+		return asTurtleDrawCommand(true, commands);
+	}
+
+	public Pattern asTurtleDrawCommand(boolean doUpdates,
+			TurtleDrawCommand... commands) {
 		turtle = new Turtle(loom.getParent());
 
 		for (int i = 0; i < commands.length; i++) {
@@ -629,26 +634,39 @@ public class Pattern implements Cloneable {
 
 		final Pattern original = this;
 
-		onOnset(new Callable<Void>() {
-			@Override
-			public Void call() {
-				turtle.add(original.asTurtleDrawCommand());
-				return null;
-			}
-		});
+		if (doUpdates) {
+			onOnset(new Callable<Void>() {
+				@Override
+				public Void call() {
+					turtle.add(original.asTurtleDrawCommand());
+					return null;
+				}
+			});
 
-		every(1, new Callable<Void>() {
-			@Override
-			public Void call() {
-				turtle.clear();
-				return null;
-			}
-		});
+			every(1, new Callable<Void>() {
+				@Override
+				public Void call() {
+					turtle.clear();
+					return null;
+				}
+			});
+		}
+
 		return this;
 	}
 
 	public TurtleDrawCommand asTurtleDrawCommand() {
 		return (TurtleDrawCommand) getAs(MappingType.TURTLE_DRAW_COMMAND);
+	}
+
+	public void addAllTurtleDrawCommands() {
+		turtle.clear();
+		EventCollection events = getEvents();
+		for (Event e : events.values()) {
+			TurtleDrawCommand tdc = (TurtleDrawCommand) getAs(
+					MappingType.TURTLE_DRAW_COMMAND, e.getValue());
+			turtle.add(tdc);
+		}
 	}
 
 	public Pattern asObject(Object... objects) {
@@ -819,7 +837,7 @@ public class Pattern implements Cloneable {
 				getConcretePattern(), this);
 
 		ConcretePattern concrete2 = new ConcretePattern(loom,
-				new MatchFunction(concrete, boundaryType));
+				new EventMatchFilter(concrete.events, boundaryType));
 
 		concrete2.asStatefulCallable(CallableOnChange.fromCallables(callable));
 

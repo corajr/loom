@@ -7,17 +7,16 @@ import java.util.List;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 
-public class EventBoundaryProxy implements EventQueryable {
+public class EventBoundaryProxy extends EventTransformer {
 	final private Pattern timeScaler;
-	final private EventQueryable parentEvents;
 	static final BigFraction DEFAULT_RESOLUTION = new BigFraction(1, 1000);
 
 	public static final double ONSET = 1.0;
 	public static final double RELEASE = 0.5;
 
 	public EventBoundaryProxy(Pattern timeScaler, EventQueryable parentEvents) {
+		super(parentEvents);
 		this.timeScaler = timeScaler;
-		this.parentEvents = parentEvents;
 	}
 
 	public BigFraction getMinimumResolution() {
@@ -28,33 +27,29 @@ public class EventBoundaryProxy implements EventQueryable {
 	}
 
 	@Override
-	public Collection<Event> getForInterval(Interval interval) {
-		Collection<Event> realEvents = parentEvents.getForInterval(interval);
-		List<Event> events = new ArrayList<Event>();
+	public Collection<Event> apply(Interval interval, Event e) {
+		Collection<Event> newEvents = new ArrayList<Event>();
 
-		BigFraction minimumResolution = getMinimumResolution();
-		for (Event e : realEvents) {
-			Interval eInterval = e.getInterval();
-			BigFraction instant = eInterval.getSize().divide(10);
-			if (instant.compareTo(minimumResolution) > 0) {
-				instant = minimumResolution;
-			}
-
-			BigFraction start = eInterval.getStart();
-			BigFraction startPlus = start.add(instant);
-			BigFraction end = eInterval.getEnd();
-			BigFraction endMinus = end.subtract(instant);
-
-			Event[] triggers = new Event[] {
-					new Event(new Interval(start, startPlus), ONSET),
-					new Event(new Interval(endMinus, end), RELEASE) };
-
-			for (Event t : triggers) {
-				if (t.containedBy(interval))
-					events.add(t);
-			}
+		Interval eInterval = e.getInterval();
+		BigFraction instant = eInterval.getSize().divide(10);
+		if (instant.compareTo(getMinimumResolution()) > 0) {
+			instant = getMinimumResolution();
 		}
 
-		return events;
+		BigFraction start = eInterval.getStart();
+		BigFraction startPlus = start.add(instant);
+		BigFraction end = eInterval.getEnd();
+		BigFraction endMinus = end.subtract(instant);
+
+		Event[] triggers = new Event[] {
+				new Event(new Interval(start, startPlus), ONSET),
+				new Event(new Interval(endMinus, end), RELEASE) };
+
+		for (Event t : triggers) {
+			if (t.containedBy(interval))
+				newEvents.add(t);
+		}
+
+		return newEvents;
 	}
 }
