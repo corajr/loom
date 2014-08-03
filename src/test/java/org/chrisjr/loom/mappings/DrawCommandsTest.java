@@ -109,7 +109,6 @@ public class DrawCommandsTest {
 			scheduler.setElapsedMillis(i * 250);
 			loom.draw();
 
-			System.out.println(testApp.commands);
 			assertThat(testApp.commands, contains(expectedCommands[i
 					% expectedCommands.length]));
 		}
@@ -135,10 +134,10 @@ public class DrawCommandsTest {
 		pattern.asTurtleDrawCommand(commands);
 		pattern.loop();
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 20; i++) {
 			testApp.commands.clear();
 
-			scheduler.setElapsedMillis(i * 250 + 1);
+			scheduler.setElapsedMillis(i * 100 + 1);
 			loom.draw();
 
 			assertThat(testApp.commands.size(), is(greaterThan(0)));
