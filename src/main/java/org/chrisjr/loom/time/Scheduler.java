@@ -79,7 +79,7 @@ public abstract class Scheduler {
 		this.periodMillis = periodMillis;
 	}
 
-	public synchronized void update() throws Exception {
+	public void update() throws Exception {
 		PatternCollection actives = getPatternsWithExternalMappings();
 		for (Pattern pattern : actives) {
 			Collection<Callable<?>> callbacks = pattern.getExternalMappings();
