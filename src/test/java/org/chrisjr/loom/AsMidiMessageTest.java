@@ -74,7 +74,9 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 		Thread.sleep(1);
 
-		scheduler.setElapsedMillis(2000);
+		scheduler.setElapsedMillis(1999);
+
+		Thread.sleep(1);
 
 		assertThat(notesOnReceived.get(), is(equalTo(8)));
 		assertThat(notesOffReceived.get(), is(equalTo(8)));
@@ -87,8 +89,6 @@ public class AsMidiMessageTest implements StandardMidiListener {
 			notesOnReceived.getAndIncrement();
 		else if ((data[0] & 0x80) == ShortMessage.NOTE_OFF)
 			notesOffReceived.getAndIncrement();
-		System.out.print("recv ");
-		MidiTools.printMidiRaw(data);
 	}
 
 }
