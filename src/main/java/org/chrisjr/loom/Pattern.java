@@ -632,15 +632,14 @@ public class Pattern implements Cloneable {
 			commands[i].setParent(loom.getParent());
 			commands[i].setTurtle(turtle);
 		}
-		Mapping<Callable<Void>> commandMapping = new ObjectMapping<Callable<Void>>(
-				commands);
 
-		putMapping(MappingType.TURTLE_DRAW_COMMAND, commandMapping);
+		putMapping(MappingType.TURTLE_DRAW_COMMAND,
+				new ObjectMapping<TurtleDrawCommand>(commands));
 
 		final Pattern original = this;
 
 		if (doUpdates) {
-			onOnsetWithValue(commandMapping);
+			onOnset(commands);
 
 			every(1, new Callable<Void>() {
 				@Override
@@ -850,13 +849,14 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
-	public Pattern onOnsetWithValue(Mapping<Callable<Void>> callableMapping) {
+	public Pattern onOnset(Callable<Void>... callables) {
 		EventQueryable proxy = new EventBoundaryProxy(this, this.getEvents());
 
 		ConcretePattern concrete = new ConcretePattern(loom,
 				new EventMatchFilter(proxy, EventBoundaryProxy.ONSET));
 
-		// concrete.asStatefulCallable(CallableOnChange.fromCallables(callable));
+		Mapping<StatefulCallable> callableMapping = new StatefulCallableMapping(
+				CallableOnChange.fromCallables(callables));
 		concrete.putMapping(MappingType.CALLABLE_WITH_ARG, callableMapping);
 
 		concrete.useParentOffset = false;

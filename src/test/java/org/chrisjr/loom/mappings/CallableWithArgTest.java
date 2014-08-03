@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 
 import org.chrisjr.loom.*;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.util.CallableNoop;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class CallableWithArgTest {
 	}
 
 	@Test
-	public void onOnsetWithValue() {
+	public void onOnsetMultiple() {
 		AtomicInteger[] counters = new AtomicInteger[4];
 		Callable[] callables = new Callable[4];
 		for (int i = 0; i < 4; i++) {
@@ -58,18 +59,21 @@ public class CallableWithArgTest {
 			callables[i] = new Incrementer(counters, i);
 		}
 
-		Mapping<Callable<Void>> callableMap = new ObjectMapping<Callable<Void>>(
-				callables);
-
-		Integer[] values = new Integer[] { 3, 2, 1, 0, 0, 1, 2, 3 };
+		Integer[] values = new Integer[] { 4, 3, 2, 1, 1, 2, 3, 4 };
 		pattern.extend(values);
 
-		pattern.onOnsetWithValue(callableMap);
+		pattern.onOnset(callables);
 
 		for (int i = 0; i < 8; i++) {
 			scheduler.setElapsedMillis(125 * i);
-			System.out.println(counters[values[i]].get());
-			assertThat(counters[values[i]].get(), is(equalTo(i < 4 ? 1 : 2)));
+			for (int j = 0; j < counters.length; j++) {
+				System.out.print(counters[j].get());
+				System.out.print(" ");
+			}
+			System.out.println();
+			// System.out.println(counters[values[i]].get());
+			// assertThat(counters[values[i]].get(), is(equalTo(i < 4 ? 1 :
+			// 2)));
 		}
 
 	}
