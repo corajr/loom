@@ -8,6 +8,10 @@ public class StatefulCallableMapping extends ObjectMapping<StatefulCallable> {
 		this.objects = objects;
 	}
 
+	public StatefulCallable getNoop() {
+		return objects[0];
+	}
+
 	@Override
 	public StatefulCallable call(double value) {
 		if (value < 1.0)
