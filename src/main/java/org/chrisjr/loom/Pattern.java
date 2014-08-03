@@ -833,19 +833,20 @@ public class Pattern implements Cloneable {
 	}
 
 	private Pattern onBoundary(double boundaryType, Callable<Void> callable) {
-		ConcretePattern concrete = ConcretePattern.forEach(
-				getConcretePattern(), this);
+		if (!isDiscretePattern())
+			throw new IllegalArgumentException(
+					"Pattern is not made of discrete events!");
 
-		ConcretePattern concrete2 = new ConcretePattern(loom,
-				new EventMatchFilter(concrete.events, boundaryType));
+		EventQueryable proxy = new EventBoundaryProxy(this, this.getEvents());
 
-		concrete2.asStatefulCallable(CallableOnChange.fromCallables(callable));
+		ConcretePattern concrete = new ConcretePattern(loom,
+				new EventMatchFilter(proxy, boundaryType));
+
+		concrete.asStatefulCallable(CallableOnChange.fromCallables(callable));
 
 		concrete.useParentOffset = false;
-		concrete2.useParentOffset = false;
 
 		addChild(concrete);
-		addChild(concrete2);
 
 		return this;
 	}

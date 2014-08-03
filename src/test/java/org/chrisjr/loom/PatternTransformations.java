@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -289,6 +290,29 @@ public class PatternTransformations {
 
 		scheduler.setElapsedMillis(1001);
 		assertThat(counter.get(), is(equalTo(4)));
+	}
+
+	@Test
+	public void manyTinyOnsets() {
+		int n = 10000;
+		pattern.clear();
+
+		Integer[] allOnes = new Integer[n];
+		Arrays.fill(allOnes, 1);
+
+		pattern.extend(allOnes);
+
+		final AtomicInteger counter = new AtomicInteger();
+		pattern.onOnset(new Callable<Void>() {
+			@Override
+			public Void call() {
+				counter.incrementAndGet();
+				return null;
+			}
+		});
+
+		scheduler.setElapsedMillis(1001);
+		assertThat(counter.get(), is(equalTo(10000)));
 	}
 
 	@Test

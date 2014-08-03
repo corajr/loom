@@ -26,14 +26,15 @@ public class MappingTest {
 		int black = Color.BLACK.getRGB();
 		int white = Color.WHITE.getRGB();
 		int gray60 = 0xff999999;
-		
+
 		Mapping<Integer> m = new ColorMapping(black, white);
 		assertThat(m.call(0.60), is(equalTo(gray60)));
 	}
-	
+
 	@Test
 	public void objectMapping() {
-		Mapping<Integer> m = new ObjectMapping<Integer>(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-		assertThat(m.call(0.60), is(equalTo(6)));		
+		Mapping<Integer> m = new ObjectMapping<Integer>(1, 2, 3, 4, 5, 6, 7, 8,
+				9, 10);
+		assertThat(m.call(0.60), is(equalTo(6)));
 	}
 }
