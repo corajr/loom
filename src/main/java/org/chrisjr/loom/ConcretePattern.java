@@ -76,7 +76,7 @@ public class ConcretePattern extends Pattern {
 					if (parentEvent != null) {
 						StatefulCallableMapping callMap = (StatefulCallableMapping) outputMappings
 								.get(MappingType.CALLABLE_WITH_ARG);
-						if (e.getValue() > 0.0)
+						if (e.getValue() == 1.0)
 							callables.add(callMap.call(parentEvent.getValue()));
 						else
 							callables.add(callMap.getNoop());

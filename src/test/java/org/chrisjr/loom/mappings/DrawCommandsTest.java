@@ -82,7 +82,7 @@ public class DrawCommandsTest {
 
 	@Test
 	public void turtle() {
-		pattern.extend("0123");
+		pattern.extend("1234");
 		pattern.loop();
 		pattern.asTurtleDrawCommand(
 				TurtleDraw.forward(100),
@@ -112,6 +112,54 @@ public class DrawCommandsTest {
 			System.out.println(testApp.commands);
 			// assertThat(testApp.commands, contains(expectedCommands[i
 			// % expectedCommands.length]));
+		}
+	}
+
+	@Test
+	public void turtleWithDragon() {
+		LsysRewriter lsys = new LsysRewriter("X->X+YF", "Y->FX-Y");
+		EventCollection axiom = lsys.makeAxiom("FX");
+
+		lsys.generations = 2;
+		lsys.setCommand("F", TurtleDraw.forward(10));
+		lsys.setCommand("+", TurtleDraw.turn(PConstants.HALF_PI));
+		lsys.setCommand("-", TurtleDraw.turn(-PConstants.HALF_PI));
+
+		TurtleDrawCommand[] commands = lsys.getTurtleDrawCommands();
+
+		EventCollection events = lsys.apply(axiom);
+
+		pattern = new Pattern(loom, events);
+		pattern.asTurtleDrawCommand(commands);
+		pattern.loop();
+
+		pattern.addAllTurtleDrawCommands();
+		pattern.draw();
+
+		String[] result = new String[testApp.commands.size()];
+		result = testApp.commands.toArray(result);
+
+		assertThat(testApp.commands, contains(result));
+
+		pattern.turtle.clear();
+
+		for (int i = 0; i < 3; i++) {
+			testApp.commands.clear();
+
+			scheduler.setElapsedMillis(i * 1000 + 1);
+			loom.draw();
+
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			System.out.println(testApp.commands);
+
+			assertThat(testApp.commands, contains(result));
+
 		}
 	}
 

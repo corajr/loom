@@ -72,8 +72,8 @@ public class CallableWithArgTest {
 			}
 			System.out.println();
 			// System.out.println(counters[values[i]].get());
-			// assertThat(counters[values[i]].get(), is(equalTo(i < 4 ? 1 :
-			// 2)));
+			assertThat(counters[values[i] - 1].get(),
+					is(equalTo(i < 4 ? 1 : 2)));
 		}
 
 	}
