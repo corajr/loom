@@ -119,7 +119,7 @@ public class DrawCommandsTest {
 		LsysRewriter lsys = new LsysRewriter("X->F-[[X]+X]+F[+FX]-X", "F->FF");
 		EventCollection axiom = lsys.makeAxiom("X");
 
-		lsys.generations = 2;
+		lsys.generations = 4;
 		lsys.setCommand("F", TurtleDraw.forward(100));
 		lsys.setCommand("+", TurtleDraw.turn(PApplet.radians(35)));
 		lsys.setCommand("-", TurtleDraw.turn(PApplet.radians(-35)));

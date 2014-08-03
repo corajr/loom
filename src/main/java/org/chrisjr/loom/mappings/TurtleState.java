@@ -40,7 +40,11 @@ public class TurtleState {
 	}
 
 	public TurtleState popPositionHeading() {
-		PositionHeading posHead = posStack.pop();
+		PositionHeading posHead = posStack.poll();
+		if (posHead == null) {
+			throw new IllegalStateException(
+					"Tried to pop position from an empty stack.");
+		}
 		return new TurtleState(posHead, posStack);
 	}
 
