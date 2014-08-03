@@ -109,6 +109,7 @@ public class DrawCommandsTest {
 			scheduler.setElapsedMillis(i * 250);
 			loom.draw();
 
+			System.out.println(testApp.commands);
 			assertThat(testApp.commands, contains(expectedCommands[i
 					% expectedCommands.length]));
 		}

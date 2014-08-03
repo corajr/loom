@@ -68,9 +68,19 @@ public class ConcretePattern extends Pattern {
 		}
 
 		for (Event e : activeEvents) {
+			double eventValue = transformValue(e.getValue());
+
 			for (MappingType mapping : myMappings) {
-				callables.add((Callable<?>) getAs(mapping,
-						transformValue(e.getValue())));
+				if (mapping == MappingType.CALLABLE_WITH_ARG) {
+					Event parentEvent = e.getParentEvent();
+					if (parentEvent != null) {
+						Mapping<Callable<?>> callMap = (Mapping<Callable<?>>) outputMappings
+								.get(MappingType.CALLABLE_WITH_ARG);
+						callables.add(callMap.call(parentEvent.getValue()));
+					}
+				} else {
+					callables.add((Callable<?>) getAs(mapping, eventValue));
+				}
 			}
 
 		}

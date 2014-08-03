@@ -68,12 +68,14 @@ public class Pattern implements Cloneable {
 		OSC_MESSAGE, // OscMessage with arbitrary data
 		OSC_BUNDLE, // collection of OscMessages
 		CALLABLE, // a function object
+		CALLABLE_WITH_ARG, // a function object that takes an argument
 		STATEFUL_CALLABLE, // a function object that has internal state
 		OBJECT // generic object
 	}
 
 	final protected MappingType[] externalMappings = new MappingType[] {
-			MappingType.CALLABLE, MappingType.STATEFUL_CALLABLE };
+			MappingType.CALLABLE, MappingType.CALLABLE_WITH_ARG,
+			MappingType.STATEFUL_CALLABLE };
 
 	/**
 	 * Constructor for an empty Pattern.
@@ -628,20 +630,17 @@ public class Pattern implements Cloneable {
 
 		for (int i = 0; i < commands.length; i++) {
 			commands[i].setParent(loom.getParent());
+			commands[i].setTurtle(turtle);
 		}
-		putMapping(MappingType.TURTLE_DRAW_COMMAND,
-				new ObjectMapping<TurtleDrawCommand>(commands));
+		Mapping<Callable<Void>> commandMapping = new ObjectMapping<Callable<Void>>(
+				commands);
+
+		putMapping(MappingType.TURTLE_DRAW_COMMAND, commandMapping);
 
 		final Pattern original = this;
 
 		if (doUpdates) {
-			onOnset(new Callable<Void>() {
-				@Override
-				public Void call() {
-					turtle.add(original.asTurtleDrawCommand());
-					return null;
-				}
-			});
+			onOnsetWithValue(commandMapping);
 
 			every(1, new Callable<Void>() {
 				@Override
@@ -843,6 +842,22 @@ public class Pattern implements Cloneable {
 				new EventMatchFilter(proxy, boundaryType));
 
 		concrete.asStatefulCallable(CallableOnChange.fromCallables(callable));
+
+		concrete.useParentOffset = false;
+
+		addChild(concrete);
+
+		return this;
+	}
+
+	public Pattern onOnsetWithValue(Mapping<Callable<Void>> callableMapping) {
+		EventQueryable proxy = new EventBoundaryProxy(this, this.getEvents());
+
+		ConcretePattern concrete = new ConcretePattern(loom,
+				new EventMatchFilter(proxy, EventBoundaryProxy.ONSET));
+
+		// concrete.asStatefulCallable(CallableOnChange.fromCallables(callable));
+		concrete.putMapping(MappingType.CALLABLE_WITH_ARG, callableMapping);
 
 		concrete.useParentOffset = false;
 
