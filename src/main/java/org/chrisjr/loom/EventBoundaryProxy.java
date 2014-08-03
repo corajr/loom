@@ -32,10 +32,13 @@ public class EventBoundaryProxy implements EventQueryable {
 		Collection<Event> realEvents = parentEvents.getForInterval(interval);
 		List<Event> events = new ArrayList<Event>();
 
-		BigFraction instant = getMinimumResolution();
-
+		BigFraction minimumResolution = getMinimumResolution();
 		for (Event e : realEvents) {
 			Interval eInterval = e.getInterval();
+			BigFraction instant = eInterval.getSize().divide(10);
+			if (instant.compareTo(minimumResolution) > 0) {
+				instant = minimumResolution;
+			}
 
 			BigFraction start = eInterval.getStart();
 			BigFraction startPlus = start.add(instant);

@@ -16,8 +16,8 @@ public class EventBoundaryProxyTest {
 
 	private EventCollection originalEvents;
 	private EventQueryable eventProxy;
-	private BigFraction minimumResolution = new BigFraction(1, 1000);
-	private BigFraction halfMinimum = minimumResolution.divide(2);
+	private final BigFraction minimumResolution = new BigFraction(1, 1000);
+	private final BigFraction halfMinimum = minimumResolution.divide(2);
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,9 +47,9 @@ public class EventBoundaryProxyTest {
 				value = e.getValue();
 			}
 
-			if (value == 1.0 && priorValue < 1.0)
+			if (value == 1.0 && priorValue != 1.0)
 				noteOns++;
-			else if (value == 0.5 && priorValue < 0.5)
+			else if (value == 0.5 && priorValue != 0.5)
 				noteOffs++;
 
 			priorValue = value;
@@ -58,5 +58,4 @@ public class EventBoundaryProxyTest {
 		assertThat(noteOns, is(equalTo(2)));
 		assertThat(noteOffs, is(equalTo(2)));
 	}
-
 }

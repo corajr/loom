@@ -63,7 +63,7 @@ public class PatternTransformations {
 		}
 	}
 
-	public void checkIfShifting(int measureLength, float beatLength,
+	public void checkIfShifting(int measureLength, double beatLength,
 			int shiftBy, int beatsTillShift) {
 		for (int i = 0; i < beatsTillShift * 4; i++) {
 			long time = (long) (beatLength * i) + 1;
@@ -149,7 +149,18 @@ public class PatternTransformations {
 		pattern.loop();
 		pattern.every(12, new Transforms.Shift(-1, 12));
 
-		checkIfShifting(12, 1000 / 12.0f, -1, 144);
+		checkIfShifting(12, 1000 / 12.0, -1, 144);
+	}
+
+	@Test
+	public void shiftRightEveryTwelveCycles() {
+		pattern.clear();
+		pattern.extend("0123456789AB");
+		pattern.asInt(0, 11);
+		pattern.loop();
+		pattern.every(12, new Transforms.Shift(1, 12));
+
+		checkIfShifting(12, 1000 / 12.0, 1, 144);
 	}
 
 	@Test
