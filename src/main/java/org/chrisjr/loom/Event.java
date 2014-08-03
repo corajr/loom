@@ -13,18 +13,44 @@ import org.chrisjr.loom.time.Interval;
 public class Event {
 	final private Interval interval;
 	final private double value;
+	final private Event parentEvent;
 
-	public Event(Interval _interval, double _value) {
-		interval = _interval;
-		value = _value;
+	public Event(Interval interval, double value) {
+		this(interval, value, null);
 	}
 
+	public Event(Interval interval, double value, Event parentEvent) {
+		this.interval = interval;
+		this.value = value;
+		this.parentEvent = parentEvent;
+	}
+
+	/**
+	 * Gets the interval of the event.
+	 * 
+	 * @return the interval during which this event is active
+	 */
 	public Interval getInterval() {
 		return interval;
 	}
 
+	/**
+	 * Gets the value of the event.
+	 * 
+	 * @return the value of the event, a number between 0.0 and 1.0 inclusive
+	 */
 	public double getValue() {
 		return value;
+	}
+
+	/**
+	 * Gets the event that "spawned" this event, e.g. in case this event has
+	 * been split by an EventRewriter or an EventBoundaryProxy.
+	 * 
+	 * @return the parent event
+	 */
+	public Event getParentEvent() {
+		return parentEvent;
 	}
 
 	public boolean containedBy(Interval queryInterval) {
@@ -72,6 +98,7 @@ public class Event {
 		return true;
 	}
 
+	@Override
 	public String toString() {
 		return "Event(" + interval.toString() + " == " + String.valueOf(value)
 				+ ")";

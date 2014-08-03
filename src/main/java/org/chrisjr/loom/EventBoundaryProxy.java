@@ -42,8 +42,8 @@ public class EventBoundaryProxy extends EventTransformer {
 		BigFraction endMinus = end.subtract(instant);
 
 		Event[] triggers = new Event[] {
-				new Event(new Interval(start, startPlus), ONSET),
-				new Event(new Interval(endMinus, end), RELEASE) };
+				new Event(new Interval(start, startPlus), ONSET, e),
+				new Event(new Interval(endMinus, end), RELEASE, e) };
 
 		for (Event t : triggers) {
 			if (t.containedBy(interval))

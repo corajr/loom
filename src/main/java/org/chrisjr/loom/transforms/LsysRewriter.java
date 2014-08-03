@@ -40,7 +40,7 @@ public class LsysRewriter extends EventRewriter {
 			Interval interval = new Interval(start, start.add(newSize));
 
 			for (double value : replaceWith) {
-				newEvents.add(new Event(interval, value));
+				newEvents.add(new Event(interval, value, event));
 				interval = interval.add(newSize);
 			}
 

@@ -35,8 +35,8 @@ public class SubdivideRewriter extends EventRewriter {
 			double newValue = (oldLevel + 1.0) / levels;
 			Interval[] longShort = Interval.shortenBy(length, shortenAmt);
 
-			newEvents.add(new Event(longShort[0], newValue));
-			newEvents.add(new Event(longShort[1], 0.0));
+			newEvents.add(new Event(longShort[0], newValue, event));
+			newEvents.add(new Event(longShort[1], 0.0, event));
 			return newEvents;
 		}
 	}

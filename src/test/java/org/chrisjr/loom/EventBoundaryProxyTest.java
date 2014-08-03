@@ -45,6 +45,9 @@ public class EventBoundaryProxyTest {
 			Collection<Event> events = eventProxy.getForInterval(query);
 			for (Event e : events) {
 				value = e.getValue();
+				if (value == 1.0)
+					assertThat(e.getParentEvent().getValue(),
+							is(equalTo(i < 500 ? 1.0 : 0.0)));
 			}
 
 			if (value == 1.0 && priorValue != 1.0)
