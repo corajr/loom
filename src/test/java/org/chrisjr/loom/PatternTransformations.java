@@ -329,11 +329,11 @@ public class PatternTransformations {
 		pattern.addChild(trigger);
 
 		scheduler.setElapsedMillis(501);
-		assertThat(noteOffs.get(), is(equalTo(2)));
 		assertThat(noteOns.get(), is(equalTo(3)));
+		assertThat(noteOffs.get(), is(equalTo(2)));
 		scheduler.setElapsedMillis(1000);
-		assertThat(noteOffs.get(), is(equalTo(4)));
 		assertThat(noteOns.get(), is(equalTo(4)));
+		assertThat(noteOffs.get(), is(equalTo(4)));
 
 	}
 }

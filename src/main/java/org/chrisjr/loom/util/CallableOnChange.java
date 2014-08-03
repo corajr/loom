@@ -16,14 +16,15 @@ public class CallableOnChange extends StatefulCallable {
 		this.inner = inner;
 	}
 
+	@Override
 	public Void call() throws Exception {
 		int priorValue = lastValue.getAndSet(index);
-		if (priorValue < index) {
+		if (priorValue != index) {
 			inner.call();
 		}
 		return null;
 	}
-	
+
 	public static StatefulCallable[] fromCallables(Callable<Void>... callables) {
 		ArrayList<StatefulCallable> result = new ArrayList<StatefulCallable>();
 
@@ -44,6 +45,7 @@ public class CallableOnChange extends StatefulCallable {
 		return fromCallables(Transform.toCallable(transform, original));
 	}
 
+	@Override
 	public String toString() {
 		return "CallableOnChange(" + inner.toString() + ")" + "@"
 				+ Integer.toHexString(hashCode());

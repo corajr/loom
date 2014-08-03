@@ -17,6 +17,7 @@ public class CallableOnChangeTest {
 
 		StatefulCallable[] callables = CallableOnChange
 				.fromCallables(new Callable<Void>() {
+					@Override
 					public Void call() {
 						totalCount.incrementAndGet();
 						return null;
@@ -46,6 +47,7 @@ public class CallableOnChangeTest {
 		final AtomicInteger count2 = new AtomicInteger();
 
 		Callable<Void> one = new Callable<Void>() {
+			@Override
 			public Void call() {
 				count1.incrementAndGet();
 				return null;
@@ -53,6 +55,7 @@ public class CallableOnChangeTest {
 		};
 
 		Callable<Void> two = new Callable<Void>() {
+			@Override
 			public Void call() {
 				count2.incrementAndGet();
 				return null;
@@ -66,8 +69,8 @@ public class CallableOnChangeTest {
 		assertThat(count1.get(), is(equalTo(1)));
 		assertThat(count2.get(), is(equalTo(0)));
 
-		callables[2].call();
 		callables[1].call();
+		callables[2].call();
 		assertThat(count1.get(), is(equalTo(1)));
 		assertThat(count2.get(), is(equalTo(1)));
 

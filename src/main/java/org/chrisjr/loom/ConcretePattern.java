@@ -46,12 +46,36 @@ public class ConcretePattern extends Pattern {
 
 	@Override
 	public Collection<Callable<?>> getExternalMappings() {
+		if (this.events != null)
+			return getAllCallablesInInterval(getCurrentInterval());
+
 		Collection<Callable<?>> callbacks = new ArrayList<Callable<?>>();
 		for (MappingType mapping : externalMappings) {
 			if (outputMappings.containsKey(mapping))
 				callbacks.add((Callable<?>) getAs(mapping));
 		}
 		return callbacks;
+	}
+
+	private Collection<Callable<?>> getAllCallablesInInterval(Interval interval) {
+		Collection<Callable<?>> callables = new ArrayList<Callable<?>>();
+		Collection<Event> activeEvents = this.events.getForInterval(interval);
+		Collection<MappingType> myMappings = new ArrayList<MappingType>();
+
+		for (MappingType mapping : externalMappings) {
+			if (outputMappings.containsKey(mapping))
+				myMappings.add(mapping);
+		}
+
+		for (Event e : activeEvents) {
+			for (MappingType mapping : myMappings) {
+				callables.add((Callable<?>) getAs(mapping,
+						transformValue(e.getValue())));
+			}
+
+		}
+
+		return callables;
 	}
 
 	@Override
@@ -102,14 +126,18 @@ public class ConcretePattern extends Pattern {
 				value = e.getValue();
 			}
 		}
+		value = transformValue(value);
 
+		return value;
+	}
+
+	private double transformValue(double value) {
 		// apply transformations
 		value *= valueScale;
 		value += valueOffset;
 
 		// constrain to [0.0, 1.0]
 		value = MathOps.modInterval(value);
-
 		return value;
 	}
 
