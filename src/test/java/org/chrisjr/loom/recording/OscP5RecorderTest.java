@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.chrisjr.loom.Loom;
@@ -37,8 +38,17 @@ public class OscP5RecorderTest {
 
 	@Test
 	public void reader() {
-		OscScore testScore = OscScore.fromFile(new File(
-				"/Users/chrisjr/Desktop/score-test.osc"));
+		File resources_code;
+		try {
+			resources_code = new File(getClass().getResource("/").toURI());
+		} catch (URISyntaxException e1) {
+			throw new IllegalStateException("Could not get resource directory.");
+		}
+		File datadir = new File(resources_code.getParentFile().getParentFile(),
+				"data");
+		File scoreFile = new File(datadir, "score-test.osc");
+
+		OscScore testScore = OscScore.fromFile(scoreFile);
 		assertThat(testScore.size(), is(greaterThan(0)));
 	}
 
