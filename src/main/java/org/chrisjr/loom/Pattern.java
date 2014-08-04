@@ -712,8 +712,12 @@ public class Pattern implements Cloneable {
 	}
 
 	public Collection<Callable<?>> getExternalMappings() {
+		return getExternalMappingsFor(getCurrentInterval());
+	}
+
+	public Collection<Callable<?>> getExternalMappingsFor(Interval interval) {
 		if (isConcretePattern())
-			return getConcretePattern().getExternalMappings();
+			return getConcretePattern().getExternalMappingsFor(interval);
 
 		Collection<Callable<?>> callables = new ArrayList<Callable<?>>();
 		if (children != null) {

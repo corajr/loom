@@ -88,6 +88,14 @@ public class LsysRewriter extends EventRewriter {
 		return alphabet.substring(i, i + 1);
 	}
 
+	public String fromEvents(Collection<Event> events) {
+		StringBuilder sb = new StringBuilder();
+		for (Event e : events) {
+			sb.append(fromDouble(e.getValue()));
+		}
+		return sb.toString();
+	}
+
 	public static String getAlphabetFrom(String... ruleStrings) {
 		Set<Character> symbols = new TreeSet<Character>();
 		for (String ruleString : ruleStrings) {

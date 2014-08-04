@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.*;
 
+import org.chrisjr.loom.Event;
 import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
@@ -130,7 +131,6 @@ public class DrawCommandsTest {
 
 		pattern = new Pattern(loom, events);
 		pattern.asTurtleDrawCommand(commands);
-		pattern.loop();
 
 		pattern.addAllTurtleDrawCommands();
 		pattern.draw();
@@ -139,28 +139,20 @@ public class DrawCommandsTest {
 		result = testApp.commands.toArray(result);
 
 		assertThat(testApp.commands, contains(result));
+
 		System.out.println(testApp.commands);
 
 		pattern.turtle.clear();
 
-		for (int i = 1; i < 3; i++) {
-			testApp.commands.clear();
+		testApp.commands.clear();
 
-			scheduler.setElapsedMillis(i * 1000);
-			loom.draw();
+		scheduler.setElapsedMillis(1000);
+		loom.draw();
 
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		System.out.println(testApp.commands);
 
-			System.out.println(testApp.commands);
+		assertThat(testApp.commands, contains(result));
 
-			assertThat(testApp.commands, contains(result));
-
-		}
 	}
 
 	@Test

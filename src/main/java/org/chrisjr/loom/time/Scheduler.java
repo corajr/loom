@@ -79,13 +79,17 @@ public abstract class Scheduler {
 		this.periodMillis = periodMillis;
 	}
 
-	public void update() throws Exception {
+	public void update() {
 		PatternCollection actives = getPatternsWithExternalMappings();
 		for (Pattern pattern : actives) {
 			Collection<Callable<?>> callbacks = pattern.getExternalMappings();
 			for (Callable<?> callback : callbacks) {
 				if (callback != null)
-					callback.call();
+					try {
+						callback.call();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 			}
 		}
 	}

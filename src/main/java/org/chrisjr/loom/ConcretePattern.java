@@ -45,14 +45,15 @@ public class ConcretePattern extends Pattern {
 	}
 
 	@Override
-	public Collection<Callable<?>> getExternalMappings() {
+	public Collection<Callable<?>> getExternalMappingsFor(Interval interval) {
 		if (this.events != null)
-			return getAllCallablesInInterval(getCurrentInterval());
+			return getAllCallablesInInterval(interval);
 
 		Collection<Callable<?>> callbacks = new ArrayList<Callable<?>>();
 		for (MappingType mapping : externalMappings) {
 			if (outputMappings.containsKey(mapping))
-				callbacks.add((Callable<?>) getAs(mapping));
+				callbacks.add((Callable<?>) getAs(mapping,
+						getValueFor(interval)));
 		}
 		return callbacks;
 	}

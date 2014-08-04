@@ -10,6 +10,7 @@ public class NonRealTimeScheduler extends Scheduler {
 
 	// NonRealTimeScheduler only progresses when explicitly updated via
 	// <code>setElapsedMillis</code>.
+	@Override
 	public void play() {
 		super.play();
 	}
@@ -23,17 +24,14 @@ public class NonRealTimeScheduler extends Scheduler {
 		if (this.elapsedMillis < elapsedMillis) {
 			while (this.elapsedMillis < elapsedMillis) {
 				this.elapsedMillis++;
-				try {
-					update();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				update();
 			}
 		} else {
 			this.elapsedMillis = elapsedMillis;
 		}
 	}
 
+	@Override
 	public long getElapsedMillis() {
 		return elapsedMillis;
 	}
