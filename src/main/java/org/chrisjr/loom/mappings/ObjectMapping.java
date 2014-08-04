@@ -8,6 +8,7 @@ public class ObjectMapping<T> implements Mapping<T> {
 		this.objects = objects;
 	}
 
+	@Override
 	public T call(double value) {
 		int i = (int) (value * (objects.length - 1));
 		return objects[i];
