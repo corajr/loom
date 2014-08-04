@@ -80,9 +80,14 @@ public abstract class Scheduler {
 	}
 
 	public void update() {
+		updateFor(getCurrentInterval());
+	}
+
+	public void updateFor(Interval interval) {
 		PatternCollection actives = getPatternsWithExternalMappings();
 		for (Pattern pattern : actives) {
-			Collection<Callable<?>> callbacks = pattern.getExternalMappings();
+			Collection<Callable<?>> callbacks = pattern
+					.getExternalMappingsFor(interval);
 			for (Callable<?> callback : callbacks) {
 				if (callback != null)
 					try {

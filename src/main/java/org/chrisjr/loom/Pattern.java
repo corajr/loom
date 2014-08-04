@@ -711,10 +711,6 @@ public class Pattern implements Cloneable {
 		return commands;
 	}
 
-	public Collection<Callable<?>> getExternalMappings() {
-		return getExternalMappingsFor(getCurrentInterval());
-	}
-
 	public Collection<Callable<?>> getExternalMappingsFor(Interval interval) {
 		if (isConcretePattern())
 			return getConcretePattern().getExternalMappingsFor(interval);
@@ -722,7 +718,9 @@ public class Pattern implements Cloneable {
 		Collection<Callable<?>> callables = new ArrayList<Callable<?>>();
 		if (children != null) {
 			for (Pattern child : children) {
-				callables.addAll(child.getExternalMappings());
+				Interval transformed = transform(interval,
+						child.useParentOffset);
+				callables.addAll(child.getExternalMappingsFor(transformed));
 			}
 		}
 
