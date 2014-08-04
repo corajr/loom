@@ -120,7 +120,7 @@ public class DrawCommandsTest {
 		LsysRewriter lsys = new LsysRewriter("X->X+YF", "Y->FX-Y");
 		EventCollection axiom = lsys.makeAxiom("FX");
 
-		lsys.generations = 1;
+		lsys.generations = 4;
 		lsys.setCommand("F", TurtleDraw.forward(10));
 		lsys.setCommand("+", TurtleDraw.turn(PConstants.HALF_PI));
 		lsys.setCommand("-", TurtleDraw.turn(-PConstants.HALF_PI));
@@ -131,6 +131,7 @@ public class DrawCommandsTest {
 
 		pattern = new Pattern(loom, events);
 		pattern.asTurtleDrawCommand(commands);
+		pattern.loop();
 
 		pattern.addAllTurtleDrawCommands();
 		pattern.draw();
@@ -140,18 +141,16 @@ public class DrawCommandsTest {
 
 		assertThat(testApp.commands, contains(result));
 
-		System.out.println(testApp.commands);
-
 		pattern.turtle.clear();
 
-		testApp.commands.clear();
+		for (int i = 1; i < 3; i++) {
+			testApp.commands.clear();
 
-		scheduler.setElapsedMillis(1000);
-		loom.draw();
+			scheduler.setElapsedMillis(1000 * i - 2);
+			loom.draw();
 
-		System.out.println(testApp.commands);
-
-		assertThat(testApp.commands, contains(result));
+			assertThat(testApp.commands, contains(result));
+		}
 
 	}
 
