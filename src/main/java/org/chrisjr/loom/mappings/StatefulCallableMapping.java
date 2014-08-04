@@ -14,8 +14,10 @@ public class StatefulCallableMapping extends ObjectMapping<StatefulCallable> {
 
 	@Override
 	public StatefulCallable call(double value) {
-		if (value < 1.0)
-			value += 1.0 / objects.length;
+		value *= (objects.length - 2);
+		value += 1.0;
+		value /= (objects.length - 1);
+
 		return super.call(value);
 	}
 

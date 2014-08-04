@@ -850,10 +850,18 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern onOnset(Callable<Void>... callables) {
+		return onBoundary(EventBoundaryProxy.ONSET, callables);
+	}
+
+	public Pattern onRelease(Callable<Void>... callables) {
+		return onBoundary(EventBoundaryProxy.RELEASE, callables);
+	}
+
+	private Pattern onBoundary(double boundaryType, Callable<Void>... callables) {
 		EventQueryable proxy = new EventBoundaryProxy(this, this.getEvents());
 
 		ConcretePattern concrete = new ConcretePattern(loom,
-				new EventMatchFilter(proxy, EventBoundaryProxy.ONSET));
+				new EventMatchFilter(proxy, boundaryType));
 
 		Mapping<StatefulCallable> callableMapping = new StatefulCallableMapping(
 				CallableOnChange.fromCallables(callables));

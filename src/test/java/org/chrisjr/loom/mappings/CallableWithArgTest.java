@@ -52,28 +52,29 @@ public class CallableWithArgTest {
 
 	@Test
 	public void onOnsetMultiple() {
-		AtomicInteger[] counters = new AtomicInteger[4];
-		Callable[] callables = new Callable[4];
-		for (int i = 0; i < 4; i++) {
+		int n = 100;
+
+		AtomicInteger[] counters = new AtomicInteger[n];
+		Callable[] callables = new Callable[n];
+		for (int i = 0; i < n; i++) {
 			counters[i] = new AtomicInteger();
 			callables[i] = new Incrementer(counters, i);
 		}
 
-		Integer[] values = new Integer[] { 4, 3, 2, 1, 1, 2, 3, 4 };
+		Integer[] values = new Integer[n * 2];
+
+		for (int i = 0; i < n * 2; i++) {
+			values[i] = i < n ? n - i : i - n + 1;
+		}
+
 		pattern.extend(values);
 
 		pattern.onOnset(callables);
 
-		for (int i = 0; i < 8; i++) {
-			scheduler.setElapsedMillis(125 * i);
-			for (int j = 0; j < counters.length; j++) {
-				System.out.print(counters[j].get());
-				System.out.print(" ");
-			}
-			System.out.println();
-			// System.out.println(counters[values[i]].get());
+		for (int i = 0; i < n * 2; i++) {
+			scheduler.setElapsedMillis((long) ((1000.0 / (n * 2)) * i));
 			assertThat(counters[values[i] - 1].get(),
-					is(equalTo(i < 4 ? 1 : 2)));
+					is(equalTo(i < n ? 1 : 2)));
 		}
 
 	}
