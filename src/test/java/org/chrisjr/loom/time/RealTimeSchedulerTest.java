@@ -54,6 +54,7 @@ public class RealTimeSchedulerTest {
 
 		StatefulCallable[] ops = CallableOnChange
 				.fromCallables(new Callable<Void>() {
+					@Override
 					public Void call() {
 						long now = System.nanoTime();
 						queue.add(now);
@@ -69,7 +70,7 @@ public class RealTimeSchedulerTest {
 		long totalError = 0;
 		Iterator<Long> it = queue.iterator();
 		for (int i = 0; i < expectedTimesMillis.length; i++) {
-			long nanos = ((Long) it.next()) - startNanos;
+			long nanos = (it.next()) - startNanos;
 			totalError += nanos - (expectedTimesMillis[i] * 1000000);
 		}
 
@@ -83,7 +84,7 @@ public class RealTimeSchedulerTest {
 		Iterator<Long> it = queue.iterator();
 		List<Long> times = new ArrayList<Long>();
 		while (it.hasNext()) {
-			times.add((Long) it.next() - startNanos);
+			times.add(it.next() - startNanos);
 		}
 
 		for (int i = 0; i < expectedGapsMillis.length; i++) {
@@ -128,7 +129,7 @@ public class RealTimeSchedulerTest {
 		long startNanos = System.nanoTime();
 		loom.play();
 		try {
-			Thread.sleep(1000 * repeats);
+			Thread.sleep(1000 * repeats + 10);
 		} catch (InterruptedException e) {
 		}
 

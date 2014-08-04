@@ -1,5 +1,7 @@
 package org.chrisjr.loom.time;
 
+import org.apache.commons.math3.fraction.BigFraction;
+
 /**
  * @author chrisjr
  * 
@@ -13,6 +15,7 @@ public class RealTimeScheduler extends Scheduler {
 					.currentTimeMillis() - startMillis;
 		}
 
+		@Override
 		public void run() {
 			long now = System.currentTimeMillis();
 
@@ -28,9 +31,13 @@ public class RealTimeScheduler extends Scheduler {
 			if (waitInNanos > 999999)
 				waitInNanos = 500000;
 
+			BigFraction lastUpdated = getNow().subtract(halfMinimum);
+			BigFraction nowFrac;
 			while (true) {
 				try {
-					update();
+					nowFrac = getNow().add(halfMinimum);
+					updateFor(new Interval(lastUpdated, nowFrac));
+					lastUpdated = nowFrac;
 					Thread.sleep(0, waitInNanos);
 				} catch (InterruptedException e) {
 					break;
@@ -43,18 +50,20 @@ public class RealTimeScheduler extends Scheduler {
 		}
 	}
 
-	private Timer timer;
-	private Thread timingThread;
+	private final Timer timer;
+	private final Thread timingThread;
 
 	public RealTimeScheduler() {
 		timer = new Timer();
 		timingThread = new Thread(timer);
 	}
 
+	@Override
 	public long getElapsedMillis() {
 		return timer.getElapsedMillis();
 	}
 
+	@Override
 	public void play() {
 		timingThread.start();
 
