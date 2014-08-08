@@ -87,6 +87,16 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		return events;
 	}
 
+	public static EventCollection fromArray(Event[] eventArray) {
+		return fromEvents(Arrays.asList(eventArray));
+	}
+
+	public static EventCollection fromEvents(Collection<Event> collection) {
+		EventCollection events = new EventCollection();
+		events.addAll(collection);
+		return events;
+	}
+
 	public void add(Event e) throws IllegalStateException {
 		Collection<Event> existingEvents = getForInterval(e.getInterval());
 		if (!existingEvents.isEmpty())

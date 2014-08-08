@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class EventCollectionTest {
@@ -74,6 +75,31 @@ public class EventCollectionTest {
 		Double[] sample = new Double[] { 0.0, 1.0, 0.0, 1.0 };
 		events = EventCollection.fromDoubles(sample);
 		assertThat(events.size(), is(equalTo(sample.length)));
+	}
+
+	private Event[] makeArray(int n) {
+		Interval start = new Interval(0, 1);
+		Event[] sample = new Event[n];
+		for (int i = 0; i < n; i++) {
+			sample[i] = new Event(start, (double) i / n);
+			start = start.add(1);
+		}
+		return sample;
+	}
+
+	@Test
+	public void initializeFromEventArray() {
+		Event[] sample = makeArray(5);
+		events = EventCollection.fromArray(sample);
+		assertThat(events.size(), is(equalTo(sample.length)));
+	}
+
+	@Test
+	public void initializeFromCollection() {
+		Event[] sampleArray = makeArray(5);
+		Collection<Event> sample = Arrays.asList(sampleArray);
+		events = EventCollection.fromEvents(sample);
+		assertThat(events.size(), is(equalTo(sample.size())));
 	}
 
 	@Test

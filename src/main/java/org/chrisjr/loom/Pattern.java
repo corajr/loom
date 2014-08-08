@@ -95,6 +95,14 @@ public class Pattern implements Cloneable {
 		this(loom, null, function, false);
 	}
 
+	public Pattern(Loom loom, Event... events) {
+		this(loom, EventCollection.fromArray(events));
+	}
+
+	public Pattern(Loom loom, Collection<Event> events) {
+		this(loom, EventCollection.fromEvents(events));
+	}
+
 	public Pattern(Loom loom, EventCollection events) {
 		this(loom, events, null, false);
 	}
