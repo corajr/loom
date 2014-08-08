@@ -2,6 +2,7 @@ package org.chrisjr.loom;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.util.MidiTools.Note;
 
 /**
  * @author chrisjr An Event has a start, an end, and a value. The start and end
@@ -53,6 +54,17 @@ public class Event {
 		return parentEvent;
 	}
 
+	/**
+	 * Returns true if the event's start is less than or equal to the query
+	 * interval's end, and the event's end is after the query interval starts.
+	 * 
+	 * For example: if the event goes from 0 to 1 and the query interval is 0.99
+	 * to 1.0, containedBy will return true. If the query interval is instead
+	 * 1.0 to 1.01, it will return false.
+	 * 
+	 * @param queryInterval
+	 * @return whether the event falls within the interval
+	 */
 	public boolean containedBy(Interval queryInterval) {
 		BigFraction queryStart = queryInterval.getStart();
 		BigFraction queryEnd = queryInterval.getEnd();
@@ -64,6 +76,49 @@ public class Event {
 		boolean endsAfterQueryStart = end.compareTo(queryStart) > 0;
 
 		return startsBeforeOrAtQueryEnd && endsAfterQueryStart;
+	}
+
+	public static Event note(double duration, Note note) {
+		return note(duration, ((double) note.ordinal()) / 127);
+	}
+
+	public static Event note(double duration, double value) {
+		return note(new BigFraction(duration), value);
+	}
+
+	public static Event note(BigFraction duration, double value) {
+		return new Event(Interval.zeroTo(duration), value);
+	}
+
+	public static Event rest(double duration) {
+		return rest(new BigFraction(duration));
+	}
+
+	public static Event rest(BigFraction duration) {
+		return new Event(Interval.zeroTo(duration), 0.0);
+	}
+
+	/**
+	 * Sequences events one after another. For example, given two events that
+	 * last from 0 to 1, the output will have one event from 0 to 1 and another
+	 * from 1 to 2.
+	 * 
+	 * @param events
+	 *            the original events, each with a time interval of 0 to
+	 *            `duration`
+	 * @return the sequenced events
+	 */
+	public static Event[] seq(Event... events) {
+		Event[] sequenced = new Event[events.length];
+		BigFraction offset = new BigFraction(0);
+		for (int i = 0; i < events.length; i++) {
+			Event oldEvent = events[i];
+			Interval duration = oldEvent.getInterval();
+
+			sequenced[i] = new Event(duration.add(offset), oldEvent.getValue());
+			offset = offset.add(duration.getSize());
+		}
+		return sequenced;
 	}
 
 	@Override

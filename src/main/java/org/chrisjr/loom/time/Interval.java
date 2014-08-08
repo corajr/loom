@@ -17,6 +17,14 @@ public class Interval {
 		this.end = end;
 	}
 
+	public static Interval zeroTo(double duration) {
+		return zeroTo(new BigFraction(duration));
+	}
+
+	public static Interval zeroTo(BigFraction duration) {
+		return new Interval(BigFraction.ZERO, duration);
+	}
+
 	public BigFraction getStart() {
 		return start;
 	}

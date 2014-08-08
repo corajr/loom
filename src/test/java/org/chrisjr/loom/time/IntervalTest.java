@@ -46,6 +46,12 @@ public class IntervalTest {
 	}
 
 	@Test
+	public void zeroTo() {
+		Interval newInterval = Interval.zeroTo(2);
+		assertThat(newInterval.getSize().doubleValue(), is(equalTo(2.0)));
+	}
+
+	@Test
 	public void moduloOtherInterval() {
 		Interval zeroToQuarter = new Interval(0, 0.25);
 		Interval quarterToHalf = new Interval(0.25, 0.5);
