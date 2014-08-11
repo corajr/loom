@@ -14,6 +14,13 @@ import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.util.MathOps;
 
+/**
+ * The implementation of a Pattern, which stores its output mappings and
+ * associated events/function. ConcretePatterns have no children and hold
+ * exactly one value at any given time.
+ * 
+ * @author chrisjr
+ */
 public class ConcretePattern extends Pattern {
 	protected ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();
 
@@ -129,7 +136,7 @@ public class ConcretePattern extends Pattern {
 		double value = defaultValue;
 		if (this.function != null) {
 			try {
-				// midpoint of function within current interval
+				// averages the function's value at either endpoint of interval
 				value = function.call(now);
 			} catch (Exception e) {
 				e.printStackTrace();

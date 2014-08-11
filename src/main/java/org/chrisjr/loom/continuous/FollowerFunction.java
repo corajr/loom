@@ -4,6 +4,12 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.Interval;
 
+/**
+ * Follows another pattern and returns that pattern's value for the interval
+ * queried.
+ * 
+ * @author chrisjr
+ */
 public class FollowerFunction extends ContinuousFunction {
 	final Pattern pattern;
 

@@ -7,6 +7,13 @@ import java.util.List;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 
+/**
+ * Transforms each event of a parent EventQueryable into separate onset and
+ * release events.
+ * 
+ * @author chrisjr
+ * 
+ */
 public class EventBoundaryProxy extends EventTransformer {
 	final private Pattern timeScaler;
 	static final BigFraction DEFAULT_RESOLUTION = new BigFraction(1, 1000);

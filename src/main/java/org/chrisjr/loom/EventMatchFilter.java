@@ -5,6 +5,11 @@ import java.util.Collections;
 
 import org.chrisjr.loom.time.Interval;
 
+/**
+ * Match events from the parent EventQueryable according to a specified value.
+ * 
+ * @author chrisjr
+ */
 public class EventMatchFilter extends EventTransformer {
 	double matchValue;
 	static final double EPSILON = 1e-4;

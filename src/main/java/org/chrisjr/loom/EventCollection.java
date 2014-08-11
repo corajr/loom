@@ -7,12 +7,13 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 
 /**
+ * Stores events as a sorted map indexed by start position.
+ * 
+ * Note: Events cannot overlap within a single collection. Overlapping events
+ * (polyphony) can be achieved by creating multiple child patterns, each with
+ * its own set of events.
+ * 
  * @author chrisjr
- * 
- *         Stores events as a sorted map indexed by start position. Events
- *         cannot overlap within a single collection; polyphony can be achieved
- *         by having multiple child patterns each with its own set of events.
- * 
  */
 
 public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>

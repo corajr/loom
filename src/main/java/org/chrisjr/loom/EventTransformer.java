@@ -6,6 +6,13 @@ import java.util.List;
 
 import org.chrisjr.loom.time.Interval;
 
+/**
+ * Abstract class for transforming the events of an EventQueryable. For each
+ * event in the original collection, zero or more events may be returned.
+ * 
+ * @author chrisjr
+ */
+
 public abstract class EventTransformer implements EventQueryable {
 	final private EventQueryable parentEvents;
 

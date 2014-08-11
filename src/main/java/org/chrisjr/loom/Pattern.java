@@ -25,10 +25,14 @@ import supercollider.*;
 import ddf.minim.*;
 
 /**
- * The base class for patterns in Loom. ConcretePatterns may be discrete or
- * continuous, while compound patterns (the default) can contain a combination
- * of both.
+ * The base class for patterns in Loom. A Pattern may either be: discrete,
+ * containing a non-overlapping series of events; continuous, its value a
+ * function of time; or compound, containing a combination of the two.
  * 
+ * A single pattern can only have one value at a time, but by adding child
+ * patterns, multiple mappings can be assigned.
+ * 
+ * @see ConcretePattern
  * @author chrisjr
  */
 public class Pattern implements Cloneable {

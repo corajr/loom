@@ -5,8 +5,7 @@ import java.util.concurrent.atomic.*;
 import org.apache.commons.math3.fraction.BigFraction;
 
 /**
- * Accepts an AtomicInteger as input; when this integer is set to 2, the
- * function will return 1.0 the next time it is polled.
+ * A "trigger" pattern that can be fired by outside events.
  * 
  * @author chrisjr
  * 
@@ -19,6 +18,7 @@ public class TriggerFunction extends ContinuousFunction {
 		fired.set(true);
 	}
 
+	@Override
 	public double call(BigFraction t) {
 		boolean wasFired = fired.getAndSet(false);
 		if (wasFired) {

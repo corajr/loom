@@ -45,15 +45,12 @@ import org.chrisjr.loom.wrappers.*;
 import oscP5.OscP5;
 
 /**
- * This is a template class and can be used to start a new processing library or
- * tool. Make sure you rename this class as well as the name of the example
- * package 'template' to your own library or tool naming convention.
+ * A <code>Loom</code> holds all of the {@link Pattern}s associated with the
+ * user's sketch, and provides facilities to play or record the output of
+ * patterns at the desired rate. By default, it uses a {@link RealTimeScheduler}
+ * with a period of 1000 milliseconds.
  * 
  * @example Hello
- * 
- *          (the tag @example followed by the name of an example included in
- *          folder 'examples' will automatically include the example in the
- *          javadoc.)
  * 
  */
 
