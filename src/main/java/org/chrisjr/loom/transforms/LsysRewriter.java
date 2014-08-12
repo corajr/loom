@@ -6,7 +6,6 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Event;
 import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.mappings.Draw;
-import org.chrisjr.loom.mappings.DrawCommand;
 import org.chrisjr.loom.mappings.TurtleDrawCommand;
 import org.chrisjr.loom.time.Interval;
 

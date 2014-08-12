@@ -1,18 +1,15 @@
 package org.chrisjr.loom.recording;
 
+import org.junit.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
-import org.chrisjr.loom.util.MidiTools;
-import org.junit.*;
 
 public class OscP5RecorderTest {
 	private Loom loom;

@@ -33,13 +33,11 @@ import java.io.IOException;
 import javax.sound.midi.MidiMessage;
 
 import org.apache.commons.math3.fraction.BigFraction;
-import org.chrisjr.loom.recording.*;
 import org.chrisjr.loom.time.*;
 
 import processing.core.*;
 import themidibus.MidiBus;
 
-import org.chrisjr.loom.util.*;
 import org.chrisjr.loom.wrappers.*;
 
 import oscP5.OscP5;

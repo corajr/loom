@@ -2,7 +2,6 @@ package org.chrisjr.loom;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;

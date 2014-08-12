@@ -4,9 +4,6 @@ import static org.junit.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.util.*;
-
-import org.chrisjr.loom.Event;
 import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;

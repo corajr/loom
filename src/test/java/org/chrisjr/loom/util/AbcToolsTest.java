@@ -11,8 +11,6 @@ import org.chrisjr.loom.*;
 import org.chrisjr.loom.mappings.IntMapping;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 
-import abc.notation.*;
-
 public class AbcToolsTest {
 	String tuneString = "X:1\nT:\nK:D\nDEFG|ABcd||";
 	int[] noteValues = new int[] { 62, 64, 66, 67, 69, 71, 73, 74 };

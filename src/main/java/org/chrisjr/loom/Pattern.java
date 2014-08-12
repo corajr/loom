@@ -13,7 +13,6 @@ import netP5.NetAddress;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.continuous.*;
 import org.chrisjr.loom.mappings.*;
-import org.chrisjr.loom.mappings.Draw.Compound;
 import org.chrisjr.loom.time.*;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
@@ -229,7 +228,16 @@ public class Pattern implements Cloneable {
 			children.remove(child);
 	}
 
-	protected Pattern getChild(int i) {
+	/**
+	 * Retrieve the ith child pattern. Returns null if there are no children, or
+	 * throws an exception if the index is out of bounds.
+	 * 
+	 * @param i
+	 *            the index of pattern to retrieve
+	 * @return the ith child
+	 * @throws IndexOutOfBoundsException
+	 */
+	protected Pattern getChild(int i) throws IndexOutOfBoundsException {
 		if (children == null)
 			return null;
 		return children.get(i);
@@ -429,7 +437,7 @@ public class Pattern implements Cloneable {
 		EventRewriter hitsOnly = new MatchRewriter(1.0);
 		Pattern hits = this.rewrite(hitsOnly);
 
-		ConcretePattern commands = ConcretePattern.forEach(this);
+		ConcretePattern commands = ConcretePattern.forEach(hits);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
 		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(9);
@@ -721,8 +729,6 @@ public class Pattern implements Cloneable {
 
 		putMapping(MappingType.TURTLE_DRAW_COMMAND,
 				new ObjectMapping<TurtleDrawCommand>(commands));
-
-		final Pattern original = this;
 
 		if (doUpdates) {
 			onOnset(commands);

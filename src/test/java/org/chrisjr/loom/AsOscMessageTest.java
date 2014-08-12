@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import netP5.NetAddress;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
-import org.chrisjr.loom.wrappers.OscP5Impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

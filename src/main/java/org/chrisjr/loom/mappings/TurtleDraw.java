@@ -2,8 +2,6 @@ package org.chrisjr.loom.mappings;
 
 import java.util.Collection;
 
-import org.chrisjr.loom.mappings.PositionHeading;
-
 import processing.core.PApplet;
 import processing.core.PVector;
 

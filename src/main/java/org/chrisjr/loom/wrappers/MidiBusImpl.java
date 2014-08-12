@@ -2,8 +2,6 @@ package org.chrisjr.loom.wrappers;
 
 import javax.sound.midi.MidiMessage;
 
-import org.chrisjr.loom.Loom;
-
 import themidibus.MidiBus;
 
 public class MidiBusImpl implements IMidiBus {

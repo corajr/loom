@@ -10,9 +10,6 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
-import org.chrisjr.loom.util.MidiTools;
-import org.chrisjr.loom.wrappers.MidiBusImpl;
-import org.chrisjr.loom.wrappers.MidiBusWrapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

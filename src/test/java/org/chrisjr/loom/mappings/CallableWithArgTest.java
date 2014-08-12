@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.*;
 
 import org.chrisjr.loom.*;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
-import org.chrisjr.loom.util.CallableNoop;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,8 +1,5 @@
 package org.chrisjr.loom.mappings;
 
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
-
 import processing.core.PApplet;
 
 public abstract class DrawCommand {

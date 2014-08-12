@@ -5,12 +5,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import org.chrisjr.loom.*;
-import org.chrisjr.loom.mappings.Draw;
-import org.chrisjr.loom.mappings.DrawCommand;
 import org.chrisjr.loom.mappings.TurtleDraw;
 import org.chrisjr.loom.mappings.TurtleDrawCommand;
-import org.chrisjr.loom.time.*;
-
 import java.util.*;
 
 import org.junit.Test;

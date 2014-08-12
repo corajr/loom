@@ -3,7 +3,6 @@ package org.chrisjr.loom.mappings;
 import java.util.concurrent.*;
 
 import processing.core.PApplet;
-import processing.core.PVector;
 
 public class Turtle extends ConcurrentLinkedQueue<TurtleDrawCommand> {
 	PApplet parent;

@@ -2,7 +2,6 @@ package org.chrisjr.loom.wrappers;
 
 import oscP5.*;
 import netP5.*;
-import org.chrisjr.loom.*;
 
 public class OscP5Impl implements IOscP5 {
 
