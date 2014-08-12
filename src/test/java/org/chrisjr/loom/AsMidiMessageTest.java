@@ -22,21 +22,23 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
-	private MidiBus myBus;
+	private MidiBus myBus = null;
 
-	AtomicInteger notesOnReceived = new AtomicInteger();
-	AtomicInteger notesOffReceived = new AtomicInteger();
+	private final AtomicInteger notesOnReceived = new AtomicInteger();
+	private final AtomicInteger notesOffReceived = new AtomicInteger();
 
 	@Before
 	public void setUp() throws Exception {
+		notesOnReceived.set(0);
+		notesOffReceived.set(0);
+
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
-		myBus = new MidiBus(null, "Bus 1", "Bus 1");
-		myBus.addMidiListener(this);
-
-		notesOnReceived.set(0);
-		notesOffReceived.set(0);
+		if (myBus == null) {
+			myBus = new MidiBus(null, "Bus 1", "Bus 1");
+			myBus.addMidiListener(this);
+		}
 
 		loom.setMidiBus(myBus);
 		loom.play();
@@ -47,7 +49,8 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	@After
 	public void tearDown() throws Exception {
-		loom.dispose();
+		myBus = null;
+		pattern = null;
 	}
 
 	@Test
