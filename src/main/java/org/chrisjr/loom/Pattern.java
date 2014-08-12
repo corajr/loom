@@ -100,7 +100,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern(Loom loom, Event... events) {
-		this(loom, EventCollection.fromArray(events));
+		this(loom, EventCollection.fromEvents(events));
 	}
 
 	public Pattern(Loom loom, Collection<Event> events) {
@@ -155,10 +155,61 @@ public class Pattern implements Cloneable {
 		return AbcTools.fromString(loom, tune);
 	}
 
+	/**
+	 * Creates a new pattern using a numerical string, which will be turned into
+	 * equally spaced events. Values are scaled to the maximum present in the
+	 * string. Example: <code>Pattern.fromString(loom, "024");</code> creates a
+	 * pattern with three events, each 1/3 a cycle long, with values 0.0, 0.5,
+	 * and 1.0.
+	 * 
+	 * @param loom
+	 *            the Loom on which the new pattern should be created
+	 * @param string
+	 *            a string with digits
+	 * @return a new pattern
+	 * @see #extend(String)
+	 */
+	public static Pattern fromString(Loom loom, String string) {
+		Pattern pattern = new Pattern(loom);
+		return pattern.extend(string);
+	}
+
+	/**
+	 * Creates a new pattern using a sequence of integers, which will be turned
+	 * into equally spaced events. Values are scaled to the maximum present in
+	 * the sequence. Example: <code>Pattern.fromString(loom, 0, 2, 4);</code>
+	 * creates a pattern with three events, each 1/3 a cycle long, with values
+	 * 0.0, 0.5, and 1.0.
+	 * 
+	 * @param loom
+	 *            the Loom on which the new pattern should be created
+	 * @param ints
+	 *            the integer values for each event
+	 * @return a new pattern
+	 */
+	public static Pattern fromInts(Loom loom, Integer... ints) {
+		Pattern pattern = new Pattern(loom);
+		return pattern.extend(ints);
+	}
+
+	/**
+	 * Called on initialization, or when adding a sibling (pattern at the same
+	 * level in the hierarchy). This abstracts away the use of the Loom's
+	 * <code>patterns</code> field in case the interface needs to change.
+	 * 
+	 * @param loom
+	 *            the loom to which this pattern should be added
+	 */
 	protected void addSelfTo(Loom loom) {
 		loom.patterns.add(this);
 	}
 
+	/**
+	 * Adds a pattern as the current pattern's child.
+	 * 
+	 * @param child
+	 *            the pattern to be added
+	 */
 	protected void addChild(Pattern child) {
 		if (children == null)
 			children = new PatternCollection();
@@ -184,14 +235,21 @@ public class Pattern implements Cloneable {
 		return children.get(i);
 	}
 
+	/**
+	 * Casts this pattern to a ConcretePattern instance, or returns the first
+	 * child if it is a concrete pattern.
+	 * 
+	 * @return the concrete pattern underlying this pattern, if any
+	 */
 	protected ConcretePattern getConcretePattern() {
 		if (isConcretePattern()) {
 			return (ConcretePattern) this;
-		} else if (children != null && children.size() > 0) {
+		} else if (children != null && children.size() > 0
+				&& getChild(0).isConcretePattern()) {
 			return (ConcretePattern) getChild(0);
-		} else {
-			throw new IllegalStateException("Pattern is empty!");
 		}
+
+		return null;
 	}
 
 	public Pattern putMapping(MappingType mappingType, Mapping<?> mapping) {
@@ -226,20 +284,36 @@ public class Pattern implements Cloneable {
 	}
 
 	/**
+	 * Extends the current pattern by treating the input as equally spaced
+	 * events within a single cycle. For example, "01234" produces a set of 5
+	 * events, each 1/5 a cycle's duration, with values [0.0, 0.25, 0.5, 0.75,
+	 * 1.0]. Values are scaled so that the maximum listed.
+	 * 
 	 * @param string
 	 *            a string such as "10010010" describing a pattern to be tacked
 	 *            on at the end
 	 * @return the updated pattern
 	 */
 	public Pattern extend(String string) {
-		EventCollection newEvents = EventCollection.fromString(string);
-		addChild(new ConcretePattern(loom, newEvents));
-		return this;
+		return extend(EventCollection.fromString(string).values());
 	}
 
-	public Pattern extend(Integer... values) {
-		EventCollection newEvents = EventCollection.fromInts(values);
-		addChild(new ConcretePattern(loom, newEvents));
+	public Pattern extend(Integer... ints) {
+		return extend(EventCollection.fromInts(ints).values());
+	}
+
+	public Pattern extend(Event... events) {
+		return extend(Arrays.asList(events));
+	}
+
+	public Pattern extend(Collection<Event> newEvents) {
+		EventCollection events = getEvents();
+		if (events != null) {
+			events.addAfterwards(newEvents);
+		} else {
+			events = EventCollection.fromEvents(newEvents);
+			addChild(new ConcretePattern(loom, events));
+		}
 		return this;
 	}
 

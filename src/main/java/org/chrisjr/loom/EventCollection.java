@@ -88,8 +88,8 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		return events;
 	}
 
-	public static EventCollection fromArray(Event[] eventArray) {
-		return fromEvents(Arrays.asList(eventArray));
+	public static EventCollection fromEvents(Event... events) {
+		return fromEvents(Arrays.asList(events));
 	}
 
 	public static EventCollection fromEvents(Collection<Event> collection) {
@@ -127,7 +127,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 			latest = this.descendingMap().firstEntry().getValue();
 		}
 		return latest != null ? latest.getInterval().getEnd()
-				: new BigFraction(0);
+				: BigFraction.ZERO;
 	}
 
 	public Interval getTotalInterval() {

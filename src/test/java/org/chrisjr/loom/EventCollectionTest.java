@@ -90,7 +90,7 @@ public class EventCollectionTest {
 	@Test
 	public void initializeFromEventArray() {
 		Event[] sample = makeArray(5);
-		events = EventCollection.fromArray(sample);
+		events = EventCollection.fromEvents(sample);
 		assertThat(events.size(), is(equalTo(sample.length)));
 	}
 

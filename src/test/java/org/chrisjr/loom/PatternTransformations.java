@@ -363,12 +363,14 @@ public class PatternTransformations {
 				noteOnInc));
 		pattern.addChild(trigger);
 
-		scheduler.setElapsedMillis(501);
+		scheduler.setElapsedMillis(500);
 		assertThat(noteOns.get(), is(equalTo(3)));
 		assertThat(noteOffs.get(), is(equalTo(2)));
-		scheduler.setElapsedMillis(1000);
+		scheduler.setElapsedMillis(999);
 		assertThat(noteOns.get(), is(equalTo(4)));
 		assertThat(noteOffs.get(), is(equalTo(4)));
-
+		scheduler.setElapsedMillis(1000);
+		assertThat(noteOns.get(), is(equalTo(5)));
+		assertThat(noteOffs.get(), is(equalTo(4)));
 	}
 }
