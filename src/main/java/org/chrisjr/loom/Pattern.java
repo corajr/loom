@@ -434,8 +434,7 @@ public class Pattern implements Cloneable {
 	 * @return the updated pattern
 	 */
 	public Pattern asMidi(MidiTools.Percussion sound) {
-		EventRewriter hitsOnly = new MatchRewriter(1.0);
-		Pattern hits = this.rewrite(hitsOnly);
+		Pattern hits = this.rewrite(new MatchRewriter(1.0));
 
 		ConcretePattern commands = ConcretePattern.forEach(hits);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);

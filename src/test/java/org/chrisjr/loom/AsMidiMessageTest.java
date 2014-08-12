@@ -10,6 +10,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.util.MidiTools.Percussion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,9 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		pattern = new Pattern(loom);
 		myBus = new MidiBus(null, "Bus 1", "Bus 1");
 		myBus.addMidiListener(this);
+
+		notesOnReceived.set(0);
+		notesOffReceived.set(0);
 
 		loom.setMidiBus(myBus);
 		loom.play();
@@ -77,6 +81,20 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 		assertThat(notesOnReceived.get(), is(equalTo(8)));
 		assertThat(notesOffReceived.get(), is(equalTo(8)));
+	}
+
+	@Test
+	public void asMidiTest() throws InterruptedException {
+		pattern.extend("1101");
+		pattern.asMidi(Percussion.CLAVES);
+
+		scheduler.setElapsedMillis(1000);
+
+		Thread.sleep(1);
+
+		assertThat(notesOnReceived.get(), is(equalTo(3)));
+		assertThat(notesOffReceived.get(), is(equalTo(3)));
+
 	}
 
 	@Override
