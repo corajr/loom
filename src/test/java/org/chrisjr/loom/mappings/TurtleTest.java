@@ -74,7 +74,7 @@ public class TurtleTest {
 
 	@Test
 	public void addCommands() {
-		MockPApplet testApp = new MockPApplet();
+		TestMockPApplet testApp = new TestMockPApplet();
 		testApp.init();
 
 		Turtle turtle = new Turtle(testApp);

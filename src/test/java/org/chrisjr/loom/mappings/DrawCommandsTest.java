@@ -17,14 +17,14 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class DrawCommandsTest {
-	private MockPApplet testApp;
+	private TestMockPApplet testApp;
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
 
 	@Before
 	public void setUp() throws Exception {
-		testApp = new MockPApplet();
+		testApp = new TestMockPApplet();
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(testApp, scheduler);
 		pattern = new Pattern(loom);

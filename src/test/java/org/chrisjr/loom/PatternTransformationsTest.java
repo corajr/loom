@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class PatternTransformations {
+public class PatternTransformationsTest {
 
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;

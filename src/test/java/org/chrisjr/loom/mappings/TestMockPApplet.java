@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import processing.core.PApplet;
 
-public class MockPApplet extends PApplet {
+public class TestMockPApplet extends PApplet {
 	ArrayList<String> commands = new ArrayList<String>();
 
 	@Override

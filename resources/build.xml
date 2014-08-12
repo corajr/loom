@@ -140,7 +140,7 @@ ${line}
 	
 	
 	<target name="compile">
-		<javac srcdir="${project.tmp}/${project.name}/src" destdir="${project.bin}" source="${java.target.version}" target="${java.target.version}" includeantruntime="false">
+		<javac srcdir="${project.tmp}/${project.name}/src/main/java" destdir="${project.bin}" source="${java.target.version}" target="${java.target.version}" includeantruntime="false">
 			<classpath>
 				<path refid="classpath"/>
 			</classpath>
@@ -223,7 +223,10 @@ ${line}
 		<move file="${project.tmp}/${project.name}" toDir="${project.dist.version}" />
 	</target>
 	
-	
+	  <patternset id="non.test.sources">
+	    <include name="**/*.java"/>
+	    <exclude name="**/*Test*"/>
+	  </patternset>	
 	
 	<target name="generate.javadoc" if="is.normal">
 	  	<!-- create the java reference of the library -->
@@ -240,9 +243,7 @@ ${line}
 			<link href="${javadoc.processing.href}" />
 			<taglet name="ExampleTaglet" path="resources/code" />
  			<fileset dir="${project.tmp}/${project.name}/src" defaultexcludes="yes">
-			<!-- add packages to be added to reference. -->
-				<include name="**/*"/>
-	  			<exclude name="**/*Test*"/>
+				<patternset refid="non.test.sources"/>
 			</fileset>
 	 	</javadoc>
 	</target>
