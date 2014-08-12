@@ -84,7 +84,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	}
 
 	@Test
-	public void asMidiTest() throws InterruptedException {
+	public void asMidiPercussionTest() throws InterruptedException {
 		pattern.extend("1101");
 		pattern.asMidi(Percussion.CLAVES);
 
