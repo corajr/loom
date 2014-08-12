@@ -28,8 +28,9 @@ import ddf.minim.*;
  * containing a non-overlapping series of events; continuous, its value a
  * function of time; or compound, containing a combination of the two.
  * 
- * A single pattern can only have one value at a time, but by adding child
- * patterns, multiple mappings can be assigned.
+ * A single pattern can only have one value at a time, and thus only a single
+ * mapping of a given type. However, by adding child patterns or creating a new
+ * Pattern using {@link #following}, multiple mappings can be assigned.
  * 
  * @see ConcretePattern
  * @author chrisjr
@@ -57,6 +58,12 @@ public class Pattern implements Cloneable {
 
 	protected boolean isConcrete;
 
+	/**
+	 * Constants for each possible mapping from floating-point values to output.
+	 * Only one mapping of each type is allowed per pattern.
+	 * 
+	 * @author chrisjr
+	 */
 	public enum MappingType {
 		INTEGER, // inclusive range
 		FLOAT, // inclusive range
@@ -76,40 +83,104 @@ public class Pattern implements Cloneable {
 		OBJECT // generic object
 	}
 
-	final protected MappingType[] externalMappings = new MappingType[] {
-			MappingType.CALLABLE, MappingType.CALLABLE_WITH_ARG,
-			MappingType.STATEFUL_CALLABLE };
+	/**
+	 * Mappings that are to be actively invoked by the scheduler, rather than
+	 * passively queried.
+	 */
+	final protected MappingType[] activeMappings = new MappingType[] {
+			MappingType.CALLABLE, // a Callable<Void>
+			MappingType.CALLABLE_WITH_ARG, // a callable that depends on a value
+			MappingType.STATEFUL_CALLABLE // a callable that keeps state
+	};
 
 	/**
 	 * Constructor for an empty Pattern.
 	 * 
 	 * @param loom
-	 *            the loom that holds this pattern (can be null)
+	 *            the {@link Loom} that holds this pattern (can be null)
 	 */
 	public Pattern(Loom loom) {
 		this(loom, null, null, false);
 	}
 
+	/**
+	 * A pattern that returns a constant value between 0.0 and 1.0.
+	 * 
+	 * @param loom
+	 *            the {@link Loom} that holds this pattern (can be null)
+	 * @param defaultValue
+	 *            the value of this pattern
+	 */
 	public Pattern(Loom loom, double defaultValue) {
 		this(loom, null, new ConstantFunction(defaultValue), false);
 	}
 
+	/**
+	 * A pattern with a value that is a continuous function of time.
+	 * 
+	 * @param loom
+	 *            the {@link Loom} that holds this pattern (can be null)
+	 * @param function
+	 *            the value of the pattern as a function of time
+	 */
 	public Pattern(Loom loom, ContinuousFunction function) {
 		this(loom, null, function, false);
 	}
 
+	/**
+	 * A pattern comprised of the specified events.
+	 * 
+	 * @param loom
+	 *            the {@link Loom} that holds this pattern (can be null)
+	 * @param events
+	 *            the events to be added
+	 */
 	public Pattern(Loom loom, Event... events) {
 		this(loom, EventCollection.fromEvents(events));
 	}
 
+	/**
+	 * A pattern comprised of the specified events.
+	 * 
+	 * @param loom
+	 *            the {@link Loom} that holds this pattern (can be null)
+	 * @param events
+	 *            the events to be added
+	 */
 	public Pattern(Loom loom, Collection<Event> events) {
 		this(loom, EventCollection.fromEvents(events));
 	}
+
+	/**
+	 * A pattern comprised of the specified events.
+	 * 
+	 * @param loom
+	 *            the {@link Loom} that holds this pattern (can be null)
+	 * @param events
+	 *            the {@link EventCollection} to be added
+	 */
 
 	public Pattern(Loom loom, EventCollection events) {
 		this(loom, events, null, false);
 	}
 
+	/**
+	 * Creates a Pattern and adds itself to the {@link Loom}.
+	 * 
+	 * Either a {@link EventCollection} or {@link ContinuousFunction} (not both)
+	 * can be passed in, in which case it will create an underlying
+	 * ConcretePattern.
+	 * 
+	 * @param loom
+	 *            the {@link Loom} that holds this pattern (can be null)
+	 * @param events
+	 *            an {@link EventCollection} for the pattern
+	 * @param function
+	 *            a {@link ContinuousFunction} for the pattern
+	 * @param isConcrete
+	 *            is the pattern concrete (i.e. does it contain events/a
+	 *            function directly)
+	 */
 	public Pattern(Loom loom, EventCollection events,
 			ContinuousFunction function, boolean isConcrete) {
 		this.loom = loom;
@@ -184,11 +255,23 @@ public class Pattern implements Cloneable {
 	 *            the Loom on which the new pattern should be created
 	 * @param ints
 	 *            the integer values for each event
-	 * @return a new pattern
+	 * @return a new pattern with the specified events
 	 */
 	public static Pattern fromInts(Loom loom, Integer... ints) {
 		Pattern pattern = new Pattern(loom);
 		return pattern.extend(ints);
+	}
+
+	/**
+	 * Create a new pattern that returns the same value as another. Useful for
+	 * creating multiple mappings of the same type.
+	 * 
+	 * @param other
+	 *            the pattern to follow
+	 * @return a pattern that returns the same value as the specified pattern
+	 */
+	public static Pattern following(Pattern other) {
+		return new Pattern(other.loom, new FollowerFunction(other));
 	}
 
 	/**
@@ -260,6 +343,17 @@ public class Pattern implements Cloneable {
 		return null;
 	}
 
+	/**
+	 * Sets the {@link Mapping} of this pattern for a certain
+	 * {@link MappingType}.
+	 * 
+	 * @param mappingType
+	 *            the type of mapping that will be set
+	 * @param mapping
+	 *            a {@link Mapping}
+	 * @return the current pattern
+	 * @see MappingType
+	 */
 	public Pattern putMapping(MappingType mappingType, Mapping<?> mapping) {
 		getOutputMappings().put(mappingType, mapping);
 		return this;
@@ -802,16 +896,16 @@ public class Pattern implements Cloneable {
 		return commands;
 	}
 
-	public Collection<Callable<?>> getExternalMappingsFor(Interval interval) {
+	public Collection<Callable<?>> getActiveMappingsFor(Interval interval) {
 		if (isConcretePattern())
-			return getConcretePattern().getExternalMappingsFor(interval);
+			return getConcretePattern().getActiveMappingsFor(interval);
 
 		Collection<Callable<?>> callables = new ArrayList<Callable<?>>();
 		if (children != null) {
 			for (Pattern child : children) {
 				Interval transformed = transform(interval,
 						child.useParentOffset);
-				callables.addAll(child.getExternalMappingsFor(transformed));
+				callables.addAll(child.getActiveMappingsFor(transformed));
 			}
 		}
 
@@ -822,14 +916,14 @@ public class Pattern implements Cloneable {
 		return getConcretePattern().hasMapping(mapping);
 	}
 
-	public Boolean hasExternalMappings() {
+	public Boolean hasActiveMappings() {
 		boolean result = false;
 		if (isConcretePattern()) {
-			result = getConcretePattern().hasExternalMappings();
+			result = getConcretePattern().hasActiveMappings();
 		} else {
 			if (children != null) {
 				for (Pattern pattern : children) {
-					if (pattern.hasExternalMappings()) {
+					if (pattern.hasActiveMappings()) {
 						result = true;
 						break;
 					}

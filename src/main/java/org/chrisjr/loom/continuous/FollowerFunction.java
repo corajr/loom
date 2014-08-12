@@ -5,14 +5,19 @@ import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.Interval;
 
 /**
- * Follows another pattern and returns that pattern's value for the interval
- * queried.
+ * "Follows" another pattern by returning that pattern's value when queried.
  * 
  * @author chrisjr
  */
 public class FollowerFunction extends ContinuousFunction {
 	final Pattern pattern;
 
+	/**
+	 * Creates a pattern that returns the same value as the underlying pattern.
+	 * 
+	 * @param pattern
+	 *            the pattern to be followed
+	 */
 	public FollowerFunction(Pattern pattern) {
 		this.pattern = pattern;
 	}

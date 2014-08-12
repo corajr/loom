@@ -8,15 +8,17 @@ import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.PatternCollection;
 
 /**
+ * The base class for schedulers in Loom.
+ * 
  * @author chrisjr
- * 
- *         The base class for schedulers in Loom.
- * 
  */
 public abstract class Scheduler {
 
 	private PatternCollection patterns;
 
+	/**
+	 * The state of the scheduler.
+	 */
 	public enum State {
 		PLAYING, PAUSED, STOPPED
 	}
@@ -38,11 +40,25 @@ public abstract class Scheduler {
 
 	State state = State.STOPPED;
 
+	/**
+	 * One millisecond at standard playback speed.
+	 */
 	public static final BigFraction minimumResolution = new BigFraction(1, 1000);
 	public static final BigFraction halfMinimum = minimumResolution.divide(2);
 
+	/**
+	 * Implementations of the Scheduler class must provide the present time when
+	 * queried.
+	 * 
+	 * @return the number of milliseconds elapsed
+	 */
 	public abstract long getElapsedMillis();
 
+	/**
+	 * Returns the current time in milliseconds divided by the period.
+	 * 
+	 * @return the present moment as a fraction of a cycle
+	 */
 	public BigFraction getNow() {
 		if (state == State.STOPPED)
 			throw new IllegalStateException(
@@ -54,19 +70,35 @@ public abstract class Scheduler {
 		return new BigFraction(elapsed, periodMillis);
 	}
 
+	/**
+	 * Retrieves an {@link Interval} that extends before and after the current
+	 * instant by half the minimum resolution.
+	 * 
+	 * @return an interval
+	 */
 	public Interval getCurrentInterval() {
 		BigFraction now = getNow();
 		return new Interval(now.subtract(halfMinimum), now.add(halfMinimum));
 	}
 
+	/**
+	 * Start playback. Must be called before querying the scheduler!
+	 */
 	public void play() {
 		state = State.PLAYING;
 	}
 
+	/**
+	 * Pause playback.
+	 */
 	public void pause() {
 		state = State.PAUSED;
 	}
 
+	/**
+	 * Stop playback. Additional queries to the scheduler will throw an
+	 * exception until {@link #play} is called again.
+	 */
 	public void stop() {
 		state = State.STOPPED;
 	}
@@ -75,19 +107,36 @@ public abstract class Scheduler {
 		return periodMillis;
 	}
 
+	/**
+	 * Sets the period of the scheduler.
+	 * 
+	 * @param periodMillis
+	 *            the new period
+	 */
 	public void setPeriod(long periodMillis) {
 		this.periodMillis = periodMillis;
 	}
 
+	/**
+	 * Runs all callbacks associated with the current interval.
+	 */
 	public void update() {
 		updateFor(getCurrentInterval());
 	}
 
+	/**
+	 * Runs all callbacks for a given interval. If a pattern is made of discrete
+	 * events, the callback for each event will be called individually. For a
+	 * continuous pattern, only one callback will be called.
+	 * 
+	 * @param interval
+	 *            the interval over which to run callbacks
+	 */
 	public void updateFor(Interval interval) {
-		PatternCollection actives = getPatternsWithExternalMappings();
+		PatternCollection actives = getPatternsWithActiveMappings();
 		for (Pattern pattern : actives) {
 			Collection<Callable<?>> callbacks = pattern
-					.getExternalMappingsFor(interval);
+					.getActiveMappingsFor(interval);
 			for (Callable<?> callback : callbacks) {
 				if (callback != null)
 					try {
@@ -100,13 +149,18 @@ public abstract class Scheduler {
 	}
 
 	/**
+	 * Retrieve the patterns that we must query for callbacks.
+	 * 
 	 * @return the patterns that have external mappings
 	 */
-	public PatternCollection getPatternsWithExternalMappings() {
-		return patterns.getPatternsWithExternalMappings();
+	public PatternCollection getPatternsWithActiveMappings() {
+		return patterns.getPatternsWithActiveMappings();
 	}
 
 	/**
+	 * Sets the {@link PatternCollection} associated with this scheduler, needs
+	 * for active mappings.
+	 * 
 	 * @param patterns
 	 *            the patterns to manage with this scheduler
 	 */

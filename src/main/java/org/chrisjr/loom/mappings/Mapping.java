@@ -2,7 +2,8 @@ package org.chrisjr.loom.mappings;
 
 /**
  * A Mapping is an interface with one method, <code>call</code>, that returns a
- * single output for a value between 0.0 and 1.0.
+ * single output for a value between 0.0 and 1.0. It may also return null if
+ * there is no output associated with a given value.
  * 
  * @author chrisjr
  * 

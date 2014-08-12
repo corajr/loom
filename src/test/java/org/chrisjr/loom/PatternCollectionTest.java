@@ -35,7 +35,7 @@ public class PatternCollectionTest {
 		patterns.add(pattern2);
 
 		PatternCollection activePatterns = patterns
-				.getPatternsWithExternalMappings();
+				.getPatternsWithActiveMappings();
 		assertThat(activePatterns.size(), is(equalTo(1)));
 	}
 

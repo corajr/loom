@@ -51,12 +51,12 @@ public class ConcretePattern extends Pattern {
 	}
 
 	@Override
-	public Collection<Callable<?>> getExternalMappingsFor(Interval interval) {
+	public Collection<Callable<?>> getActiveMappingsFor(Interval interval) {
 		if (this.events != null)
 			return getAllCallablesInInterval(interval);
 
 		Collection<Callable<?>> callbacks = new ArrayList<Callable<?>>();
-		for (MappingType mapping : externalMappings) {
+		for (MappingType mapping : activeMappings) {
 			if (outputMappings.containsKey(mapping))
 				callbacks.add((Callable<?>) getAs(mapping,
 						getValueFor(interval)));
@@ -69,7 +69,7 @@ public class ConcretePattern extends Pattern {
 		Collection<Event> activeEvents = this.events.getForInterval(interval);
 		Collection<MappingType> myMappings = new ArrayList<MappingType>();
 
-		for (MappingType mapping : externalMappings) {
+		for (MappingType mapping : activeMappings) {
 			if (outputMappings.containsKey(mapping))
 				myMappings.add(mapping);
 		}
@@ -114,9 +114,9 @@ public class ConcretePattern extends Pattern {
 	 * @return true if external mappings are present
 	 */
 	@Override
-	public Boolean hasExternalMappings() {
+	public Boolean hasActiveMappings() {
 		boolean result = false;
-		for (MappingType mapping : externalMappings) {
+		for (MappingType mapping : activeMappings) {
 			if (outputMappings.containsKey(mapping)) {
 				result = true;
 				break;

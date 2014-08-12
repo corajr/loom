@@ -37,10 +37,10 @@ public class PatternTest {
 
 	@Test
 	public void hasExternalMappings() {
-		assertThat(pattern.hasExternalMappings(), is(equalTo(false)));
+		assertThat(pattern.hasActiveMappings(), is(equalTo(false)));
 
 		pattern.asCallable(new StatefulNoop(null));
-		assertThat(pattern.hasExternalMappings(), is(equalTo(true)));
+		assertThat(pattern.hasActiveMappings(), is(equalTo(true)));
 	}
 
 	@Test

@@ -22,10 +22,10 @@ public class PatternCollection extends CopyOnWriteArrayList<Pattern> {
 	 * 
 	 * @return the relevant subset of patterns
 	 */
-	public PatternCollection getPatternsWithExternalMappings() {
+	public PatternCollection getPatternsWithActiveMappings() {
 		PatternCollection actives = new PatternCollection();
 		for (Pattern pattern : this) {
-			if (pattern.hasExternalMappings())
+			if (pattern.hasActiveMappings())
 				actives.add(pattern);
 		}
 		return actives;
