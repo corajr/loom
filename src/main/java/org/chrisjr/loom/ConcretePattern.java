@@ -11,7 +11,7 @@ import org.chrisjr.loom.continuous.ConstantFunction;
 import org.chrisjr.loom.continuous.ContinuousFunction;
 import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.Interval;
-import org.chrisjr.loom.util.MathOps;
+import org.chrisjr.loom.time.IntervalMath;
 
 /**
  * The implementation of a Pattern, which stores its output mappings and
@@ -157,7 +157,7 @@ public class ConcretePattern extends Pattern {
 		value += valueOffset;
 
 		// constrain to [0.0, 1.0]
-		value = MathOps.modInterval(value);
+		value = IntervalMath.modInterval(value);
 		return value;
 	}
 

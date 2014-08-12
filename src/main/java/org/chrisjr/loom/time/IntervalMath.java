@@ -1,6 +1,6 @@
-package org.chrisjr.loom.util;
+package org.chrisjr.loom.time;
 
-public class MathOps {
+public class IntervalMath {
 	public static double modInterval(double value) {
 		return modInterval(value, 0.0, 1.0);
 	}
