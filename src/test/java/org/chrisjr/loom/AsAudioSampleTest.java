@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.TestDataMockPApplet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,12 +14,12 @@ import ddf.minim.javasound.JSMinim;
 import ddf.minim.spi.AudioOut;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AsAudioSampleTest {
 	private JSMinim jsMinim;
 	private Minim minim;
+	private final TestDataMockPApplet testApp = new TestDataMockPApplet();
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
@@ -67,33 +68,18 @@ public class AsAudioSampleTest {
 		return "";
 	}
 
-	public InputStream createInput(String fileName) {
-		File resources_code;
-		try {
-			resources_code = new File(getClass().getResource("/").toURI());
-		} catch (URISyntaxException e1) {
-			throw new IllegalStateException("Could not get resource directory.");
-		}
-		File datadir = new File(resources_code.getParentFile().getParentFile(),
-				"data");
-		File file = new File(datadir, fileName);
-		System.out.println(file.toString());
-		InputStream is = null;
-		try {
-			is = new FileInputStream(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return is;
+	public InputStream createInput(String fileName)
+			throws FileNotFoundException {
+		return new FileInputStream(testApp.dataFile(fileName));
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		jsMinim = new JSMinim(this);
+		jsMinim = new JSMinim(testApp);
 		minim = new Minim(jsMinim);
 
 		scheduler = new NonRealTimeScheduler();
-		loom = new Loom(null, scheduler);
+		loom = new Loom(testApp, scheduler);
 		pattern = new Pattern(loom);
 
 		fakeOut = jsMinim.getAudioOutput(2, 1024, 44100, 8);

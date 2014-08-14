@@ -293,6 +293,10 @@ public class Pattern implements Cloneable {
 	 *            the pattern to be added
 	 */
 	protected void addChild(Pattern child) {
+		if (child == this)
+			throw new IllegalArgumentException(
+					"A pattern cannot be its own child.");
+
 		if (children == null)
 			children = new PatternCollection();
 		child.parent = this;
@@ -745,18 +749,15 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern asSample(final AudioSample sample) {
-		Pattern hits = new Pattern(loom,
-				new MatchRewriter(1.0).apply(getEvents()));
+		this.rewrite(new MatchRewriter(1.0));
 
-		hits.onOnset(new Callable<Void>() {
+		onOnset(new Callable<Void>() {
 			@Override
 			public Void call() {
 				sample.trigger();
 				return null;
 			}
 		});
-
-		addChild(hits);
 
 		return this;
 	}

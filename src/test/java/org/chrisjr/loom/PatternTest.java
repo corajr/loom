@@ -84,6 +84,12 @@ public class PatternTest {
 	}
 
 	@Test
+	public void cannotAddSelfToSelf() {
+		thrown.expect(IllegalArgumentException.class);
+		pattern.addChild(pattern);
+	}
+
+	@Test
 	public void whenNoMappingIsSet() {
 		thrown.expect(IllegalStateException.class);
 		pattern.asColor();

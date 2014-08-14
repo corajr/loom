@@ -1,11 +1,21 @@
 package org.chrisjr.loom;
 
-import java.io.File;
+import java.io.*;
 
 import processing.core.PApplet;
 
 public class TestDataMockPApplet extends PApplet {
 	private static final long serialVersionUID = 4527002226607060274L;
+
+	@Override
+	public InputStream createInput(String filename) {
+		try {
+			return new FileInputStream(dataFile(filename));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	@Override
 	public File dataFile(String filename) {
