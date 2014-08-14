@@ -1,11 +1,12 @@
 package org.chrisjr.loom;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import processing.core.PApplet;
 
 public class TestDataMockPApplet extends PApplet {
+	private static final long serialVersionUID = 4527002226607060274L;
+
 	@Override
 	public File dataFile(String filename) {
 		File file = new File(filename);

@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.TestDataMockPApplet;

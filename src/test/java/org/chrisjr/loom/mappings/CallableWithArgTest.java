@@ -54,7 +54,10 @@ public class CallableWithArgTest {
 		int n = 12;
 
 		AtomicInteger[] counters = new AtomicInteger[n];
-		Callable[] callables = new Callable[n];
+
+		@SuppressWarnings("unchecked")
+		Callable<Void>[] callables = new Callable[n];
+
 		for (int i = 0; i < n; i++) {
 			counters[i] = new AtomicInteger();
 			callables[i] = new Incrementer(counters, i);

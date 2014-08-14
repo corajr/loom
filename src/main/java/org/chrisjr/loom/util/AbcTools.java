@@ -40,6 +40,8 @@ public class AbcTools {
 
 		if (tune != null) {
 			BigFraction start = new BigFraction(0);
+
+			@SuppressWarnings("unchecked")
 			Iterator<MusicElement> it = tune.getMusic().iterator();
 
 			KeySignature sig = null;
