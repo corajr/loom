@@ -6,7 +6,7 @@ import processing.core.PApplet;
 
 public class TestMockPApplet extends PApplet {
 	private static final long serialVersionUID = -7174699997244200887L;
-	ArrayList<String> commands = new ArrayList<String>();
+	public ArrayList<String> commands = new ArrayList<String>();
 
 	@Override
 	public void setup() {

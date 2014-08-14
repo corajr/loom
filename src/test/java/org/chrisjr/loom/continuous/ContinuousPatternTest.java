@@ -66,7 +66,7 @@ public class ContinuousPatternTest {
 	public void followContinuousPattern() {
 		pattern = new Pattern(loom, new SineFunction());
 
-		Pattern pattern2 = new Pattern(loom, new FollowerFunction(pattern));
+		Pattern pattern2 = Pattern.following(pattern);
 
 		final double epsilon = 1e-5;
 

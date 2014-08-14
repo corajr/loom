@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.awt.Color;
 
+import org.chrisjr.loom.mappings.TestMockPApplet;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.util.StatefulNoop;
 import org.junit.After;
@@ -16,6 +17,7 @@ import org.junit.rules.ExpectedException;
 
 public class PatternTest {
 	private Loom loom;
+	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
 
 	@Rule
@@ -23,8 +25,9 @@ public class PatternTest {
 
 	@Before
 	public void setUp() throws Exception {
-		loom = new Loom(null, new NonRealTimeScheduler()); // PApplet is not
-															// needed here
+		scheduler = new NonRealTimeScheduler();
+		loom = new Loom(null, scheduler);
+
 		pattern = new Pattern(loom, 0.6);
 		loom.play();
 	}
@@ -60,12 +63,7 @@ public class PatternTest {
 
 	@Test
 	public void asColorDiscrete() {
-		NonRealTimeScheduler scheduler = new NonRealTimeScheduler();
-		pattern = new Pattern(new Loom(null, scheduler));
-
-		scheduler.play();
-
-		pattern.extend("0101");
+		pattern = Pattern.fromInts(loom, 0, 1, 0, 1);
 
 		int black = Color.BLACK.getRGB();
 		int white = Color.WHITE.getRGB();
@@ -81,6 +79,23 @@ public class PatternTest {
 	public void asObject() {
 		pattern.asObject(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 		assertThat((Integer) pattern.asObject(), is(equalTo(6)));
+	}
+
+	@Test
+	public void rect() {
+		TestMockPApplet testApp = new TestMockPApplet();
+		loom = new Loom(testApp, scheduler);
+		pattern = Pattern.fromString(loom, "01");
+
+		pattern.asColor(0xFF000000, 0xFFFFFFFF);
+
+		pattern.rect(0, 0, 3, 1);
+
+		String[] expected = new String[] { "stroke(ff000000);",
+				"line(0, 0, 0, 1);", "stroke(ffffffff);", "line(1, 0, 1, 1);",
+				"stroke(ffffffff);", "line(2, 0, 2, 1);" };
+
+		assertThat(testApp.commands, hasItems(expected));
 	}
 
 	@Test
