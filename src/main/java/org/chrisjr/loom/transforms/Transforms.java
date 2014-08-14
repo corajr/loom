@@ -2,6 +2,7 @@ package org.chrisjr.loom.transforms;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Pattern;
+import org.chrisjr.loom.time.IntervalMath;
 
 public class Transforms {
 	public static class Noop extends Transform {
@@ -19,9 +20,13 @@ public class Transforms {
 	}
 
 	public static class Speed extends Transform {
-		private final double amt;
+		private final BigFraction amt;
 
 		public Speed(double amt) {
+			this(IntervalMath.toFraction(amt));
+		}
+
+		public Speed(BigFraction amt) {
 			this.amt = amt;
 		}
 

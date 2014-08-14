@@ -39,7 +39,7 @@ public class AbcTools {
 		}
 
 		if (tune != null) {
-			BigFraction start = new BigFraction(0);
+			BigFraction start = BigFraction.ZERO;
 
 			@SuppressWarnings("unchecked")
 			Iterator<MusicElement> it = tune.getMusic().iterator();

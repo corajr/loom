@@ -24,7 +24,6 @@ public abstract class Transform {
 		return new Callable<Void>() {
 			@Override
 			public Void call() {
-				System.out.println(toString());
 				transform.call(original);
 				return null;
 			}

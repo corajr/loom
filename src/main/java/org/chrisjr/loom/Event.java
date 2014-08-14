@@ -2,6 +2,7 @@ package org.chrisjr.loom;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.time.IntervalMath;
 import org.chrisjr.loom.util.MidiTools.Note;
 
 /**
@@ -84,7 +85,7 @@ public class Event {
 	}
 
 	public static Event note(double duration, double value) {
-		return note(new BigFraction(duration), value);
+		return note(IntervalMath.toFraction(duration), value);
 	}
 
 	public static Event note(BigFraction duration, double value) {
@@ -92,7 +93,7 @@ public class Event {
 	}
 
 	public static Event rest(double duration) {
-		return rest(new BigFraction(duration));
+		return rest(IntervalMath.toFraction(duration));
 	}
 
 	public static Event rest(BigFraction duration) {
@@ -111,7 +112,7 @@ public class Event {
 	 */
 	public static Event[] seq(Event... events) {
 		Event[] sequenced = new Event[events.length];
-		BigFraction offset = new BigFraction(0);
+		BigFraction offset = BigFraction.ZERO;
 		for (int i = 0; i < events.length; i++) {
 			Event oldEvent = events[i];
 			Interval duration = oldEvent.getInterval();

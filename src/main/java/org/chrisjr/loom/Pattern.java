@@ -50,8 +50,8 @@ public class Pattern implements Cloneable {
 	protected double defaultValue;
 
 	boolean isLooping = false;
-	BigFraction timeOffset = new BigFraction(0);
-	BigFraction timeScale = new BigFraction(1);
+	BigFraction timeOffset = BigFraction.ZERO;
+	BigFraction timeScale = BigFraction.ONE;
 	Interval loopInterval = new Interval(0, 1);
 
 	protected double valueOffset = 0.0;
@@ -278,13 +278,15 @@ public class Pattern implements Cloneable {
 	/**
 	 * Called on initialization, or when adding a sibling (pattern at the same
 	 * level in the hierarchy). This abstracts away the use of the Loom's
-	 * <code>patterns</code> field in case the interface needs to change.
+	 * <code>patterns</code> field in case the interface needs to change. Only
+	 * adds if not already added.
 	 * 
 	 * @param loom
 	 *            the loom to which this pattern should be added
 	 */
 	protected void addSelfTo(Loom loom) {
-		loom.patterns.add(this);
+		if (!loom.patterns.contains(this))
+			loom.patterns.add(this);
 	}
 
 	/**
@@ -1335,7 +1337,7 @@ public class Pattern implements Cloneable {
 	// Transformations
 
 	public Pattern speed(double multiplier) {
-		return speed(new BigFraction(multiplier));
+		return speed(IntervalMath.toFraction(multiplier));
 	}
 
 	public Pattern speed(BigFraction multiplier) {
@@ -1348,7 +1350,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern shift(double amt) {
-		return shift(new BigFraction(amt));
+		return shift(IntervalMath.toFraction(amt));
 	}
 
 	public Pattern shift(BigFraction amt) {
@@ -1470,7 +1472,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public void setTimeOffset(double i) {
-		setTimeOffset(new BigFraction(i));
+		setTimeOffset(IntervalMath.toFraction(i));
 	}
 
 	public void setTimeOffset(BigFraction timeOffset) {
@@ -1485,7 +1487,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public void setTimeScale(double i) {
-		setTimeScale(new BigFraction(i));
+		setTimeScale(IntervalMath.toFraction(i));
 	}
 
 	public void setTimeScale(BigFraction timeScale) {
@@ -1552,7 +1554,8 @@ public class Pattern implements Cloneable {
 
 		PApplet sketch = loom.myParent;
 
-		BigFraction unit = interval.getSize().divide(new BigFraction(width));
+		BigFraction unit = interval.getSize().divide(
+				IntervalMath.toFraction(width));
 		BigFraction start = interval.getStart();
 
 		Interval currentInterval = new Interval(start, start.add(unit));

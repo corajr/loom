@@ -7,7 +7,7 @@ public class Interval {
 	private final BigFraction end;
 
 	public Interval(double start, double end) {
-		this(new BigFraction(start), new BigFraction(end));
+		this(IntervalMath.toFraction(start), IntervalMath.toFraction(end));
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class Interval {
 	 * @return a new interval
 	 */
 	public static Interval zeroTo(double duration) {
-		return zeroTo(new BigFraction(duration));
+		return zeroTo(IntervalMath.toFraction(duration));
 	}
 
 	/**
@@ -73,15 +73,15 @@ public class Interval {
 	}
 
 	public Interval add(double i) {
-		return add(new BigFraction(i));
+		return add(IntervalMath.toFraction(i));
 	}
 
 	public Interval subtract(double i) {
-		return subtract(new BigFraction(i));
+		return subtract(IntervalMath.toFraction(i));
 	}
 
 	public Interval multiply(double i) {
-		return multiply(new BigFraction(i));
+		return multiply(IntervalMath.toFraction(i));
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class Interval {
 	 * @return the product, modulo the other interval
 	 */
 	public Interval multiplyMod(double amt, Interval interval) {
-		return multiplyMod(new BigFraction(amt), interval);
+		return multiplyMod(IntervalMath.toFraction(amt), interval);
 	}
 
 	/**
