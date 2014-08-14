@@ -20,10 +20,6 @@ public class OscP5Recorder extends OscP5 implements IOscP5 {
 		score = new OscScore();
 	}
 
-	public OscP5Recorder(Loom loom, String outputFilename) throws IOException {
-		this(loom, new File(outputFilename));
-	}
-
 	@Override
 	public void send(OscPacket packet, NetAddress addr) {
 		if (!(packet instanceof OscBundle))

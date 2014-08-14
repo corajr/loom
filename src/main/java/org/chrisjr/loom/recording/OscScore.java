@@ -50,9 +50,7 @@ public class OscScore extends ConcurrentSkipListMap<Double, OscBundle> {
 
 				score.put(timestamp, bundle);
 			}
-		} catch (FileNotFoundException e) {
-			System.err.println("File " + file.getPath() + " not found!");
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
