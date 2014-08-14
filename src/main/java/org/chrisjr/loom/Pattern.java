@@ -16,6 +16,7 @@ import org.chrisjr.loom.mappings.*;
 import org.chrisjr.loom.time.*;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
+import org.chrisjr.loom.util.MidiTools.Instrument;
 import org.chrisjr.loom.wrappers.OscP5Impl;
 
 import oscP5.*;
@@ -399,19 +400,50 @@ public class Pattern implements Cloneable {
 	 *            a string such as "10010010" describing a pattern to be tacked
 	 *            on at the end
 	 * @return the updated pattern
+	 * @see EventCollection#fromString(String)
 	 */
 	public Pattern extend(String string) {
 		return extend(EventCollection.fromString(string).values());
 	}
 
+	/**
+	 * Extends the current pattern by treating the input as equally spaced
+	 * events within a single cycle. For example, extend(0, 1, 2, 3, 4) will
+	 * create 5 events, each 1/5 a cycle's duration, with values [0.0, 0.25,
+	 * 0.5, 0.75, 1.0].
+	 * 
+	 * @param ints
+	 *            the integer values of each event
+	 * @return the updated pattern
+	 * @see EventCollection#fromInts(Integer...)
+	 */
 	public Pattern extend(Integer... ints) {
 		return extend(EventCollection.fromInts(ints).values());
 	}
 
+	/**
+	 * Extends the pattern by adding the events specified after the last event
+	 * currently in the pattern. (If the pattern has no events yet, it will
+	 * create a new EventCollection for this pattern and add the events to it.)
+	 * 
+	 * @param newEvents
+	 *            the events to be appended
+	 * @return the current pattern with events added
+	 * @see #extend(Collection)
+	 */
 	public Pattern extend(Event... events) {
 		return extend(Arrays.asList(events));
 	}
 
+	/**
+	 * Extends the pattern by adding the events specified after the last event
+	 * currently in the pattern. (If the pattern has no events yet, it will
+	 * create a new EventCollection for this pattern and add the events to it.)
+	 * 
+	 * @param newEvents
+	 *            the events to be appended
+	 * @return the current pattern with events added
+	 */
 	public Pattern extend(Collection<Event> newEvents) {
 		EventCollection events = getEvents();
 		if (events != null) {
@@ -423,10 +455,23 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Returns the value of this Pattern at the current interval, a number
+	 * between 0.0 and 1.0 inclusive.
+	 * 
+	 * @return the value as a double
+	 */
 	public double getValue() {
 		return getValueFor(getCurrentInterval());
 	}
 
+	/**
+	 * Returns the value of the pattern for a specified {@link Interval}.
+	 * 
+	 * @param now
+	 *            the interval to query
+	 * @return the value of the Pattern
+	 */
 	public double getValueFor(Interval now) {
 		ConcretePattern pattern = getConcretePattern();
 		if (pattern == null)
@@ -436,10 +481,34 @@ public class Pattern implements Cloneable {
 		return getConcretePattern().getValueFor(now);
 	}
 
+	/**
+	 * Returns the current interval from the perspective of this pattern,
+	 * transformed by its time scale, offset, and loop interval (if applicable).
+	 * Each pattern queries its parent, if it has one, or the Loom's scheduler
+	 * if not; in this way, nested time transformations are possible.
+	 * 
+	 * @return the current interval
+	 * @see #getCurrentInterval(boolean)
+	 */
 	public Interval getCurrentInterval() {
 		return getCurrentInterval(true);
 	}
 
+	/**
+	 * Returns the current interval from the perspective of this pattern,
+	 * transformed by its time scale, offset, and loop interval (if applicable).
+	 * Each pattern queries its parent, if it has one, or the Loom's scheduler
+	 * if not; in this way, nested time transformations are possible.
+	 * 
+	 * If <code>useOffset</code> is false, it will ignore the time offset in its
+	 * calculations. This is needed so that {@link #every} and other functions
+	 * act in the expected manner when a parent pattern is transformed.
+	 * 
+	 * @param useOffset
+	 *            use the time offset when calculating interval
+	 * @return a transformed interval
+	 * @see #transform(Interval, boolean)
+	 */
 	public Interval getCurrentInterval(boolean useOffset) {
 		Interval interval;
 		if (this.parent != null) {
@@ -451,10 +520,30 @@ public class Pattern implements Cloneable {
 		return transform(interval, useOffset);
 	}
 
+	/**
+	 * Performs the transformation of a given interval, according to the
+	 * pattern's time scaling, offset, and loop interval.
+	 * 
+	 * @param interval
+	 *            the interval to be transformed
+	 * @return the transformed interval
+	 * @see #transform(Interval, boolean)
+	 */
 	public Interval transform(Interval interval) {
 		return transform(interval, true);
 	}
 
+	/**
+	 * Performs the transformation of a given interval, according to the
+	 * pattern's time scaling, offset, and loop interval. If
+	 * <code>useOffset</code> is false, the offset will be ignored.
+	 * 
+	 * @param interval
+	 *            the interval to be transformed
+	 * @param useOffset
+	 *            whether or not to use the offset
+	 * @return the transformed interval
+	 */
 	public Interval transform(Interval interval, boolean useOffset) {
 		BigFraction scale = getTimeScale();
 
@@ -476,11 +565,21 @@ public class Pattern implements Cloneable {
 		return interval;
 	}
 
+	/**
+	 * Turns looping off.
+	 * 
+	 * @return the current pattern
+	 */
 	public Pattern once() {
 		isLooping = false;
 		return this;
 	}
 
+	/**
+	 * Turns looping on.
+	 * 
+	 * @return the current pattern
+	 */
 	public Pattern loop() {
 		isLooping = true;
 		return this;
@@ -488,25 +587,69 @@ public class Pattern implements Cloneable {
 
 	// Mappings
 
+	/**
+	 * Retrieves the int value of <code>result</code>, or a default value if it
+	 * is null.
+	 * 
+	 * @param result
+	 *            the object to be queried
+	 * @param defaultInt
+	 *            a default if result is null (usually 0)
+	 * @return the value of result, or 0
+	 */
 	private static int getIntOrElse(Integer result, int defaultInt) {
 		return result != null ? result.intValue() : defaultInt;
 	}
 
+	/**
+	 * Set the mapping from this pattern's values to integers. The range from
+	 * <code>lo</code> to <code>hi</code> is inclusive, so 1.0 will be mapped to
+	 * <code>hi</code>; values are rounded to the nearest whole number using
+	 * Math.round.
+	 * 
+	 * @param lo
+	 *            the low end of the range
+	 * @param hi
+	 *            the high end of the range (inclusive)
+	 * @return the current pattern
+	 */
 	public Pattern asInt(int lo, int hi) {
 		putMapping(MappingType.INTEGER, new IntMapping(lo, hi));
 		return this;
 	}
 
+	/**
+	 * Returns the current int value of this pattern according to the previously
+	 * set IntMapping.
+	 * 
+	 * @return the current int value
+	 */
 	public int asInt() {
 		Integer result = (Integer) getAs(MappingType.INTEGER);
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
+	/**
+	 * Set the mapping from this pattern's values to floats. The range is
+	 * inclusive, so 1.0 will be mapped to <code>hi</code>.
+	 * 
+	 * @param lo
+	 *            the low end of the range
+	 * @param hi
+	 *            the high end of the range (inclusive)
+	 * @return the current pattern
+	 */
 	public Pattern asFloat(float lo, float hi) {
 		putMapping(MappingType.FLOAT, new FloatMapping(lo, hi));
 		return this;
 	}
 
+	/**
+	 * Returns the current float value of this pattern according to the
+	 * previously set FloatMapping.
+	 * 
+	 * @return the current float value
+	 */
 	public float asFloat() {
 		Float result = (Float) getAs(MappingType.FLOAT);
 		return result.floatValue();
@@ -520,7 +663,10 @@ public class Pattern implements Cloneable {
 	 * @return the updated pattern
 	 */
 	public Pattern asMidi(String instrument) {
-		// TODO program change message
+		int midiInstrument = Instrument.valueOf(instrument).ordinal();
+
+		Pattern setInstrument = Pattern.fromInts(loom, 1);
+		addChild(setInstrument);
 		return asMidiMessage(this);
 	}
 
@@ -530,6 +676,7 @@ public class Pattern implements Cloneable {
 	 * @param sound
 	 *            a MIDI percussion instrument
 	 * @return the updated pattern
+	 * @see MidiTools.Percussion
 	 */
 	public Pattern asMidi(MidiTools.Percussion sound) {
 		Pattern hits = this.rewrite(new MatchRewriter(1.0));
@@ -552,55 +699,150 @@ public class Pattern implements Cloneable {
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
 
+	/**
+	 * Maps this pattern's values to the specified MIDI commands. Use -1 if a
+	 * certain value should be a no-op.
+	 * 
+	 * Example:
+	 * <code>asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);</code>
+	 * maps the values 0.0, 0.5, and 1.0 (output from
+	 * {@link ConcretePattern#forEach(Pattern)}) to the appropriate MIDI
+	 * commands for each note.
+	 * 
+	 * @param commands
+	 *            the commands to execute
+	 * @return the current pattern
+	 */
 	public Pattern asMidiCommand(Integer... commands) {
 		putMapping(MappingType.MIDI_COMMAND, new MidiCommandMapping(commands));
 		return this;
 	}
 
+	/**
+	 * Gets the current MIDI command for this pattern.
+	 * 
+	 * @return the current MIDI command
+	 */
 	public int asMidiCommand() {
 		Integer result = (Integer) getAs(MappingType.MIDI_COMMAND);
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
+	/**
+	 * Sets the mapping of this pattern's values to MIDI channels. This can be
+	 * used if you which to switch channels on certain notes, for example to
+	 * create a Klangfarbenmelodie (or most likely, to render percussion on MIDI
+	 * channel 10).
+	 * 
+	 * @param channels
+	 *            the channels to map to
+	 * @return the current pattern
+	 */
 	public Pattern asMidiChannel(Integer... channels) {
 		putMapping(MappingType.MIDI_CHANNEL, new MidiChannelMapping(channels));
 		return this;
 	}
 
+	/**
+	 * Gets the current MIDI channel for this pattern.
+	 * 
+	 * @return the current MIDI channel
+	 */
 	public int asMidiChannel() {
 		Integer result = (Integer) getAs(MappingType.MIDI_CHANNEL);
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
+	/**
+	 * Maps the pattern's values to MIDI data byte 1. For NOTE_ON and NOTE_OFF
+	 * messages, this is the note to be played (from 0 to 127).
+	 * 
+	 * @param lo
+	 *            the low end of the range
+	 * @param hi
+	 *            the high end of the range (inclusive)
+	 * @return the current pattern
+	 * @see IntMapping
+	 */
 	public Pattern asMidiData1(int lo, int hi) {
 		putMapping(MappingType.MIDI_DATA1, new IntMapping(lo, hi));
 		return this;
 	}
 
+	/**
+	 * Returns the current value of MIDI data 1.
+	 * 
+	 * @return the current MIDI data 1 value
+	 */
 	public int asMidiData1() {
 		Integer result = (Integer) getAs(MappingType.MIDI_DATA1);
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
+	/**
+	 * Maps the values of this pattern to MIDI notes. Akin to
+	 * {@link #asMidiData1(int, int)}, but output will be constrained to the
+	 * possibilities specified. Useful to map to certain notes of the scale.
+	 * 
+	 * Example: asMidiNote(60, 64, 67) will map the values 0.0, 0.5, and 1.0 to
+	 * the notes middle C, E, and G. Other values will be floored (e.g. 0.25 =>
+	 * 60). Input is sorted, so asMidiNote(67, 64, 60) has the same effect.
+	 * 
+	 * @param values
+	 *            the notes to be mapped to
+	 * @return the current pattern
+	 */
 	public Pattern asMidiNote(Integer... values) {
 		Arrays.sort(values);
-		return asMidiData1(values[0], values[values.length - 1]);
+		putMapping(MappingType.MIDI_DATA1, new ObjectMapping<Integer>(values));
+		return this;
 	}
 
+	/**
+	 * Returns the current MIDI note. An alias for {@link #asMidiData1}.
+	 * 
+	 * @return the current MIDI note
+	 */
 	public int asMidiNote() {
 		return asMidiData1();
 	}
 
+	/**
+	 * Maps the pattern's values to MIDI data 2. For NOTE_ON and NOTE_OFF
+	 * messages, this corresponds to the velocity.
+	 * 
+	 * @param lo
+	 *            the low end of the range
+	 * @param hi
+	 *            the high end of the range (inclusive)
+	 * @return the current pattern
+	 */
 	public Pattern asMidiData2(int lo, int hi) {
 		putMapping(MappingType.MIDI_DATA2, new IntMapping(lo, hi));
 		return this;
 	}
 
+	/**
+	 * Returns the current MIDI data 2 value for this pattern.
+	 * 
+	 * @return the current MIDI data 2 value
+	 */
 	public int asMidiData2() {
 		Integer result = (Integer) getAs(MappingType.MIDI_DATA2);
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
+	/**
+	 * Maps the specified note pattern as a MIDI message, which will be
+	 * Typically this will be called using the pattern itself as argument, i.e.
+	 * <code>notePattern.asMidiMessage(notePattern);</code>
+	 * 
+	 * @param notes
+	 *            the pattern that provides the MIDI notes (must have an
+	 *            {@link #asMidiData1(int, int)} mapping).
+	 * @return the current pattern
+	 * @see #asMidiMessage(Pattern, Pattern, Pattern, Pattern)
+	 */
 	public Pattern asMidiMessage(Pattern notes) {
 		ConcretePattern commands = ConcretePattern.forEach(notes);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
@@ -618,6 +860,26 @@ public class Pattern implements Cloneable {
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
 
+	/**
+	 * Maps the current pattern to MIDI messages and schedules them to be sent
+	 * out using the Loom's {@link org.chrisjr.loom.wrappers.MidiBusWrapper}. A
+	 * new message is sent each time there is an onset in the
+	 * <code>commands</code> pattern.
+	 * 
+	 * This takes four patterns as input (they need not be distinct). This
+	 * allows each parameter of the MIDI message to be set separately if
+	 * desired.
+	 * 
+	 * @param commands
+	 *            the pattern that specifies the MIDI command
+	 * @param channels
+	 *            the pattern that specifies the MIDI channel
+	 * @param notes
+	 *            the pattern that specifies MIDI data 1
+	 * @param velocities
+	 *            the pattern that specifies MIDI data 2
+	 * @return the current pattern
+	 */
 	public Pattern asMidiMessage(Pattern commands, Pattern channels,
 			Pattern notes, Pattern velocities) {
 
@@ -642,20 +904,64 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Returns the current MIDI message from this pattern.
+	 * 
+	 * @return the current MIDI message
+	 */
 	public MidiMessage asMidiMessage() {
 		return (MidiMessage) getAs(MappingType.MIDI_MESSAGE);
 	}
 
+	/**
+	 * Maps this pattern to an OSC message with a default argument of 1.
+	 * 
+	 * Example: <code>asOscMessage("/light")</code> will result in a message of
+	 * "/light 1".
+	 * 
+	 * @param addressPattern
+	 *            the address to send the message to
+	 * @return the current pattern
+	 * @see #asOscBundle(NetAddress, Pattern...)
+	 */
 	public Pattern asOscMessage(String addressPattern) {
 		return asOscMessage(addressPattern, 1);
 	}
 
+	/**
+	 * Maps this pattern to an OSC message with a single integer argument.
+	 * 
+	 * Example: <code>asOscMessage("/light", 1)</code> will result in a message
+	 * of "/light 1".
+	 * 
+	 * @param addressPattern
+	 *            the address to send the message to
+	 * @param value
+	 *            the integer value
+	 * @return the current pattern
+	 * @see #asOscBundle(NetAddress, Pattern...)
+	 */
 	public Pattern asOscMessage(String addressPattern, int value) {
 		ConcretePattern subPattern = new ConcretePattern(loom, 1.0);
 		return asOscMessage(addressPattern, subPattern,
 				new IntMapping(0, value));
 	}
 
+	/**
+	 * Sets a mapping of this pattern to OSC messages, with a new
+	 * {@link Mapping} used to provide the arguments.
+	 * 
+	 * Example: <code>asOscMessage("/light", new IntMapping(0, 1));</code> will
+	 * call the {@link IntMapping} on the current pattern, then create a message
+	 * like "/light 0" or "/light 1" depending on its value.
+	 * 
+	 * @param addressPattern
+	 *            the address of the message
+	 * @param mapping
+	 *            the mapping from this pattern's values to the OSC message's
+	 *            arguments
+	 * @return the current pattern
+	 */
 	public Pattern asOscMessage(String addressPattern, Mapping<?> mapping) {
 		final Pattern original = this;
 		putMapping(MappingType.OSC_MESSAGE, new OscMessageMapping(original,
@@ -663,13 +969,39 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
-	public Pattern asOscMessage(String addressPattern,
-			ConcretePattern subPattern, Mapping<?> mapping) {
+	/**
+	 * Sets this pattern's mapping to OSC messages, using a second pattern
+	 * <code>subPattern</code> to provide the values that will be translated
+	 * into the message's arguments.
+	 * 
+	 * The <code>mapping</code> will be called using the subpattern's current
+	 * value when this pattern is queried. For example, the subpattern could
+	 * have a mapping that turns 0.0 into the three floats [0.0, 0.0, 0.0] and
+	 * 1.0 into the three floats [0.1, 0.2, 0.3], which would work independently
+	 * of the values of the current pattern.
+	 * 
+	 * @param addressPattern
+	 *            the address to send the message to
+	 * @param subPattern
+	 *            the pattern that will be used to provide the values for the
+	 *            mapping
+	 * @param mapping
+	 *            the mapping from subPattern's values to the OSC messages'
+	 *            arguments
+	 * @return the current pattern
+	 */
+	public Pattern asOscMessage(String addressPattern, Pattern subPattern,
+			Mapping<?> mapping) {
 		subPattern.asOscMessage(addressPattern, mapping);
 		addChild(subPattern);
 		return this;
 	}
 
+	/**
+	 * Returns the current OSC message value of this pattern.
+	 * 
+	 * @return the current OSC message
+	 */
 	public OscMessage asOscMessage() {
 		return (OscMessage) getAs(MappingType.OSC_MESSAGE);
 	}
@@ -983,13 +1315,9 @@ public class Pattern implements Cloneable {
 	}
 
 	public Pattern every(BigFraction fraction, Callable<Void> callable) {
-		EventCollection events = new EventCollection();
-
 		Interval interval = new Interval(BigFraction.ZERO, fraction);
 
-		events.add(new Event(interval, 1.0));
-
-		Pattern trigger = new Pattern(loom, events);
+		Pattern trigger = new Pattern(loom, new Event(interval, 1.0));
 		trigger.loop();
 		trigger.setLoopInterval(interval);
 

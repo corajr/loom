@@ -288,6 +288,8 @@ public class PatternTransformationsTest {
 			int millis = expected[i * 2];
 			int expectedCount = expected[i * 2 + 1];
 			scheduler.setElapsedMillis(millis);
+			// System.out.format("%s %s %s %s %s\n", millis, pattern.asInt(),
+			// counter.get(), expectedCount, pattern.getTimeScale());
 			assertThat(counter.get(), is(equalTo(expectedCount)));
 		}
 	}
@@ -297,9 +299,9 @@ public class PatternTransformationsTest {
 		pattern.every(1, new Transforms.Speed(0.5));
 		pattern.loop();
 
-		countBeats(pattern, 249, 1, 499, 2, 749, 3, 999, 4, 1499, 5, 1999, 6,
-				2499, 7, 2999, 8, 3999, 9, 4999, 10, 5999, 11, 6999, 12, 8999,
-				13, 10999, 14, 12999, 15, 14999, 16);
+		countBeats(pattern, 0, 1, 250, 2, 500, 3, 750, 4, 1000, 5, 1500, 6,
+				2000, 7, 2500, 8, 3000, 9, 4000, 10, 5000, 11, 6000, 12, 7000,
+				13, 9000, 14, 11000, 15, 13000, 16);
 	}
 
 	@Test
@@ -307,9 +309,9 @@ public class PatternTransformationsTest {
 		pattern.every(1, new Transforms.Speed(5));
 		pattern.loop();
 
-		countBeats(pattern, 249, 1, 499, 2, 749, 3, 999, 4, 1049, 5, 1099, 6,
-				1149, 7, 1199, 8, 1209, 9, 1219, 10, 1229, 11, 1239, 12, 1241,
-				13, 1243, 14, 1245, 15, 1247, 16);
+		countBeats(pattern, 0, 1, 250, 2, 500, 3, 750, 4, 1000, 5, 1050, 6,
+				1100, 7, 1150, 8, 1200, 9, 1210, 10, 1220, 11, 1230, 12, 1240,
+				13, 1242, 14, 1244, 15, 1246, 16);
 	}
 
 	@Test

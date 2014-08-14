@@ -23,17 +23,16 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	/**
 	 * Creates a series of events from a string.
 	 * 
-	 * The syntax is simple: digits from "0" through "F" (hexadecimal) will be
-	 * accepted, with the values being scaled so that the maximum present is
-	 * equal to 1.0. The length of the string, N, is considered one cycle, so
-	 * each value is 1/N cycles in duration.
+	 * The syntax is as follows: digits from "0" through "F" (hexadecimal) will
+	 * be accepted, with the values being scaled so that the maximum value
+	 * present is equal to 1.0. The length of the string, N, is considered one
+	 * cycle, so each value is 1/N cycles in duration.
 	 * 
 	 * @param string
 	 * @return a new EventCollection
+	 * @see fromInts
 	 */
 	public static EventCollection fromString(String string) {
-		// TODO specify this format and define a real parser
-
 		int n = string.length();
 
 		List<Integer> intValues = new ArrayList<Integer>(n);
@@ -44,11 +43,36 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		return fromInts(intValues);
 	}
 
-	public static EventCollection fromInts(Integer[] values) {
+	/**
+	 * Creates a series of events from integers. Each argument will be divided
+	 * by the maximum value of any argument and turned into an event of 1/N
+	 * cycles in duration (where N is the total number of arguments).
+	 * 
+	 * Example: fromInts(0, 2, 4) will create a collection with 3 events, each
+	 * 1/3 a cycle long, with values 0.0, 0.5, and 1.0.
+	 * 
+	 * @param values
+	 *            the integer values of each event
+	 * @return a new EventCollection containing these events
+	 */
+	public static EventCollection fromInts(Integer... values) {
 		List<Integer> intValues = Arrays.asList(values);
 		return fromInts(intValues);
 	}
 
+	/**
+	 * Creates a series of events from integers. Each argument will be divided
+	 * by the maximum value of any argument and turned into an event of 1/N
+	 * cycles in duration (where N is the total number of arguments).
+	 * 
+	 * Example: Let <code>list</code> be a list containing 0, 2, and 4. Then
+	 * fromInts(list) will create a collection with 3 events, each 1/3 a cycle
+	 * long, with values 0.0, 0.5, and 1.0.
+	 * 
+	 * @param values
+	 *            the integer values of each event
+	 * @return a new EventCollection containing these events
+	 */
 	public static EventCollection fromInts(List<Integer> intValues) {
 		int max = Collections.max(intValues);
 		if (max == 0)
@@ -64,11 +88,31 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		return fromDoubles(doubleValues);
 	}
 
-	public static EventCollection fromDoubles(Double[] values) {
+	/**
+	 * Creates an event collection where each event is 1/N cycles long (where N
+	 * is the length of the list) and each has the specified value between 0.0
+	 * and 1.0 inclusive. Values out of range will result in an exception.
+	 * 
+	 * @param values
+	 *            the input values
+	 * @return a new EventCollection
+	 * @throws IllegalArgumentException
+	 */
+	public static EventCollection fromDoubles(Double... values) {
 		List<Double> doubleValues = Arrays.asList(values);
 		return fromDoubles(doubleValues);
 	}
 
+	/**
+	 * Creates an event collection where each event is 1/N cycles long (where N
+	 * is the length of the list) and each has the specified value between 0.0
+	 * and 1.0 inclusive. Values out of range will result in an exception.
+	 * 
+	 * @param doubleValues
+	 *            the list of input values
+	 * @return a new EventCollection
+	 * @throws IllegalArgumentException
+	 */
 	public static EventCollection fromDoubles(List<Double> doubleValues)
 			throws IllegalArgumentException {
 		EventCollection events = new EventCollection();
@@ -88,16 +132,39 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		return events;
 	}
 
+	/**
+	 * Turn a variable number of Events into an EventCollection.
+	 * 
+	 * @param events
+	 *            the events to be added
+	 * @return a new EventCollection
+	 */
+
 	public static EventCollection fromEvents(Event... events) {
 		return fromEvents(Arrays.asList(events));
 	}
 
+	/**
+	 * Turn a generic Collection of Events into an EventCollection.
+	 * 
+	 * @param collection
+	 *            the collection of events to be added
+	 * @return a new EventCollection
+	 */
 	public static EventCollection fromEvents(Collection<Event> collection) {
 		EventCollection events = new EventCollection();
 		events.addAll(collection);
 		return events;
 	}
 
+	/**
+	 * Add an event to the collection, unless it overlaps with an existing
+	 * event.
+	 * 
+	 * @param e
+	 *            the event to add
+	 * @throws IllegalStateException
+	 */
 	public void add(Event e) throws IllegalStateException {
 		Collection<Event> existingEvents = getForInterval(e.getInterval());
 		if (!existingEvents.isEmpty())
@@ -112,6 +179,13 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		}
 	}
 
+	/**
+	 * Add events after the end of the last event currently in the collection.
+	 * 
+	 * @param events
+	 *            the events to add
+	 * @throws IllegalStateException
+	 */
 	public void addAfterwards(Collection<Event> events)
 			throws IllegalStateException {
 		BigFraction end = getLatestEnd();
@@ -121,6 +195,11 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		}
 	}
 
+	/**
+	 * Find the last event in the collection and return its end time.
+	 * 
+	 * @return the end of the last event
+	 */
 	private BigFraction getLatestEnd() {
 		Event latest = null;
 		if (this.size() > 0) {
@@ -130,6 +209,11 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 				: BigFraction.ZERO;
 	}
 
+	/**
+	 * Find the span of time taken up by all of the events in this collection.
+	 * 
+	 * @return the total duration of this collection (null if it has no events)
+	 */
 	public Interval getTotalInterval() {
 		if (this.size() > 0) {
 			BigFraction start = this.firstKey();

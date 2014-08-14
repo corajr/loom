@@ -22,11 +22,14 @@ public abstract class Transform {
 	public static Callable<Void> toCallable(final Transform transform,
 			final Pattern original) {
 		return new Callable<Void>() {
+			@Override
 			public Void call() {
+				System.out.println(toString());
 				transform.call(original);
 				return null;
 			}
 
+			@Override
 			public String toString() {
 				return transform.toString();
 			}
