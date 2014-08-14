@@ -131,9 +131,13 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	}
 
 	public Interval getTotalInterval() {
-		BigFraction start = this.firstKey();
-		BigFraction end = getLatestEnd();
-		return new Interval(start, end);
+		if (this.size() > 0) {
+			BigFraction start = this.firstKey();
+			BigFraction end = getLatestEnd();
+			return new Interval(start, end);
+		} else {
+			return null;
+		}
 	}
 
 	@Override

@@ -7,9 +7,32 @@ import static org.hamcrest.Matchers.is;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.chrisjr.loom.transforms.Transform;
+import org.chrisjr.loom.transforms.Transforms;
 import org.junit.Test;
 
 public class CallableOnChangeTest {
+
+	@Test
+	public void transformToCallable() {
+		Transform reverse = new Transforms.Reverse();
+		StatefulCallable[] callables = CallableOnChange.fromTransform(reverse,
+				null);
+		assertThat(callables.length, is(equalTo(2)));
+	}
+
+	@Test
+	public void fromNoop() throws Exception {
+		AtomicInteger ai = new AtomicInteger();
+		CallableOnChange wrappedNoop = new CallableOnChange(ai,
+				new CallableNoop(), 1);
+
+		wrappedNoop.call(); // for coverage
+
+		assertThat(wrappedNoop.toString().startsWith("CallableOnChange"),
+				is(equalTo(true)));
+
+	}
 
 	@Test
 	public void onlyOnce() throws Exception {

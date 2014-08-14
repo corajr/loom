@@ -6,14 +6,21 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.*;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.chrisjr.loom.*;
 import org.chrisjr.loom.mappings.IntMapping;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 
 public class AbcToolsTest {
-	String tuneString = "X:1\nT:\nK:D\nDEFG|ABcd||";
+	String minimalTuneString = "K:D\nDEFG|ABcd|Z1|";
+	String tuneString = "X:1\nT:\n" + minimalTuneString;
+	String invalidTune = "HIJKLMN";
 	int[] noteValues = new int[] { 62, 64, 66, 67, 69, 71, 73, 74 };
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void eventsFromString() {
@@ -31,12 +38,11 @@ public class AbcToolsTest {
 		}
 	}
 
-	@Test
-	public void fromString() {
+	public void fromTuneString(String string, int[] noteValues) {
 		NonRealTimeScheduler scheduler = new NonRealTimeScheduler();
 		Loom loom = new Loom(null, scheduler);
 
-		Pattern notes = Pattern.fromABC(loom, tuneString);
+		Pattern notes = Pattern.fromABC(loom, string);
 		loom.play();
 
 		for (int i = 0; i < 8; i++) {
@@ -45,6 +51,21 @@ public class AbcToolsTest {
 		}
 
 		loom.dispose();
+	}
+
+	@Test
+	public void fromMinimalString() {
+		fromTuneString(minimalTuneString, noteValues);
+	}
+
+	@Test
+	public void fromFullString() {
+		fromTuneString(tuneString, noteValues);
+	}
+
+	@Test
+	public void invalidString() {
+		AbcTools.fromString(null, invalidTune);
 	}
 
 	@Test

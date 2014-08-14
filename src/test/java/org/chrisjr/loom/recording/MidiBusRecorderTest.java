@@ -15,11 +15,13 @@ import javax.sound.midi.*;
 
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
+import org.chrisjr.loom.TestDataMockPApplet;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.util.MidiTools;
 
 public class MidiBusRecorderTest {
 	private Loom loom;
+	private final TestDataMockPApplet testApp = new TestDataMockPApplet();
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
 	private File midiFile;
@@ -27,11 +29,11 @@ public class MidiBusRecorderTest {
 	@Before
 	public void setUp() throws Exception {
 		scheduler = new NonRealTimeScheduler();
-		loom = new Loom(null, scheduler);
+		loom = new Loom(testApp, scheduler);
 		pattern = new Pattern(loom);
 
 		midiFile = File.createTempFile("recording", ".mid");
-		loom.record(null, midiFile);
+		loom.recordMidi(midiFile.getAbsolutePath());
 	}
 
 	@After

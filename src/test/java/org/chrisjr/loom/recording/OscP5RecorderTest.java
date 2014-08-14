@@ -8,11 +8,13 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import org.chrisjr.loom.Loom;
+import org.chrisjr.loom.TestDataMockPApplet;
 import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 
 public class OscP5RecorderTest {
 	private Loom loom;
+	private final TestDataMockPApplet testApp = new TestDataMockPApplet();
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
 	private File oscFile;
@@ -20,33 +22,26 @@ public class OscP5RecorderTest {
 	@Before
 	public void setUp() throws Exception {
 		scheduler = new NonRealTimeScheduler();
-		loom = new Loom(null, scheduler);
+		loom = new Loom(testApp, scheduler);
 		pattern = new Pattern(loom);
 
-		oscFile = File.createTempFile("recording", "osc");
-		loom.record(oscFile, null);
+		oscFile = File.createTempFile("recording", ".osc");
+		loom.recordOsc(oscFile.getAbsolutePath());
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		oscFile.delete();
-		loom.dispose();
 	}
 
 	@Test
 	public void reader() {
-		File resources_code;
-		try {
-			resources_code = new File(getClass().getResource("/").toURI());
-		} catch (URISyntaxException e1) {
-			throw new IllegalStateException("Could not get resource directory.");
-		}
-		File datadir = new File(resources_code.getParentFile().getParentFile(),
-				"data");
-		File scoreFile = new File(datadir, "score-test.osc");
+		File scoreFile = testApp.dataFile("score-test.osc");
 
 		OscScore testScore = OscScore.fromFile(scoreFile);
 		assertThat(testScore.size(), is(greaterThan(0)));
+
+		loom.dispose();
 	}
 
 	@Test

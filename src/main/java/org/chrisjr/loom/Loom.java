@@ -137,23 +137,61 @@ public class Loom {
 		scheduler.stop();
 	}
 
+	/**
+	 * Records both OSC and MIDI events, to files in the sketch's data folder
+	 * with the prefixes "osc" and "midi" respectively.
+	 * 
+	 * @throws IOException
+	 */
 	public void record() throws IOException {
 		record("osc", "midi");
 	}
 
-	public void record(String oscFilePrefix, String midiFilePrefix)
-			throws IOException {
+	/**
+	 * Record OSC events to the specified filename in the data folder of the
+	 * sketch.
+	 * 
+	 * @param oscFilename
+	 *            the binary OSC score filename
+	 * 
+	 */
+	public void recordOsc(String oscFilename) {
+		record(oscFilename, null);
+	}
+
+	public void recordMidi(String midiFilename) {
+		record(null, midiFilename);
+	}
+
+	public void record(String oscFilename, String midiFilename) {
 		String timestamp = Long.toString(System.currentTimeMillis());
 
 		File oscFile = null;
 		File midiFile = null;
 
-		if (oscFilePrefix != null)
-			oscFile = myParent.dataFile(oscFilePrefix + timestamp + ".osc");
-		if (midiFilePrefix != null)
-			midiFile = myParent.dataFile(midiFilePrefix + timestamp + ".mid");
+		if (oscFilename != null) {
+			if (oscFilename.endsWith(".osc")) {
+				oscFile = myParent.dataFile(oscFilename);
+			} else {
+				oscFile = myParent.dataFile(oscFilename + timestamp + ".osc");
+			}
+		}
 
-		record(oscFile, midiFile);
+		if (midiFilename != null) {
+			if (midiFilename.endsWith(".mid")) {
+				midiFile = myParent.dataFile(midiFilename);
+			} else {
+				midiFile = myParent.dataFile(midiFilename + timestamp + ".mid");
+			}
+		}
+
+		try {
+			record(oscFile, midiFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalStateException(
+					"Files could not be opened for recording!");
+		}
 	}
 
 	public void record(File oscFile, File midiFile) throws IOException {
@@ -216,9 +254,7 @@ public class Loom {
 	}
 
 	public void dispose() {
-		if (oscP5Wrapper != null)
-			oscP5Wrapper.dispose();
-		if (midiBusWrapper != null)
-			midiBusWrapper.dispose();
+		oscP5Wrapper.dispose();
+		midiBusWrapper.dispose();
 	}
 }

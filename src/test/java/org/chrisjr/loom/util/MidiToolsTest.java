@@ -10,9 +10,11 @@ import java.net.URISyntaxException;
 
 import javax.sound.midi.*;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
+import org.junit.rules.ExpectedException;
 
 public class MidiToolsTest {
 
@@ -22,13 +24,8 @@ public class MidiToolsTest {
 
 	private final static PrintStream originalOut = System.out;
 
-	static {
-		try {
-			message.setMessage(144, 0, 60, 127);
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
-		}
-	}
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private File getMidiFile() {
 		File resources_code;
@@ -45,6 +42,7 @@ public class MidiToolsTest {
 
 	@Before
 	public void setUp() throws Exception {
+		message.setMessage(144, 0, 60, 127);
 	}
 
 	@After
@@ -70,6 +68,12 @@ public class MidiToolsTest {
 	}
 
 	@Test
+	public void testReadTracksFromInvalid() {
+		thrown.expect(IllegalArgumentException.class);
+		MidiTools.readTracksFrom(new File(""));
+	}
+
+	@Test
 	public void testReadTracksFrom() {
 		File midiFile = getMidiFile();
 		Track[] tracks = MidiTools.readTracksFrom(midiFile);
@@ -81,5 +85,12 @@ public class MidiToolsTest {
 		File midiFile = getMidiFile();
 		List<MidiEvent> events = MidiTools.readFile(midiFile);
 		assertThat(events.size(), is(greaterThan(0)));
+	}
+
+	@Test
+	public void testInstruments() {
+		int piano = MidiTools.Instrument.valueOf("ACOUSTIC_GRAND_PIANO")
+				.ordinal();
+		assertThat(piano, is(equalTo(0)));
 	}
 }
