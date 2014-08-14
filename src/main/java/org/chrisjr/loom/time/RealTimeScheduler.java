@@ -66,7 +66,12 @@ public class RealTimeScheduler extends Scheduler {
 	@Override
 	public void play() {
 		timingThread.start();
-
 		super.play();
+	}
+
+	@Override
+	public void stop() {
+		timingThread.interrupt();
+		super.stop();
 	}
 }

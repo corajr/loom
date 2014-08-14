@@ -35,6 +35,6 @@ public class MatchRewriter extends EventRewriter {
 	}
 
 	public MatchRewriter(double value) {
-		super(new Rule[] { new MatchRewriter.MatchRule(value) });
+		super(new MatchRewriter.MatchRule(value));
 	}
 }

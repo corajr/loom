@@ -66,7 +66,7 @@ public class PatternTransformationsTest {
 
 	public void checkIfShifting(int measureLength, double beatLength,
 			int shiftBy, int beatsTillShift) {
-		for (int i = 0; i < beatsTillShift * 4; i++) {
+		for (int i = 0; i < beatsTillShift * 2; i++) {
 			long time = (long) (beatLength * i) + 1;
 			int shifts = beatsTillShift > 0 ? i / beatsTillShift : 1;
 			scheduler.setElapsedMillis(time);
@@ -274,11 +274,7 @@ public class PatternTransformationsTest {
 		}
 	}
 
-	@Test
-	public void onOnset() {
-		pattern.clear();
-		pattern.extend("1101");
-
+	private void countBeats(Pattern pattern, Integer... expected) {
 		final AtomicInteger counter = new AtomicInteger();
 		pattern.onOnset(new Callable<Void>() {
 			@Override
@@ -288,8 +284,40 @@ public class PatternTransformationsTest {
 			}
 		});
 
-		scheduler.setElapsedMillis(1001);
-		assertThat(counter.get(), is(equalTo(4)));
+		for (int i = 0; i < expected.length / 2; i++) {
+			int millis = expected[i * 2];
+			int expectedCount = expected[i * 2 + 1];
+			scheduler.setElapsedMillis(millis);
+			assertThat(counter.get(), is(equalTo(expectedCount)));
+		}
+	}
+
+	@Test
+	public void slowEveryCycle() {
+		pattern.every(1, new Transforms.Speed(0.5));
+		pattern.loop();
+
+		countBeats(pattern, 249, 1, 499, 2, 749, 3, 999, 4, 1499, 5, 1999, 6,
+				2499, 7, 2999, 8, 3999, 9, 4999, 10, 5999, 11, 6999, 12, 8999,
+				13, 10999, 14, 12999, 15, 14999, 16);
+	}
+
+	@Test
+	public void speedUpEveryCycle() {
+		pattern.every(1, new Transforms.Speed(5));
+		pattern.loop();
+
+		countBeats(pattern, 249, 1, 499, 2, 749, 3, 999, 4, 1049, 5, 1099, 6,
+				1149, 7, 1199, 8, 1209, 9, 1219, 10, 1229, 11, 1239, 12, 1241,
+				13, 1243, 14, 1245, 15, 1247, 16);
+	}
+
+	@Test
+	public void onOnset() {
+		pattern.clear();
+		pattern.extend("1101");
+
+		countBeats(pattern, 1001, 4);
 	}
 
 	@Test
@@ -302,17 +330,7 @@ public class PatternTransformationsTest {
 
 		pattern.extend(allOnes);
 
-		final AtomicInteger counter = new AtomicInteger();
-		pattern.onOnset(new Callable<Void>() {
-			@Override
-			public Void call() {
-				counter.incrementAndGet();
-				return null;
-			}
-		});
-
-		scheduler.setElapsedMillis(1001);
-		assertThat(counter.get(), is(equalTo(10000)));
+		countBeats(pattern, 1001, 10000);
 	}
 
 	@Test
@@ -320,17 +338,7 @@ public class PatternTransformationsTest {
 		pattern.clear();
 		pattern.extend("1101");
 
-		final AtomicInteger counter = new AtomicInteger();
-		pattern.onRelease(new Callable<Void>() {
-			@Override
-			public Void call() {
-				counter.incrementAndGet();
-				return null;
-			}
-		});
-
-		scheduler.setElapsedMillis(1001);
-		assertThat(counter.get(), is(equalTo(4)));
+		countBeats(pattern, 1001, 4);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -8,14 +8,20 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.*;
+import org.chrisjr.loom.transforms.MatchRewriter;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ContinuousPatternTest {
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -177,4 +183,13 @@ public class ContinuousPatternTest {
 											// threshold
 		}
 	}
+
+	@Test
+	public void cannotRewriteIfContinuous() {
+		pattern = new Pattern(loom);
+
+		thrown.expect(IllegalStateException.class);
+		pattern.rewrite(new MatchRewriter(1.0));
+	}
+
 }

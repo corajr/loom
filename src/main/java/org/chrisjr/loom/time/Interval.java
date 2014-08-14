@@ -10,6 +10,15 @@ public class Interval {
 		this(new BigFraction(start), new BigFraction(end));
 	}
 
+	/**
+	 * Creates a new Interval, which must have a non-zero duration and end after
+	 * it begins.
+	 * 
+	 * @param start
+	 *            the beginning of the interval
+	 * @param end
+	 *            the end of the interval
+	 */
 	public Interval(BigFraction start, BigFraction end) {
 		if (end.compareTo(start) <= 0)
 			throw new IllegalArgumentException("Must end after start!");
@@ -17,10 +26,24 @@ public class Interval {
 		this.end = end;
 	}
 
+	/**
+	 * Creates an interval that goes from 0 to the specified number of cycles.
+	 * 
+	 * @param duration
+	 *            the length of the interval
+	 * @return a new interval
+	 */
 	public static Interval zeroTo(double duration) {
 		return zeroTo(new BigFraction(duration));
 	}
 
+	/**
+	 * Creates an interval that goes from 0 to the specified number of cycles.
+	 * 
+	 * @param duration
+	 *            the length of the interval
+	 * @return a new interval
+	 */
 	public static Interval zeroTo(BigFraction duration) {
 		return new Interval(BigFraction.ZERO, duration);
 	}
@@ -62,8 +85,9 @@ public class Interval {
 	}
 
 	/**
-	 * "modulo interval" in the sense given in
-	 * http://www.cs.tau.ac.il/~nachum/papers/Modulo.pdf
+	 * "Modulo interval" in the sense given in
+	 * <http://www.cs.tau.ac.il/~nachum/papers/Modulo.pdf>. This transforms a
+	 * BigFraction to fit it into the specified interval.
 	 * 
 	 * @param fraction
 	 *            the fraction to transform
@@ -76,9 +100,6 @@ public class Interval {
 		BigFraction a = interval.getStart();
 		BigFraction b = interval.getEnd();
 
-		if (a.compareTo(b) == 0)
-			return x;
-
 		BigFraction x_minus_a = x.subtract(a);
 		BigFraction length = b.subtract(a);
 
@@ -89,6 +110,10 @@ public class Interval {
 	}
 
 	/**
+	 * Shifts the start or end of this interval to make it fit inside another.
+	 * If this interval is larger than the modulo interval, it will throw an
+	 * IllegalArgumentException.
+	 * 
 	 * @param other
 	 *            the other interval
 	 * @return this interval shifted into the range of the other
@@ -112,25 +137,65 @@ public class Interval {
 		return i;
 	}
 
-	public Interval multiplyMod(int i, Interval interval) {
-		return multiplyMod(new BigFraction(i), interval);
+	/**
+	 * Multiplies this interval by some amount, then fits the product into
+	 * another interval.
+	 * 
+	 * @param amt
+	 *            the multiplier
+	 * @param interval
+	 *            the other interval into which the product should be fit
+	 * @return the product, modulo the other interval
+	 */
+	public Interval multiplyMod(double amt, Interval interval) {
+		return multiplyMod(new BigFraction(amt), interval);
 	}
 
-	public static Interval modulo(BigFraction newStart, BigFraction newEnd,
+	/**
+	 * Fits the start and end of an interval inside another interval, returning
+	 * the result.
+	 * 
+	 * @param start
+	 *            the start of the original interval
+	 * @param end
+	 *            the end of the original interval
+	 * @param other
+	 *            the interval within which to fit the start and end
+	 * @return the new interval
+	 * @see fractionMod
+	 */
+	public static Interval modulo(BigFraction start, BigFraction end,
 			Interval other) {
-		newStart = Interval.fractionMod(newStart, other);
-		newEnd = Interval.fractionMod(newEnd, other);
+		BigFraction newStart = Interval.fractionMod(start, other);
+		BigFraction newEnd = Interval.fractionMod(end, other);
 
 		Interval i = null;
-		if (newStart.compareTo(newEnd) <= 0) {
+
+		switch (newStart.compareTo(newEnd)) {
+		case -1:
 			i = new Interval(newStart, newEnd);
-		} else {
+			break;
+		case 0:
+			throw new IllegalArgumentException(String.format(
+					"%s and %s are equal after modulo(%s)", start, end, other));
+		case 1:
 			i = new Interval(newEnd, newStart);
+			break;
 		}
 
 		return i;
 	}
 
+	/**
+	 * Multiplies this interval by some amount, then fits the product into
+	 * another interval.
+	 * 
+	 * @param fraction
+	 *            the multiplier
+	 * @param interval
+	 *            the other interval into which the product should be fit
+	 * @return the product, modulo the other interval
+	 */
 	public Interval multiplyMod(BigFraction fraction, Interval interval) {
 		BigFraction newStart = getStart().multiply(fraction);
 		BigFraction newEnd = getEnd().multiply(fraction);
@@ -138,6 +203,17 @@ public class Interval {
 		return Interval.modulo(newStart, newEnd, interval);
 	}
 
+	/**
+	 * Splits an interval into two by cutting off a portion. For example: if the
+	 * original interval went from 0 to 1, and the fraction was 1/4, the new
+	 * intervals would be [0, 3/4] and [3/4, 1].
+	 * 
+	 * @param interval
+	 *            the original interval
+	 * @param fraction
+	 *            the amount by which to shorten
+	 * @return an array of two intervals, long and short
+	 */
 	public static Interval[] shortenBy(Interval interval, BigFraction fraction) {
 		BigFraction newEnd = interval.getEnd().subtract(fraction);
 

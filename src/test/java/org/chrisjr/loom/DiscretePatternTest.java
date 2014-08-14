@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.transforms.MatchRewriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -94,6 +95,13 @@ public class DiscretePatternTest {
 
 		scheduler.setElapsedMillis(501);
 		assertThat(pattern.getValue(), is(equalTo(1.0)));
+	}
+
+	@Test
+	public void canRewrite() {
+		pattern.extend("0101");
+		pattern.rewrite(new MatchRewriter(1.0));
+		assertThat(pattern.getEvents().size(), is(equalTo(2)));
 	}
 
 	@Ignore

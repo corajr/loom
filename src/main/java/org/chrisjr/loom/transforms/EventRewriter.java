@@ -14,7 +14,7 @@ import org.chrisjr.loom.EventCollection;
 public abstract class EventRewriter {
 	ArrayList<Rule> rules;
 
-	public EventRewriter(Rule[] rules) {
+	public EventRewriter(Rule... rules) {
 		this(Arrays.asList(rules));
 	}
 
@@ -25,7 +25,7 @@ public abstract class EventRewriter {
 
 	public EventCollection apply(EventCollection originalEvents) {
 		EventCollection newEvents = new EventCollection();
-		
+
 		int i = 0;
 		for (Event event : originalEvents.values()) {
 			for (Rule rule : rules) {

@@ -1005,7 +1005,11 @@ public class Pattern implements Cloneable {
 	public Pattern rewrite(EventRewriter eventRewriter) {
 		EventCollection events = getEvents();
 		if (events != null) {
-			getConcretePattern().events = eventRewriter.apply(events);
+			EventCollection newEvents = eventRewriter.apply(events);
+			getConcretePattern().events = newEvents;
+		} else {
+			throw new IllegalStateException(
+					"This pattern does not contain events.");
 		}
 		return this;
 	}
@@ -1138,7 +1142,8 @@ public class Pattern implements Cloneable {
 	protected EventCollection getEvents() {
 		EventCollection events = null;
 		ConcretePattern pat = getConcretePattern();
-		if (pat != null && pat.events instanceof EventCollection)
+		if (pat != null && pat.events != null
+				&& pat.events instanceof EventCollection)
 			events = (EventCollection) getConcretePattern().events;
 		return events;
 	}

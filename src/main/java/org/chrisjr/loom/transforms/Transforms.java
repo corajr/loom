@@ -18,7 +18,20 @@ public class Transforms {
 		}
 	}
 
-	public class Rewrite extends Transform {
+	public static class Speed extends Transform {
+		private final double amt;
+
+		public Speed(double amt) {
+			this.amt = amt;
+		}
+
+		@Override
+		public Pattern call(Pattern original) {
+			return original.speed(amt);
+		}
+	}
+
+	public static class Rewrite extends Transform {
 		EventRewriter eventRewriter;
 
 		public Rewrite(EventRewriter eventRewriter) {
