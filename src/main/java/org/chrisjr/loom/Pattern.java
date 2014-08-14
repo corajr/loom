@@ -297,6 +297,9 @@ public class Pattern implements Cloneable {
 		if (child == this)
 			throw new IllegalArgumentException(
 					"A pattern cannot be its own child.");
+		if (isConcretePattern())
+			throw new IllegalStateException(
+					"A ConcretePattern cannot have children.");
 
 		if (children == null)
 			children = new PatternCollection();
@@ -1006,10 +1009,33 @@ public class Pattern implements Cloneable {
 		return (OscMessage) getAs(MappingType.OSC_MESSAGE);
 	}
 
+	/**
+	 * Sets a mapping to wrap up the OSC messages for this pattern's onsets into
+	 * bundles and schedules them to be sent using the Loom's
+	 * {@link OscP5Wrapper}. The current pattern's children are assumed to
+	 * contain mappings to OSC messages.
+	 * 
+	 * @param remoteAddress
+	 *            the server to send the messages to
+	 * @return the current pattern
+	 * @see #asOscMessage(String, Mapping)
+	 * @see #asOscBundle(NetAddress, Pattern...)
+	 */
 	public Pattern asOscBundle(NetAddress remoteAddress) {
 		return asOscBundle(remoteAddress, children.toArray(new Pattern[] {}));
 	}
 
+	/**
+	 * Sets a mapping to wrap up the OSC messages for this pattern's onsets into
+	 * bundles and schedules them to be sent using the Loom's
+	 * {@link OscP5Wrapper}.
+	 * 
+	 * @param remoteAddress
+	 *            the address of the OSC server to send to
+	 * @param patterns
+	 *            the patterns that contain the OSC messages to be bundled
+	 * @return the current pattern
+	 */
 	public Pattern asOscBundle(final NetAddress remoteAddress,
 			final Pattern... patterns) {
 
@@ -1047,10 +1073,30 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Returns the pattern's value as an OSC bundle.
+	 * 
+	 * @return the current OSC bundle
+	 */
 	public OscBundle asOscBundle() {
 		return (OscBundle) getAs(MappingType.OSC_BUNDLE);
 	}
 
+	/**
+	 * Sets a mapping from this pattern to the parameters of a
+	 * supercollider.Synth object. Parameters vary depending on the synth in
+	 * question; common ones might include "amp" and "gate".
+	 * 
+	 * @param synth
+	 *            the supercollider.Synth object
+	 * @param param
+	 *            the name of the parameter
+	 * @param lo
+	 *            the low range of the value
+	 * @param hi
+	 *            the high range of the value
+	 * @return the current pattern
+	 */
 	public Pattern asSynthParam(final Synth synth, final String param,
 			float lo, float hi) {
 
@@ -1080,10 +1126,21 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Sets a mapping that triggers a Minim AudioSample when this pattern's
+	 * events have a value of 1.0.
+	 * 
+	 * @param sample
+	 *            the AudioSample
+	 * @return the current pattern
+	 */
 	public Pattern asSample(final AudioSample sample) {
-		this.rewrite(new MatchRewriter(1.0));
+		Pattern hits = new Pattern(null, this.getEvents());
+		hits.rewrite(new MatchRewriter(1.0));
 
-		onOnset(new Callable<Void>() {
+		addChild(hits);
+
+		hits.onOnset(new Callable<Void>() {
 			@Override
 			public Void call() {
 				sample.trigger();

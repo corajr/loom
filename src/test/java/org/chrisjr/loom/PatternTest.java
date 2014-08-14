@@ -109,4 +109,11 @@ public class PatternTest {
 		thrown.expect(IllegalStateException.class);
 		pattern.asColor();
 	}
+
+	@Test
+	public void cannotAddChildToConcretePattern() {
+		Pattern other = new Pattern(null);
+		thrown.expect(IllegalStateException.class);
+		pattern.getConcretePattern().addChild(other);
+	}
 }
