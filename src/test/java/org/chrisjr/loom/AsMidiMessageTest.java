@@ -4,13 +4,18 @@ import static org.junit.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+
+import static org.chrisjr.loom.Event.*;
+
 import org.chrisjr.loom.util.MidiTools;
+import org.chrisjr.loom.util.MidiTools.Note;
 import org.chrisjr.loom.util.MidiTools.Percussion;
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +32,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	private final AtomicInteger notesOnReceived = new AtomicInteger();
 	private final AtomicInteger notesOffReceived = new AtomicInteger();
+	private CopyOnWriteArrayList<Integer> notes = null;
 	int programChangedTo = -1;
 
 	@Before
@@ -105,6 +111,34 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	}
 
+	private void testTranspose(int semitones) throws InterruptedException {
+		pattern.extend(seq(note(0.25, Note.C4), note(0.25, Note.E4),
+				note(0.25, Note.G4), note(0.25, Note.E4)));
+		pattern.asMidiData1(0, 127);
+		pattern.asMidiMessage(pattern);
+		pattern.transpose(semitones);
+
+		notes = new CopyOnWriteArrayList<Integer>();
+
+		Thread.sleep(1);
+		scheduler.setElapsedMillis(1000);
+
+		assertThat(
+				notes,
+				hasItems(60 + semitones, 64 + semitones, 67 + semitones,
+						64 + semitones));
+	}
+
+	@Test
+	public void transposeUpTest() throws InterruptedException {
+		testTranspose(7);
+	}
+
+	@Test
+	public void transposeDownTest() throws InterruptedException {
+		testTranspose(-7);
+	}
+
 	@Test
 	public void asMidiInstrumentTest() throws InterruptedException {
 		pattern.extend("0242");
@@ -125,9 +159,11 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		byte[] data = message.getMessage();
 		if ((data[0] & 0xC0) == ShortMessage.PROGRAM_CHANGE) {
 			programChangedTo = data[1] & 0xFF;
-		} else if ((data[0] & 0x90) == ShortMessage.NOTE_ON)
+		} else if ((data[0] & 0x90) == ShortMessage.NOTE_ON) {
 			notesOnReceived.getAndIncrement();
-		else if ((data[0] & 0x80) == ShortMessage.NOTE_OFF)
+			if (notes != null)
+				notes.add(data[1] & 0xFF);
+		} else if ((data[0] & 0x80) == ShortMessage.NOTE_OFF)
 			notesOffReceived.getAndIncrement();
 	}
 }

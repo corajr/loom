@@ -1443,6 +1443,13 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	public Pattern transpose(int semitones) {
+		double offset = semitones / 128.0;
+		setValueOffset(getValueOffset() + offset);
+
+		return this;
+	}
+
 	public Pattern invert() {
 		setValueScale(-1.0);
 		setValueOffset(1.0);
