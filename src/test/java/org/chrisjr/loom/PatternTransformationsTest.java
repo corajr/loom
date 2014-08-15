@@ -186,7 +186,7 @@ public class PatternTransformationsTest {
 	}
 
 	public void checkIfReversing(int beatLength, int beatsTillReverse) {
-		for (int i = 0; i < 32; i++) {
+		for (int i = 0; i < 16; i++) {
 			long time = (beatLength * i) + 1;
 			boolean reversed = (i / beatsTillReverse) % 2 == 1;
 			scheduler.setElapsedMillis(time);
@@ -342,7 +342,7 @@ public class PatternTransformationsTest {
 
 	@Test
 	public void manyTinyOnsets() {
-		int n = 10000;
+		int n = 2000;
 		pattern.clear();
 
 		Integer[] allOnes = new Integer[n];
@@ -350,7 +350,7 @@ public class PatternTransformationsTest {
 
 		pattern.extend(allOnes);
 
-		countBeats(pattern, 1001, 10000);
+		countBeats(pattern, 1001, n);
 	}
 
 	@Test
