@@ -10,6 +10,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.util.MidiTools;
 import org.chrisjr.loom.util.MidiTools.Percussion;
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +27,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	private final AtomicInteger notesOnReceived = new AtomicInteger();
 	private final AtomicInteger notesOffReceived = new AtomicInteger();
+	int programChangedTo = -1;
 
 	@Before
 	public void setUp() throws Exception {
@@ -51,6 +53,9 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	public void tearDown() throws Exception {
 		myBus = null;
 		pattern = null;
+		notesOnReceived.set(0);
+		notesOffReceived.set(0);
+		programChangedTo = -1;
 	}
 
 	@Test
@@ -100,13 +105,29 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	}
 
+	@Test
+	public void asMidiInstrumentTest() throws InterruptedException {
+		pattern.extend("0242");
+		pattern.asMidiNote(60, 64, 67);
+		pattern.asMidi("ACOUSTIC_GRAND_PIANO");
+
+		scheduler.setElapsedMillis(1000);
+
+		Thread.sleep(1);
+
+		assertThat(programChangedTo, is(equalTo(0)));
+		assertThat(notesOnReceived.get(), is(equalTo(4)));
+		assertThat(notesOffReceived.get(), is(equalTo(4)));
+	}
+
 	@Override
 	public void midiMessage(MidiMessage message, long timeStamp) {
 		byte[] data = message.getMessage();
-		if ((data[0] & 0x90) == ShortMessage.NOTE_ON)
+		if ((data[0] & 0xC0) == ShortMessage.PROGRAM_CHANGE) {
+			programChangedTo = data[1] & 0xFF;
+		} else if ((data[0] & 0x90) == ShortMessage.NOTE_ON)
 			notesOnReceived.getAndIncrement();
 		else if ((data[0] & 0x80) == ShortMessage.NOTE_OFF)
 			notesOffReceived.getAndIncrement();
 	}
-
 }

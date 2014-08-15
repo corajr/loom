@@ -663,16 +663,39 @@ public class Pattern implements Cloneable {
 	}
 
 	/**
-	 * Set a mapping from the pattern's events to sounds
+	 * Set a mapping from the pattern's events to MIDI notes, using a specified
+	 * instrument.
+	 * 
+	 * @param instrument
+	 *            the name of a MIDI instrument to trigger as a string
+	 * @return the updated pattern
+	 * @see Instrument
+	 * @see #asMidi(Instrument)
+	 */
+	public Pattern asMidi(String instrument) {
+		return asMidi(Instrument.valueOf(instrument));
+	}
+
+	/**
+	 * Set a mapping from the pattern's events to MIDI notes, using a specified
+	 * instrument.
 	 * 
 	 * @param instrument
 	 *            the name of a MIDI instrument to trigger
 	 * @return the updated pattern
+	 * @see Instrument
 	 */
-	public Pattern asMidi(String instrument) {
-		int midiInstrument = Instrument.valueOf(instrument).ordinal();
+	public Pattern asMidi(Instrument instrument) {
+		int midiInstrument = instrument.ordinal();
+
+		asMidiChannel(0);
 
 		Pattern setInstrument = Pattern.fromInts(loom, 1);
+		setInstrument.asMidiCommand(ShortMessage.PROGRAM_CHANGE);
+		setInstrument.asMidiNote(midiInstrument);
+
+		setInstrument.asMidiMessage(setInstrument, this, setInstrument, null);
+
 		addChild(setInstrument);
 		return asMidiMessage(this);
 	}

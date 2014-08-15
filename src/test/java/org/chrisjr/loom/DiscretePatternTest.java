@@ -9,7 +9,6 @@ import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.transforms.MatchRewriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

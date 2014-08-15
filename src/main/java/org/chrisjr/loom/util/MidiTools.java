@@ -54,6 +54,10 @@ public class MidiTools {
 		return events;
 	}
 
+	/**
+	 * The names of all General MIDI instruments.
+	 * 
+	 */
 	public enum Instrument {
 		ACOUSTIC_GRAND_PIANO, BRIGHT_ACOUSTIC_PIANO, ELECTRIC_GRAND_PIANO, HONKY_TONK_PIANO, ELECTRIC_PIANO_1, ELECTRIC_PIANO_2, HARPSICHORD, CLAVI,
 
