@@ -81,23 +81,23 @@ public class Event {
 	}
 
 	public static Event note(double duration, Note note) {
-		return note(duration, ((double) note.ordinal()) / 127);
-	}
-
-	public static Event note(double duration, double value) {
-		return note(IntervalMath.toFraction(duration), value);
-	}
-
-	public static Event note(BigFraction duration, double value) {
-		return new Event(Interval.zeroTo(duration), value);
+		return evt(duration, ((double) note.ordinal()) / 127);
 	}
 
 	public static Event rest(double duration) {
-		return rest(IntervalMath.toFraction(duration));
+		return evt(duration, 0.0);
 	}
 
 	public static Event rest(BigFraction duration) {
-		return new Event(Interval.zeroTo(duration), 0.0);
+		return evt(duration, 0.0);
+	}
+
+	public static Event evt(double duration, double value) {
+		return evt(IntervalMath.toFraction(duration), value);
+	}
+
+	public static Event evt(BigFraction duration, double value) {
+		return new Event(Interval.zeroTo(duration), value);
 	}
 
 	/**
