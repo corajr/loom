@@ -304,6 +304,15 @@ public class PatternTransformationsTest {
 	}
 
 	@Test
+	public void slowEveryHalfCycle() {
+		pattern.every(0.5, new Transforms.Speed(0.5));
+		pattern.loop();
+
+		countBeats(pattern, 0, 1, 250, 2, 500, 3, 1000, 4, 1500, 5, 2500, 6,
+				3500, 7, 5500, 8, 7500, 9, 11500, 10, 15500, 11);
+	}
+
+	@Test
 	public void speedUpEveryCycle() {
 		pattern.every(1, new Transforms.Speed(5));
 		pattern.loop();
@@ -311,6 +320,16 @@ public class PatternTransformationsTest {
 		countBeats(pattern, 0, 1, 250, 2, 500, 3, 750, 4, 1000, 5, 1050, 6,
 				1100, 7, 1150, 8, 1200, 9, 1210, 10, 1220, 11, 1230, 12, 1240,
 				13, 1242, 14, 1244, 15, 1246, 16);
+	}
+
+	@Test
+	public void speedUpEveryHalfCycle() {
+		pattern.every(0.5, new Transforms.Speed(5));
+		pattern.loop();
+
+		countBeats(pattern, 0, 1, 250, 2, 500, 3, 550, 4, 600, 5, 610, 6, 620,
+				7, 622, 8);
+
 	}
 
 	@Test
