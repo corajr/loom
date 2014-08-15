@@ -104,7 +104,7 @@ public class DiscretePatternTest {
 		assertThat(pattern.getEvents().size(), is(equalTo(2)));
 	}
 
-	@Ignore
+	@Test
 	public void clonedPatternsAreDistinct() throws CloneNotSupportedException {
 		pattern.extend("0101");
 		Pattern pattern2 = pattern.clone();

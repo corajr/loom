@@ -107,14 +107,8 @@ public class ConcretePattern extends Pattern {
 			return Collections.emptyList();
 	}
 
-	/**
-	 * Originally called getExternalMappings, but the new collection created
-	 * slowed things down.
-	 * 
-	 * @return true if external mappings are present
-	 */
 	@Override
-	public Boolean hasActiveMappings() {
+	public boolean hasActiveMappings() {
 		boolean result = false;
 		for (MappingType mapping : activeMappings) {
 			if (outputMappings.containsKey(mapping)) {
@@ -174,10 +168,13 @@ public class ConcretePattern extends Pattern {
 	@Override
 	public ConcretePattern clone() throws CloneNotSupportedException {
 		ConcretePattern copy = new ConcretePattern(loom);
-		if (events != null)
-			copy.events = events;
-		else if (function != null)
+		if (events != null) {
+			EventCollection collection = getEvents();
+			copy.events = (EventQueryable) (collection != null ? collection
+					.clone() : events);
+		} else if (function != null) {
 			copy.function = function;
+		}
 
 		copy.outputMappings.putAll(outputMappings);
 		return copy;

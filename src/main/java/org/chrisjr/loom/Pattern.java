@@ -338,16 +338,18 @@ public class Pattern implements Cloneable {
 
 	/**
 	 * Casts this pattern to a ConcretePattern instance, or returns the first
-	 * child if it is a concrete pattern.
+	 * concrete pattern among its children.
 	 * 
 	 * @return the concrete pattern underlying this pattern, if any
 	 */
 	protected ConcretePattern getConcretePattern() {
 		if (isConcretePattern()) {
 			return (ConcretePattern) this;
-		} else if (children != null && children.size() > 0
-				&& getChild(0).isConcretePattern()) {
-			return (ConcretePattern) getChild(0);
+		} else if (children != null && children.size() > 0) {
+			for (Pattern child : children) {
+				if (child.isConcretePattern())
+					return (ConcretePattern) child;
+			}
 		}
 
 		return null;
@@ -1308,7 +1310,13 @@ public class Pattern implements Cloneable {
 		return getConcretePattern().hasMapping(mapping);
 	}
 
-	public Boolean hasActiveMappings() {
+	/**
+	 * Check if this pattern or its children have any active mappings, i.e.
+	 * those that must be triggered by the scheduler.
+	 * 
+	 * @return true if the pattern or its children have active mappings
+	 */
+	public boolean hasActiveMappings() {
 		boolean result = false;
 		if (isConcretePattern()) {
 			result = getConcretePattern().hasActiveMappings();
@@ -1574,6 +1582,16 @@ public class Pattern implements Cloneable {
 			return getConcretePattern().clone();
 
 		Pattern copy = new Pattern(loom);
+
+		copy.isLooping = isLooping;
+		copy.loopInterval = loopInterval;
+		copy.parent = parent;
+		copy.timeMatch = timeMatch;
+		copy.timeOffset = timeOffset;
+		copy.timeScale = timeScale;
+		copy.useParentOffset = useParentOffset;
+		copy.valueOffset = valueOffset;
+		copy.valueScale = valueScale;
 
 		// TODO add other fields here
 		for (Pattern pattern : children) {
