@@ -111,10 +111,16 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	}
 
-	private void testTranspose(int semitones) throws InterruptedException {
-		pattern.extend(seq(note(0.25, Note.C4), note(0.25, Note.E4),
-				note(0.25, Note.G4), note(0.25, Note.E4)));
-		pattern.asMidiData1(0, 127);
+	private void testTranspose(int semitones, boolean midiNote)
+			throws InterruptedException {
+		if (midiNote) {
+			pattern.extend("0242");
+			pattern.asMidiNote(60, 64, 67);
+		} else {
+			pattern.extend(seq(note(0.25, Note.C4), note(0.25, Note.E4),
+					note(0.25, Note.G4), note(0.25, Note.E4)));
+			pattern.asMidiData1(0, 127);
+		}
 		pattern.asMidiMessage(pattern);
 		pattern.transpose(semitones);
 
@@ -131,12 +137,22 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	@Test
 	public void transposeUpTest() throws InterruptedException {
-		testTranspose(7);
+		testTranspose(7, false);
+	}
+
+	@Test
+	public void transposeUpMidiNoteTest() throws InterruptedException {
+		testTranspose(7, true);
 	}
 
 	@Test
 	public void transposeDownTest() throws InterruptedException {
-		testTranspose(-7);
+		testTranspose(-7, false);
+	}
+
+	@Test
+	public void transposeDownMidiNoteTest() throws InterruptedException {
+		testTranspose(7, true);
 	}
 
 	@Test

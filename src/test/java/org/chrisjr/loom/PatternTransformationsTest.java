@@ -81,7 +81,7 @@ public class PatternTransformationsTest {
 	@Test
 	public void shiftLeft() {
 		pattern.loop();
-		pattern.shift(-0.25);
+		pattern.delay(0.25);
 
 		checkIfShifting(4, 250, -1, 0);
 	}

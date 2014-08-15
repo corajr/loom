@@ -166,7 +166,7 @@ public class ConcretePattern extends Pattern {
 	}
 
 	@Override
-	public ConcretePattern clone() throws CloneNotSupportedException {
+	public ConcretePattern clone() {
 		ConcretePattern copy = new ConcretePattern(loom);
 		if (events != null) {
 			EventCollection collection = getEvents();

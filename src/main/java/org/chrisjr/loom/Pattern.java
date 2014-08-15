@@ -58,6 +58,8 @@ public class Pattern implements Cloneable {
 	protected double valueOffset = 0.0;
 	protected double valueScale = 1.0;
 
+	private Integer transposition = null;
+
 	protected boolean isConcrete;
 
 	/**
@@ -817,7 +819,13 @@ public class Pattern implements Cloneable {
 	 */
 	public int asMidiData1() {
 		Integer result = (Integer) getAs(MappingType.MIDI_DATA1);
-		return getIntOrElse(result, Integer.MIN_VALUE);
+		int outcome = getIntOrElse(result, Integer.MIN_VALUE)
+				+ getIntOrElse(transposition, 0);
+		if (outcome < 0)
+			outcome = 0;
+		if (outcome > 127)
+			outcome = 127;
+		return outcome;
 	}
 
 	/**
@@ -1434,6 +1442,14 @@ public class Pattern implements Cloneable {
 		return speed(-1);
 	}
 
+	public Pattern delay(double amt) {
+		return delay(IntervalMath.toFraction(amt));
+	}
+
+	public Pattern delay(BigFraction amt) {
+		return shift(amt.negate());
+	}
+
 	public Pattern shift(double amt) {
 		return shift(IntervalMath.toFraction(amt));
 	}
@@ -1443,10 +1459,17 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
-	public Pattern transpose(int semitones) {
-		double offset = semitones / 128.0;
-		setValueOffset(getValueOffset() + offset);
-
+	/**
+	 * Transposes the pattern by a specified number of semitones. Only operates
+	 * on MIDI mappings.
+	 * 
+	 * @param semitones
+	 *            the number of semitones to transpose by
+	 * @return the current pattern
+	 * @see #setValueOffset(double)
+	 */
+	public Pattern transpose(Integer semitones) {
+		transposition = semitones;
 		return this;
 	}
 
@@ -1598,6 +1621,26 @@ public class Pattern implements Cloneable {
 		this.loopInterval = loopInterval;
 	}
 
+	/**
+	 * Retrieve the total interval encompassed by this pattern's events (if
+	 * applicable), or its loop interval.
+	 * 
+	 * @return the interval
+	 */
+	public Interval getTotalInterval() {
+		Interval result;
+
+		EventCollection events = getEvents();
+		if (events != null)
+			result = events.getTotalInterval();
+		else
+			result = loopInterval;
+
+		result = new Interval(result.getStart(), result.getEnd().add(
+				getTimeOffset().abs()));
+		return result;
+	}
+
 	public double getValueOffset() {
 		return valueOffset;
 	}
@@ -1636,7 +1679,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public void rect(float x, float y, float width, float height) {
-		rect(x, y, width, height, loopInterval);
+		rect(x, y, width, height, getTotalInterval());
 	}
 
 	public void rect(float x, float y, float width, float height,
@@ -1661,7 +1704,7 @@ public class Pattern implements Cloneable {
 	}
 
 	@Override
-	public Pattern clone() throws CloneNotSupportedException {
+	public Pattern clone() {
 		if (isConcretePattern())
 			return getConcretePattern().clone();
 
