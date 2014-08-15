@@ -4,21 +4,32 @@ import java.util.concurrent.Callable;
 
 import org.chrisjr.loom.Pattern;
 
+/**
+ * A Transform must define <code>call</code> as a function that takes a Pattern
+ * as input and returns a new Pattern.
+ * 
+ * @author chrisjr
+ */
 public abstract class Transform {
 	/**
-	 * @author chrisjr
+	 * Executes the transform on the original pattern, and returns the modified
+	 * version.
 	 * 
-	 *         A Transform must define <code>call</code> as a function that
-	 *         takes a Pattern as input and returns a new Pattern.
-	 */
-
-	/**
 	 * @param original
 	 *            the original Pattern
 	 * @return an updated Pattern
 	 */
 	public abstract Pattern call(Pattern original);
 
+	/**
+	 * Turns a {@link Transform} into a Callable&lt;Void&gt;.
+	 * 
+	 * @param transform
+	 *            the {@link Transform} to use
+	 * @param original
+	 *            the pattern to which the transform should be applied
+	 * @return a new Callable
+	 */
 	public static Callable<Void> toCallable(final Transform transform,
 			final Pattern original) {
 		return new Callable<Void>() {
