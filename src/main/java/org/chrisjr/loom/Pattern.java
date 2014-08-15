@@ -43,6 +43,7 @@ public class Pattern implements Cloneable {
 
 	protected PatternCollection children = null;
 	protected Pattern parent = null;
+	private int selectedChild = -1;
 
 	protected Pattern timeMatch = null;
 	protected boolean useParentOffset = true;
@@ -294,8 +295,9 @@ public class Pattern implements Cloneable {
 	 * 
 	 * @param child
 	 *            the pattern to be added
+	 * @returns the index of the new child
 	 */
-	protected void addChild(Pattern child) {
+	protected int addChild(Pattern child) {
 		if (child == this)
 			throw new IllegalArgumentException(
 					"A pattern cannot be its own child.");
@@ -307,6 +309,7 @@ public class Pattern implements Cloneable {
 			children = new PatternCollection();
 		child.parent = this;
 		children.add(child);
+		return children.size() - 1;
 	}
 
 	protected void addSibling(Pattern sibling) {
@@ -346,9 +349,14 @@ public class Pattern implements Cloneable {
 		if (isConcretePattern()) {
 			return (ConcretePattern) this;
 		} else if (children != null && children.size() > 0) {
-			for (Pattern child : children) {
-				if (child.isConcretePattern())
-					return (ConcretePattern) child;
+			if (selectedChild != -1) {
+				return getChild(selectedChild).getConcretePattern();
+			} else {
+				// look for a concrete child
+				for (Pattern child : children) {
+					if (child.isConcretePattern())
+						return (ConcretePattern) child;
+				}
 			}
 		}
 
@@ -589,6 +597,9 @@ public class Pattern implements Cloneable {
 	 */
 	public Pattern loop() {
 		isLooping = true;
+		if (getEvents() != null) {
+			setLoopInterval(getEvents().getTotalInterval());
+		}
 		return this;
 	}
 
@@ -1363,6 +1374,49 @@ public class Pattern implements Cloneable {
 
 	public boolean isDiscretePattern() {
 		return getEvents() != null;
+	}
+
+	/**
+	 * Creates a new pattern, using the current pattern as a selector to choose
+	 * between the patterns provided as input. The output pattern will take on
+	 * the values and mappings of its children, depending on this pattern's
+	 * value.
+	 * 
+	 * <p>
+	 * Let N be the number of input patterns. When this pattern is 0.0, the
+	 * output pattern will return the values/mappings of its first child by
+	 * default. When this pattern has a value of i/N, where i is a 1-based index
+	 * into the input patterns, the output pattern will return the values nad
+	 * mappings of pattern i.
+	 * </p>
+	 * 
+	 * @param patterns
+	 *            the patterns from which to select
+	 * @return a new pattern
+	 */
+	public Pattern selectFrom(Pattern... patterns) {
+		final Pattern newPat = new Pattern(loom);
+
+		Callable<Void>[] callables = new Callable[patterns.length];
+		for (int i = 0; i < patterns.length; i++) {
+			final int index = newPat.addChild(patterns[i]);
+			callables[i] = new Callable<Void>() {
+				@Override
+				public Void call() {
+					newPat.select(index);
+					return null;
+				}
+			};
+		}
+
+		asStatefulCallable(CallableOnChange.fromCallables(callables));
+
+		return newPat;
+	}
+
+	public Pattern select(int i) {
+		selectedChild = i;
+		return this;
 	}
 
 	// Transformations
