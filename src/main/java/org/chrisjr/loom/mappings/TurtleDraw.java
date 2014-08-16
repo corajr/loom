@@ -14,13 +14,28 @@ import processing.core.PVector;
  */
 
 public class TurtleDraw {
+	/**
+	 * Combines multiple draw commands into one operation.
+	 */
 	public static class Compound extends TurtleDrawCommand {
 		TurtleDrawCommand[] commands;
 
+		/**
+		 * Create a new Compound command.
+		 * 
+		 * @param commands
+		 *            the commands to be combined
+		 */
 		public Compound(TurtleDrawCommand... commands) {
 			this.commands = commands;
 		}
 
+		/**
+		 * Create a new Compound command.
+		 * 
+		 * @param commands
+		 *            the commands to be combined
+		 */
 		public Compound(Collection<TurtleDrawCommand> commands) {
 			this(commands.toArray(new TurtleDrawCommand[] {}));
 		}
@@ -42,9 +57,18 @@ public class TurtleDraw {
 		}
 	}
 
+	/**
+	 * Move the turtle by a certain amount without drawing anything.
+	 */
 	public static class Move extends TurtleDrawCommand {
 		float drawLength;
 
+		/**
+		 * Create a new Move.
+		 * 
+		 * @param drawLength
+		 *            the amount to move forward
+		 */
 		public Move(float drawLength) {
 			this.drawLength = drawLength;
 		}
@@ -55,7 +79,17 @@ public class TurtleDraw {
 		}
 	}
 
+	/**
+	 * Draw forward by a specified amount and move the turtle to the new
+	 * location.
+	 */
 	public static class Forward extends Move {
+		/**
+		 * Creates a new draw forward command.
+		 * 
+		 * @param drawLength
+		 *            the amount to draw forward
+		 */
 		public Forward(float drawLength) {
 			super(drawLength);
 		}
@@ -73,9 +107,18 @@ public class TurtleDraw {
 		}
 	}
 
+	/**
+	 * Rotate the turtle by a specified amount.
+	 */
 	public static class Turn extends TurtleDrawCommand {
 		float angle;
 
+		/**
+		 * Creates a new Turn command.
+		 * 
+		 * @param angle
+		 *            the amount to turn in radians
+		 */
 		public Turn(float angle) {
 			this.angle = angle;
 		}
@@ -86,6 +129,9 @@ public class TurtleDraw {
 		}
 	}
 
+	/**
+	 * Push the current position and heading onto the turtle's stack.
+	 */
 	public static class Push extends TurtleDrawCommand {
 		@Override
 		public TurtleState draw(PApplet parent, TurtleState state) {
@@ -93,6 +139,9 @@ public class TurtleDraw {
 		}
 	}
 
+	/**
+	 * Pop a stored position and heading off of the turtle's stack.
+	 */
 	public static class Pop extends TurtleDrawCommand {
 		@Override
 		public TurtleState draw(PApplet parent, TurtleState state) {
@@ -100,22 +149,53 @@ public class TurtleDraw {
 		}
 	}
 
+	/**
+	 * Creates a draw forward command.
+	 * 
+	 * @param drawLength
+	 *            the amount to draw forward
+	 * @return a new forward
+	 */
 	public static Forward forward(float drawLength) {
 		return new Forward(drawLength);
 	}
 
+	/**
+	 * Creates a rotate command.
+	 * 
+	 * @param theta
+	 *            the amount to rotate in radians
+	 * @return a new Turn
+	 */
 	public static Turn turn(float theta) {
 		return new Turn(theta);
 	}
 
+	/**
+	 * Creates a new Push.
+	 * 
+	 * @return a new Push
+	 */
 	public static Push push() {
 		return new Push();
 	}
 
+	/**
+	 * Creates a new Pop.
+	 * 
+	 * @return a new Pop
+	 */
 	public static Pop pop() {
 		return new Pop();
 	}
 
+	/**
+	 * Shorthand to combine commands.
+	 * 
+	 * @param commands
+	 *            the commands to be combined
+	 * @return a new compound command
+	 */
 	public static TurtleDrawCommand c(TurtleDrawCommand... commands) {
 		return new Compound(commands);
 	}

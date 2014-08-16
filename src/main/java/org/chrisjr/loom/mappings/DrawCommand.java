@@ -2,6 +2,11 @@ package org.chrisjr.loom.mappings;
 
 import processing.core.PApplet;
 
+/**
+ * Describes a drawing operation but does not execute it right away.
+ * 
+ * @author chrisjr
+ */
 public abstract class DrawCommand {
 	private PApplet parent;
 
@@ -10,6 +15,8 @@ public abstract class DrawCommand {
 	 * separately, so this will simply do something like call `parent.rect(0, 0,
 	 * 100, 100);`.
 	 * 
+	 * @param parent
+	 *            the PApplet to draw to
 	 */
 	public abstract void draw(PApplet parent);
 
