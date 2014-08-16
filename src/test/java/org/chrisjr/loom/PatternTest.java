@@ -88,14 +88,22 @@ public class PatternTest {
 		pattern = Pattern.fromString(loom, "01");
 
 		pattern.asColor(0xFF000000, 0xFFFFFFFF);
+		pattern.loop();
 
 		pattern.rect(0, 0, 3, 1);
 
-		String[] expected = new String[] { "stroke(ff000000);",
+		String[] expected1 = new String[] { "stroke(ff000000);",
 				"line(0, 0, 0, 1);", "stroke(ffffffff);", "line(1, 0, 1, 1);",
 				"stroke(ffffffff);", "line(2, 0, 2, 1);" };
 
-		assertThat(testApp.commands, hasItems(expected));
+		String[] expected2 = new String[] { "stroke(ffffffff);",
+				"line(0, 0, 0, 1);", "stroke(ff000000);", "line(1, 0, 1, 1);",
+				"stroke(ffffffff);", "line(2, 0, 2, 1);" };
+		assertThat(testApp.commands, hasItems(expected1));
+		testApp.commands.clear();
+		scheduler.setElapsedMillis(500);
+		pattern.rect(0, 0, 3, 1);
+		assertThat(testApp.commands, hasItems(expected2));
 	}
 
 	@Test

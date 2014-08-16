@@ -1636,8 +1636,8 @@ public class Pattern implements Cloneable {
 		else
 			result = loopInterval;
 
-		result = new Interval(result.getStart(), result.getEnd().add(
-				getTimeOffset().abs()));
+		// result = new Interval(result.getStart(), result.getEnd().add(
+		// getTimeOffset().abs()));
 		return result;
 	}
 
@@ -1691,7 +1691,12 @@ public class Pattern implements Cloneable {
 
 		BigFraction unit = interval.getSize().divide(
 				IntervalMath.toFraction(width));
-		BigFraction start = interval.getStart();
+
+		Interval present = parent != null ? parent
+				.getCurrentInterval(useParentOffset) : loom
+				.getCurrentInterval();
+
+		BigFraction start = interval.getStart().add(present.getEnd());
 
 		Interval currentInterval = new Interval(start, start.add(unit));
 		for (int i = 0; i < width; i++) {
