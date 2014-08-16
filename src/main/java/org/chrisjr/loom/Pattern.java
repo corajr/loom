@@ -757,7 +757,8 @@ public class Pattern implements Cloneable {
 	 * @return the current pattern
 	 */
 	public Pattern asMidiCommand(Integer... commands) {
-		putMapping(MappingType.MIDI_COMMAND, new MidiCommandMapping(commands));
+		putMapping(MappingType.MIDI_COMMAND, new ObjectMapping<Integer>(
+				commands));
 		return this;
 	}
 
@@ -782,7 +783,8 @@ public class Pattern implements Cloneable {
 	 * @return the current pattern
 	 */
 	public Pattern asMidiChannel(Integer... channels) {
-		putMapping(MappingType.MIDI_CHANNEL, new MidiChannelMapping(channels));
+		putMapping(MappingType.MIDI_CHANNEL, new ObjectMapping<Integer>(
+				channels));
 		return this;
 	}
 
