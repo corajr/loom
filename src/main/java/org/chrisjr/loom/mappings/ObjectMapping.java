@@ -1,5 +1,13 @@
 package org.chrisjr.loom.mappings;
 
+/**
+ * Maps from numerical values to objects of a specified type. The object will be
+ * selected by finding the floor of (value * (length - 1)) and using the result
+ * as an index into the input array.
+ * 
+ * @param <T>
+ *            the type of object to return
+ */
 public class ObjectMapping<T> implements Mapping<T> {
 	T[] objects;
 

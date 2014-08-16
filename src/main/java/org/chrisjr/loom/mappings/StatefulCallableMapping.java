@@ -2,6 +2,17 @@ package org.chrisjr.loom.mappings;
 
 import org.chrisjr.loom.util.StatefulCallable;
 
+/**
+ * Returns the appropriate callable when an extra StatefulNoop has been added at
+ * the start. This ensures that patterns that provide the same value twice upon
+ * two separate onsets will have their callable called twice. Used primarily
+ * with {@link TurtleDrawCommand} where repeated instructions may have a
+ * different outcome.
+ * 
+ * 
+ * @see org.chrisjr.loom.Pattern#asTurtleDrawCommand(TurtleDrawCommand...)
+ * @author chrisjr
+ */
 public class StatefulCallableMapping extends ObjectMapping<StatefulCallable> {
 
 	public StatefulCallableMapping(StatefulCallable... objects) {

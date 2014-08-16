@@ -1,14 +1,14 @@
-/**
- * 
- */
 package org.chrisjr.loom.mappings;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 /**
- * @author chrisjr
+ * Mapping from doubles to colors. If the number of input colors is 1, always
+ * return that color. Otherwise, take the input value and interpolates in HSB
+ * space between the two colors closest to the value.
  * 
+ * @author chrisjr
  */
 public class ColorMapping implements Mapping<Integer> {
 	final int[] colors;

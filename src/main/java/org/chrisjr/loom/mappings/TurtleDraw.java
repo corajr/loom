@@ -5,6 +5,14 @@ import java.util.Collection;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+/**
+ * Classes for various drawing commands with a "turtle" that remembers the
+ * drawing state. When added to a pattern, these commands will be executed by
+ * that pattern's {@link Turtle}.
+ * 
+ * @author chrisjr
+ */
+
 public class TurtleDraw {
 	public static class Compound extends TurtleDrawCommand {
 		TurtleDrawCommand[] commands;

@@ -2,6 +2,13 @@ package org.chrisjr.loom.mappings;
 
 import processing.core.PVector;
 
+/**
+ * Holds the current position and direction information from a Turtle, and
+ * allows it to be manipulated in various ways.
+ * 
+ * @author chrisjr
+ * @see Turtle
+ */
 public final class PositionHeading {
 	final private PVector position;
 	final private float angle;

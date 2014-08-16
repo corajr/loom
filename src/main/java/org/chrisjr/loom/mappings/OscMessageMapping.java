@@ -4,6 +4,12 @@ import org.chrisjr.loom.*;
 
 import oscP5.OscMessage;
 
+/**
+ * Create an OSC message by using a second pattern and mapping to provide the
+ * arguments for the message.
+ * 
+ * @author chrisjr
+ */
 public class OscMessageMapping implements Mapping<OscMessage> {
 	private final Pattern original;
 	private final String addressPattern;
@@ -16,6 +22,7 @@ public class OscMessageMapping implements Mapping<OscMessage> {
 		this.mapping = mapping;
 	}
 
+	@Override
 	public OscMessage call(double value) {
 		return new OscMessage(addressPattern,
 				new Object[] { mapping.call(original.getValue()) });
