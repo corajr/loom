@@ -11,6 +11,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.time.RealTimeScheduler;
 
 import static org.chrisjr.loom.Event.*;
 
@@ -195,6 +196,21 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		assertThat(program2ChangedTo, is(equalTo(instTwo.ordinal())));
 		assertThat(notesOnReceived.get(), is(equalTo(8)));
 		assertThat(notesOffReceived.get(), is(equalTo(8)));
+	}
+
+	@Test
+	public void asMidiPercussionRealtimeTest() throws InterruptedException {
+		loom = new Loom(null, new RealTimeScheduler(), 2000);
+		loom.setMidiBus(myBus);
+
+		pattern = Pattern.fromString(loom, "111011010110");
+		pattern.asMidi(Percussion.CLAVES).loop();
+
+		loom.play();
+		Thread.sleep(4000);
+
+		assertThat(notesOnReceived.get(), is(equalTo(16)));
+		assertThat(notesOffReceived.get(), is(equalTo(16)));
 	}
 
 	@Override
