@@ -171,17 +171,17 @@ public class Loom {
 
 		if (oscFilename != null) {
 			if (oscFilename.endsWith(".osc")) {
-				oscFile = myParent.dataFile(oscFilename);
+				oscFile = myParent.saveFile(oscFilename);
 			} else {
-				oscFile = myParent.dataFile(oscFilename + timestamp + ".osc");
+				oscFile = myParent.saveFile(oscFilename + timestamp + ".osc");
 			}
 		}
 
 		if (midiFilename != null) {
 			if (midiFilename.endsWith(".mid")) {
-				midiFile = myParent.dataFile(midiFilename);
+				midiFile = myParent.saveFile(midiFilename);
 			} else {
-				midiFile = myParent.dataFile(midiFilename + timestamp + ".mid");
+				midiFile = myParent.saveFile(midiFilename + timestamp + ".mid");
 			}
 		}
 
