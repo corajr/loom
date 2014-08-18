@@ -103,14 +103,15 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	@Test
 	public void asMidiPercussionTest() throws InterruptedException {
 		pattern.extend("1101");
+		pattern.loop();
 		pattern.asMidi(Percussion.CLAVES);
 
-		scheduler.setElapsedMillis(1000);
+		scheduler.setElapsedMillis(2999);
 
 		Thread.sleep(1);
 
-		assertThat(notesOnReceived.get(), is(equalTo(3)));
-		assertThat(notesOffReceived.get(), is(equalTo(3)));
+		assertThat(notesOnReceived.get(), is(equalTo(9)));
+		assertThat(notesOffReceived.get(), is(equalTo(9)));
 
 	}
 
