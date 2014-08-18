@@ -12,14 +12,13 @@ import org.chrisjr.loom.time.Interval;
 
 import themidibus.MidiBus;
 
-public class MidiBusRecorder extends MidiBus implements IMidiBus {
+public class MidiBusRecorder implements IMidiBus {
 	Loom loom;
 	Sequence sequence;
 	Track track;
 	File midiFile;
 
 	public MidiBusRecorder(Loom loom, File midiFile) {
-		super(loom.myParent);
 		this.loom = loom;
 		this.midiFile = midiFile;
 
