@@ -1,5 +1,7 @@
 package org.chrisjr.loom;
 
+import java.util.ArrayList;
+
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
 import org.chrisjr.loom.time.IntervalMath;
@@ -103,7 +105,7 @@ public class Event {
 	/**
 	 * Sequences events one after another. For example, given two events that
 	 * last from 0 to 1, the output will have one event from 0 to 1 and another
-	 * from 1 to 2.
+	 * from 1 to 2. Events with a value of 0.0 (i.e. rests) will be ignored.
 	 * 
 	 * @param events
 	 *            the original events, each with a time interval of 0 to
@@ -111,16 +113,20 @@ public class Event {
 	 * @return the sequenced events
 	 */
 	public static Event[] seq(Event... events) {
-		Event[] sequenced = new Event[events.length];
+		ArrayList<Event> sequenced = new ArrayList<Event>();
+		// Event[] sequenced = new Event[events.length];
 		BigFraction offset = BigFraction.ZERO;
 		for (int i = 0; i < events.length; i++) {
 			Event oldEvent = events[i];
 			Interval duration = oldEvent.getInterval();
 
-			sequenced[i] = new Event(duration.add(offset), oldEvent.getValue());
+			if (oldEvent.getValue() != 0.0) {
+				sequenced.add(new Event(duration.add(offset), oldEvent
+						.getValue()));
+			}
 			offset = offset.add(duration.getSize());
 		}
-		return sequenced;
+		return sequenced.toArray(new Event[] {});
 	}
 
 	@Override
