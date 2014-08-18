@@ -903,15 +903,25 @@ public class Pattern implements Cloneable {
 		ConcretePattern commands = ConcretePattern.forEach(notes);
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
-		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
-
-		ContinuousFunction velocityFunc = new ThresholdFunction(commands, 1.0);
-		Pattern velocities = (new Pattern(loom, velocityFunc)).asMidiData2(0,
-				127);
-
 		addChild(commands);
-		addChild(channels);
-		addChild(velocities);
+
+		Pattern channels;
+		if (hasMapping(MappingType.MIDI_CHANNEL)) {
+			channels = this;
+		} else {
+			channels = (new Pattern(loom, 1.0)).asMidiChannel(0);
+			addChild(channels);
+		}
+
+		Pattern velocities;
+		if (hasMapping(MappingType.MIDI_DATA2)) {
+			velocities = this;
+		} else {
+			ContinuousFunction velocityFunc = new ThresholdFunction(commands,
+					1.0);
+			velocities = (new Pattern(loom, velocityFunc)).asMidiData2(0, 127);
+			addChild(velocities);
+		}
 
 		return asMidiMessage(commands, channels, notes, velocities);
 	}
