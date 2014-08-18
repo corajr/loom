@@ -155,6 +155,15 @@ public class ConcretePattern extends Pattern {
 		return value;
 	}
 
+	/**
+	 * Generate a pattern of note on and off events from the events of another
+	 * pattern.
+	 * 
+	 * @param other
+	 *            the pattern to get events from
+	 * @return a new pattern
+	 * @see EventBoundaryProxy
+	 */
 	public static ConcretePattern forEach(Pattern other) {
 		if (!other.isDiscretePattern())
 			throw new IllegalArgumentException(
