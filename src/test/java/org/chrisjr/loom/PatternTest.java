@@ -119,6 +119,13 @@ public class PatternTest {
 	}
 
 	@Test
+	public void noMappingsWhenPatternLacksEventsAndFunction() {
+		thrown.expect(IllegalStateException.class);
+		pattern = new Pattern(loom);
+		pattern.asColor(0);
+	}
+
+	@Test
 	public void cannotAddChildToConcretePattern() {
 		Pattern other = new Pattern(null);
 		thrown.expect(IllegalStateException.class);

@@ -382,7 +382,11 @@ public class Pattern implements Cloneable {
 	}
 
 	public ConcurrentMap<MappingType, Mapping<?>> getOutputMappings() {
-		return getConcretePattern().getOutputMappings();
+		ConcretePattern concrete = getConcretePattern();
+		if (concrete == null)
+			throw new IllegalStateException(
+					"Mappings cannot be set on an empty Pattern.");
+		return concrete.getOutputMappings();
 	}
 
 	protected Object getAs(MappingType mapping) throws IllegalStateException {
