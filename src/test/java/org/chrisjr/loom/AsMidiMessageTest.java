@@ -15,6 +15,7 @@ import org.chrisjr.loom.time.NonRealTimeScheduler;
 import static org.chrisjr.loom.Event.*;
 
 import org.chrisjr.loom.util.MidiTools;
+import org.chrisjr.loom.util.MidiTools.Instrument;
 import org.chrisjr.loom.util.MidiTools.Note;
 import org.chrisjr.loom.util.MidiTools.Percussion;
 import org.junit.After;
@@ -33,7 +34,8 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	private final AtomicInteger notesOnReceived = new AtomicInteger();
 	private final AtomicInteger notesOffReceived = new AtomicInteger();
 	private CopyOnWriteArrayList<Integer> notes = null;
-	int programChangedTo = -1;
+	int program1ChangedTo = -1;
+	int program2ChangedTo = -1;
 
 	@Before
 	public void setUp() throws Exception {
@@ -61,7 +63,8 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		pattern = null;
 		notesOnReceived.set(0);
 		notesOffReceived.set(0);
-		programChangedTo = -1;
+		program1ChangedTo = -1;
+		program2ChangedTo = -1;
 	}
 
 	@Test
@@ -165,16 +168,43 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 		Thread.sleep(1);
 
-		assertThat(programChangedTo, is(equalTo(0)));
+		assertThat(program1ChangedTo, is(equalTo(0)));
 		assertThat(notesOnReceived.get(), is(equalTo(4)));
 		assertThat(notesOffReceived.get(), is(equalTo(4)));
+	}
+
+	@Test
+	public void asMidiInstrumentTwoChannelsTest() throws InterruptedException {
+		Instrument instOne = Instrument.BRIGHT_ACOUSTIC_PIANO;
+		Instrument instTwo = Instrument.ELECTRIC_GRAND_PIANO;
+
+		pattern.extend("0242");
+		pattern.asMidiNote(60, 64, 67);
+		pattern.asMidi(instOne);
+
+		Pattern pattern2 = Pattern.fromString(loom, "0242");
+		pattern2.asMidiNote(60, 64, 67);
+		pattern2.asMidiChannel(1).asMidi(instTwo);
+
+		scheduler.setElapsedMillis(1000);
+
+		Thread.sleep(1);
+
+		assertThat(program1ChangedTo, is(equalTo(instOne.ordinal())));
+		assertThat(program2ChangedTo, is(equalTo(instTwo.ordinal())));
+		assertThat(notesOnReceived.get(), is(equalTo(8)));
+		assertThat(notesOffReceived.get(), is(equalTo(8)));
 	}
 
 	@Override
 	public void midiMessage(MidiMessage message, long timeStamp) {
 		byte[] data = message.getMessage();
 		if ((data[0] & 0xC0) == ShortMessage.PROGRAM_CHANGE) {
-			programChangedTo = data[1] & 0xFF;
+			int channel = (data[0] & 0xFF) - 0xC0;
+			if (channel == 0)
+				program1ChangedTo = data[1] & 0xFF;
+			else if (channel == 1)
+				program2ChangedTo = data[1] & 0xFF;
 		} else if ((data[0] & 0x90) == ShortMessage.NOTE_ON) {
 			notesOnReceived.getAndIncrement();
 			if (notes != null)

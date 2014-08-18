@@ -705,7 +705,8 @@ public class Pattern implements Cloneable {
 	public Pattern asMidi(Instrument instrument) {
 		int midiInstrument = instrument.ordinal();
 
-		asMidiChannel(0);
+		if (!hasMapping(MappingType.MIDI_CHANNEL))
+			asMidiChannel(0);
 
 		Pattern setInstrument = Pattern.fromInts(loom, 1);
 		setInstrument.asMidiCommand(ShortMessage.PROGRAM_CHANGE);
