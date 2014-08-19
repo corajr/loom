@@ -105,7 +105,7 @@ public class LEvent {
 	/**
 	 * Sequences events one after another. For example, given two events that
 	 * last from 0 to 1, the output will have one event from 0 to 1 and another
-	 * from 1 to 2. Events with a value of 0.0 (i.e. rests) will be ignored.
+	 * from 1 to 2.
 	 * 
 	 * @param events
 	 *            the original events, each with a time interval of 0 to
@@ -113,20 +113,16 @@ public class LEvent {
 	 * @return the sequenced events
 	 */
 	public static LEvent[] seq(LEvent... events) {
-		ArrayList<LEvent> sequenced = new ArrayList<LEvent>();
-		// Event[] sequenced = new Event[events.length];
+		LEvent[] sequenced = new LEvent[events.length];
 		BigFraction offset = BigFraction.ZERO;
 		for (int i = 0; i < events.length; i++) {
 			LEvent oldEvent = events[i];
 			Interval duration = oldEvent.getInterval();
 
-			if (oldEvent.getValue() != 0.0) {
-				sequenced.add(new LEvent(duration.add(offset), oldEvent
-						.getValue()));
-			}
+			sequenced[i] = new LEvent(duration.add(offset), oldEvent.getValue());
 			offset = offset.add(duration.getSize());
 		}
-		return sequenced.toArray(new LEvent[] {});
+		return sequenced;
 	}
 
 	@Override
