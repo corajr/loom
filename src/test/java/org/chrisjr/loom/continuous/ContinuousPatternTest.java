@@ -36,6 +36,16 @@ public class ContinuousPatternTest {
 		loom = null;
 	}
 
+	private void checkValues(double epsilon, Pattern pattern,
+			double... timeAndValue) {
+		for (int i = 0; i < timeAndValue.length / 2; i++) {
+			int millis = (int) timeAndValue[i * 2];
+			double expectedValue = timeAndValue[i * 2 + 1];
+			scheduler.setElapsedMillis(millis);
+			assertThat(pattern.getValue(), is(closeTo(expectedValue, epsilon)));
+		}
+	}
+
 	@Test
 	public void sinePattern() {
 		pattern = new Pattern(loom, new SineFunction());
@@ -182,6 +192,33 @@ public class ContinuousPatternTest {
 					.getValue() == 1.0)); // pattern2 == 1.0 iff pattern >=
 											// threshold
 		}
+	}
+
+	@Test
+	public void continuousThenDiscrete() {
+		Pattern discrete = Pattern.fromString(loom, "1343");
+		Pattern sinePattern = new Pattern(loom, new SineFunction());
+
+		pattern = sinePattern.then(discrete);
+
+		double epsilon = 1e-2;
+
+		checkValues(epsilon, pattern, 250, 1.0, 500, 0.5, 750, 0.0, 999, 0.5,
+				1001, 0.25, 1250, 0.75, 1500, 1.0, 1750, 0.75, 2001, 0.0, 2250,
+				0.0);
+	}
+
+	@Test
+	public void discreteThenContinuous() {
+		Pattern discrete = Pattern.fromString(loom, "1343");
+		Pattern sinePattern = new Pattern(loom, new SineFunction());
+
+		pattern = discrete.then(sinePattern);
+
+		double epsilon = 1e-2;
+
+		checkValues(epsilon, pattern, 0, 0.25, 250, 0.75, 500, 1.0, 750, 0.75,
+				1000, 0.5, 1250, 1.0, 1500, 0.5, 1750, 0.0, 1999, 0.5);
 	}
 
 	@Test

@@ -303,6 +303,12 @@ public class PatternTransformationsTest {
 	}
 
 	@Test
+	public void repeatThenStop() {
+		Pattern pat = pattern.repeat(4).then(Pattern.fromInts(loom, 0, 1, 2));
+		countBeats(pat, 999, 4, 1999, 8, 2999, 12, 3999, 16, 4999, 19, 5999, 19);
+	}
+
+	@Test
 	public void after() {
 		final AtomicInteger ai = new AtomicInteger();
 		pattern.loop();

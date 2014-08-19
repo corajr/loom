@@ -679,6 +679,7 @@ public class Pattern implements Cloneable {
 			});
 			repeaterSet = true;
 		}
+
 		return this;
 	}
 
@@ -1329,7 +1330,8 @@ public class Pattern implements Cloneable {
 			result = new Draw.Compound(commands);
 		}
 
-		result.setParent(loom.getParent());
+		if (result != null && loom != null && loom.getParent() != null)
+			result.setParent(loom.getParent());
 
 		return result;
 	}
@@ -1485,7 +1487,7 @@ public class Pattern implements Cloneable {
 	 * Let N be the number of input patterns. When this pattern is 0.0, the
 	 * output pattern will return the values/mappings of its first child by
 	 * default. When this pattern has a value of i/N, where i is a 1-based index
-	 * into the input patterns, the output pattern will return the values nad
+	 * into the input patterns, the output pattern will return the values and
 	 * mappings of pattern i.
 	 * </p>
 	 * 
@@ -1515,6 +1517,7 @@ public class Pattern implements Cloneable {
 
 	public Pattern select(int i) {
 		selectedChild = i;
+		timeMatch = getChild(i);
 		return this;
 	}
 
@@ -1662,6 +1665,32 @@ public class Pattern implements Cloneable {
 		return extend(offset, eventsToAdd);
 	}
 
+	/**
+	 * Gives back a new pattern that switches from this pattern to another after
+	 * the loop interval/total interval has elapsed.
+	 * 
+	 * @param other
+	 *            the pattern to run after this one
+	 * @return a new pattern
+	 */
+	public Pattern then(Pattern other) {
+		Pattern thenPat;
+		if (this.getEvents() != null && other.getEvents() != null) {
+			thenPat = this;
+			after(getTotalInterval().getSize(), other.getEvents().values()
+					.toArray(new Event[] {}));
+		} else {
+			Pattern selector = new Pattern(loom, Event.seq(
+					new Event(this.getTotalInterval(), 0.5),
+					new Event(other.getTotalInterval(), 1.0)));
+
+			thenPat = selector.selectFrom(this,
+					other.delay(other.getTotalInterval().getSize()));
+		}
+
+		return thenPat;
+	}
+
 	public Pattern rewrite(EventRewriter eventRewriter) {
 		EventCollection events = getEvents();
 		if (events != null) {
@@ -1794,8 +1823,12 @@ public class Pattern implements Cloneable {
 		else
 			result = loopInterval;
 
-		// result = new Interval(result.getStart(), result.getEnd().add(
-		// getTimeOffset().abs()));
+		int repeatN = repeats.get();
+		if (repeatN == 0)
+			repeatN = 1;
+
+		result = new Interval(result.getStart(), result.getEnd().multiply(
+				repeatN));
 		return result;
 	}
 
@@ -1864,6 +1897,31 @@ public class Pattern implements Cloneable {
 			sketch.line(x + i, y, x + i, y + height);
 			currentInterval = currentInterval.add(unit);
 		}
+	}
+
+	@Override
+	public String toString() {
+		if (isConcretePattern())
+			return getConcretePattern().toString();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Pattern@" + Integer.toHexString(hashCode()));
+		if (children != null) {
+			sb.append("(\n");
+			boolean first = true;
+			for (Pattern child : children) {
+				if (!first) {
+					sb.append(",\n");
+				} else {
+					first = false;
+				}
+
+				sb.append("\t");
+				sb.append(child.toString().replaceAll("\n", "\n\t"));
+			}
+			sb.append("\n)");
+		}
+		return sb.toString();
 	}
 
 	@Override
