@@ -481,6 +481,52 @@ public class Pattern implements Cloneable {
 	}
 
 	/**
+	 * Extends the pattern by adding the given events after a specified offset.
+	 * 
+	 * @param offset
+	 *            the amount to delay the new events
+	 * @param newEvents
+	 *            the events to be added
+	 * @return the current pattern with events added
+	 */
+	public Pattern extend(double offset, Event... newEvents) {
+		return extend(IntervalMath.toFraction(offset), newEvents);
+	}
+
+	/**
+	 * Extends the pattern by adding the given events after a specified offset.
+	 * 
+	 * @param offset
+	 *            the amount to delay the new events
+	 * @param newEvents
+	 *            the events to be added
+	 * @return the current pattern with events added
+	 */
+	public Pattern extend(BigFraction offset, Event... newEvents) {
+		return extend(offset, Arrays.asList(newEvents));
+	}
+
+	/**
+	 * Extends the pattern by adding the given events after a specified offset.
+	 * 
+	 * @param offset
+	 *            the amount to delay the new events
+	 * @param newEvents
+	 *            the events to be added
+	 * @return the current pattern with events added
+	 */
+	public Pattern extend(BigFraction offset, Collection<Event> newEvents) {
+		EventCollection events = getEvents();
+		if (events == null) {
+			events = new EventCollection();
+			addChild(new ConcretePattern(loom, events));
+		}
+
+		events.addWithOffset(offset, newEvents);
+		return this;
+	}
+
+	/**
 	 * Returns the value of this Pattern at the current interval, a number
 	 * between 0.0 and 1.0 inclusive.
 	 * 
@@ -1549,6 +1595,17 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Triggers the specified callback after a given amount of time. It will be
+	 * added to a time-matched sibling pattern, so it will be affected by the
+	 * time scale and offset of this pattern (but not its loop interval).
+	 * 
+	 * @param offset
+	 *            the duration after which to trigger the callable
+	 * @param callable
+	 *            the callable to trigger
+	 * @return the current pattern
+	 */
 	public Pattern after(double time, Callable<Void> callable) {
 		return after(IntervalMath.toFraction(time), callable);
 	}
@@ -1575,6 +1632,34 @@ public class Pattern implements Cloneable {
 		trigger.onRelease(callable);
 
 		return this;
+	}
+
+	/**
+	 * Adds events to the pattern at a certain time offset. Synonym for
+	 * {@link #extend(double, Event...)}.
+	 * 
+	 * @param offset
+	 *            the time offset
+	 * @param eventsToAdd
+	 *            events to be added
+	 * @return the updated attern
+	 */
+	public Pattern after(double time, Event... eventsToAdd) {
+		return after(IntervalMath.toFraction(time), eventsToAdd);
+	}
+
+	/**
+	 * Adds events to the pattern at a certain time offset. Synonym for
+	 * {@link #extend(BigFraction, Event...)}.
+	 * 
+	 * @param offset
+	 *            the time offset
+	 * @param eventsToAdd
+	 *            events to be added
+	 * @return the updated pattern
+	 */
+	public Pattern after(BigFraction offset, Event... eventsToAdd) {
+		return extend(offset, eventsToAdd);
 	}
 
 	public Pattern rewrite(EventRewriter eventRewriter) {

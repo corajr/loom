@@ -48,22 +48,27 @@ public class DiscretePatternTest {
 		pattern.getValue();
 	}
 
+	private void checkValues(Pattern pattern, double... timeAndValue) {
+		for (int i = 0; i < timeAndValue.length / 2; i++) {
+			int millis = (int) timeAndValue[i * 2];
+			double expectedValue = timeAndValue[i * 2 + 1];
+			scheduler.setElapsedMillis(millis);
+			assertThat(pattern.getValue(), is(equalTo(expectedValue)));
+		}
+	}
+
 	@Test
 	public void canBeExtendedWithString() {
 		pattern.extend("0101");
 
-		assertThat(pattern.getValue(), is(equalTo(0.0)));
-		scheduler.setElapsedMillis(251);
-		assertThat(pattern.getValue(), is(equalTo(1.0)));
+		checkValues(pattern, 0, 0.0, 251, 1.0);
 	}
 
 	@Test
 	public void canBeExtendedWithInts() {
 		pattern.extend(0, 1, 0, 1);
 
-		assertThat(pattern.getValue(), is(equalTo(0.0)));
-		scheduler.setElapsedMillis(251);
-		assertThat(pattern.getValue(), is(equalTo(1.0)));
+		checkValues(pattern, 0, 0.0, 251, 1.0);
 	}
 
 	@Test
@@ -71,8 +76,7 @@ public class DiscretePatternTest {
 		pattern.extend("0101");
 		pattern.loop();
 
-		scheduler.setElapsedMillis(1251);
-		assertThat(pattern.getValue(), is(equalTo(1.0)));
+		checkValues(pattern, 1251, 1.0);
 	}
 
 	@Test
@@ -80,11 +84,20 @@ public class DiscretePatternTest {
 		pattern.extend("0101");
 		pattern.loop();
 
-		scheduler.setElapsedMillis(1251);
-		assertThat(pattern.getValue(), is(equalTo(1.0)));
+		checkValues(pattern, 1251, 1.0);
 
 		pattern.once();
-		assertThat(pattern.getValue(), is(equalTo(0.0)));
+
+		checkValues(pattern, 1251, 0.0);
+	}
+
+	@Test
+	public void canBeRepeatedAndExtended() {
+		pattern.extend("0001");
+		pattern.repeat(4).after(10, Event.evt(0.25, 0.5));
+
+		checkValues(pattern, 751, 1.0, 1751, 1.0, 2751, 1.0, 3751, 1.0, 4000,
+				0.0, 4751, 0.0, 10001, 0.5, 10251, 0.0);
 	}
 
 	@Test
