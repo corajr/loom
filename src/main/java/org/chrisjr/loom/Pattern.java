@@ -629,7 +629,7 @@ public class Pattern implements Cloneable {
 		if (useOffset)
 			interval = interval.add(getTimeOffset());
 
-		if (repeats.get() > 0 || (isLooping && positiveScale)) {
+		if (getRepeats() > 0 || (isLooping && positiveScale)) {
 			interval = interval.modulo(loopInterval);
 		}
 
@@ -681,6 +681,13 @@ public class Pattern implements Cloneable {
 		}
 
 		return this;
+	}
+
+	public int getRepeats() {
+		if (timeMatch != null)
+			return timeMatch.repeats.get();
+		else
+			return repeats.get();
 	}
 
 	// Mappings
@@ -1674,19 +1681,12 @@ public class Pattern implements Cloneable {
 	 * @return a new pattern
 	 */
 	public Pattern then(Pattern other) {
-		Pattern thenPat;
-		if (this.getEvents() != null && other.getEvents() != null) {
-			thenPat = this;
-			after(getTotalInterval().getSize(), other.getEvents().values()
-					.toArray(new LEvent[] {}));
-		} else {
-			Pattern selector = new Pattern(loom, LEvent.seq(
-					new LEvent(this.getTotalInterval(), 0.5),
-					new LEvent(other.getTotalInterval(), 1.0)));
+		Pattern selector = new Pattern(loom, LEvent.seq(
+				new LEvent(this.getTotalInterval(), 0.5),
+				new LEvent(other.getTotalInterval(), 1.0)));
 
-			thenPat = selector.selectFrom(this,
-					other.delay(other.getTotalInterval().getSize()));
-		}
+		Pattern thenPat = selector.selectFrom(this,
+				other.delay(this.getTotalInterval().getSize()));
 
 		return thenPat;
 	}

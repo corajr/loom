@@ -304,8 +304,14 @@ public class PatternTransformationsTest {
 
 	@Test
 	public void repeatThenStop() {
-		Pattern pat = pattern.repeat(4).then(Pattern.fromInts(loom, 0, 1, 2));
-		countBeats(pat, 999, 4, 1999, 8, 2999, 12, 3999, 16, 4999, 19, 5999, 19);
+		Pattern pat = pattern.repeat(4).then(
+				Pattern.fromInts(loom, 3, 2, 1, 0).asInt(0, 3));
+
+		for (int i = 0; i < 20; i++) {
+			scheduler.setElapsedMillis(250 * i);
+			int expected = i < 16 ? i % 4 : 4 - (i % 4) - 1;
+			assertThat(pat.asInt(), is(equalTo(expected)));
+		}
 	}
 
 	@Test
