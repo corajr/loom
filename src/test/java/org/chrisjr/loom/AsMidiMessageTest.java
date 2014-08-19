@@ -77,7 +77,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		pattern.asMidiNote(60, 64, 67);
 		pattern.asMidiMessage(pattern);
 
-		scheduler.setElapsedMillis(251);
+		scheduler.setElapsedMillis(250);
 
 		Thread.sleep(1);
 
