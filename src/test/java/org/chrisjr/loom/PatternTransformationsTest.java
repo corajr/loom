@@ -331,6 +331,14 @@ public class PatternTransformationsTest {
 	}
 
 	@Test
+	public void slowAfter() {
+		pattern.after(1, new Transforms.Speed(0.5));
+		pattern.loop();
+		countBeats(pattern, 999, 4, 1000, 5, 1500, 6, 2000, 7, 2500, 8, 3000,
+				9, 3500, 10);
+	}
+
+	@Test
 	public void slowEveryCycle() {
 		pattern.every(1, new Transforms.Speed(0.5));
 		pattern.loop();

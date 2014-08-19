@@ -1645,6 +1645,32 @@ public class Pattern implements Cloneable {
 	}
 
 	/**
+	 * Triggers the specified transform after a given amount of time.
+	 * 
+	 * @param offset
+	 *            the duration after which to trigger the transform
+	 * @param transform
+	 *            the transform to trigger
+	 * @return the current pattern
+	 */
+	public Pattern after(double offset, Transform transform) {
+		return after(IntervalMath.toFraction(offset), transform);
+	}
+
+	/**
+	 * Triggers the specified transform after a given amount of time.
+	 * 
+	 * @param offset
+	 *            the duration after which to trigger the transform
+	 * @param transform
+	 *            the transform to trigger
+	 * @return the current pattern
+	 */
+	public Pattern after(BigFraction offset, Transform transform) {
+		return after(offset, Transform.toCallable(transform, this));
+	}
+
+	/**
 	 * Adds events to the pattern at a certain time offset. Synonym for
 	 * {@link #extend(double, LEvent...)}.
 	 * 
