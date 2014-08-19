@@ -623,7 +623,7 @@ public class Pattern implements Cloneable {
 	public Pattern repeat(int n) {
 		repeats.set(n);
 		if (!repeaterSet) {
-			every(1, new Callable<Void>() {
+			every(loopInterval.getSize(), new Callable<Void>() {
 				@Override
 				public Void call() {
 					if (repeats.get() > 0)
@@ -1536,13 +1536,41 @@ public class Pattern implements Cloneable {
 	public Pattern every(BigFraction fraction, Callable<Void> callable) {
 		Interval interval = new Interval(BigFraction.ZERO, fraction);
 
-		Pattern trigger = new Pattern(loom, new Event(interval, 1.0));
+		Pattern trigger = new Pattern(null, new Event(interval, 1.0));
 		trigger.loop();
 		trigger.setLoopInterval(interval);
 
 		addSibling(trigger);
 
 		trigger.setTimeMatch(this);
+
+		trigger.onRelease(callable);
+
+		return this;
+	}
+
+	public Pattern after(double time, Callable<Void> callable) {
+		return after(IntervalMath.toFraction(time), callable);
+	}
+
+	/**
+	 * Triggers the specified callback after a given amount of time. It will be
+	 * added to a time-matched sibling pattern, so it will be affected by the
+	 * time scale and offset of this pattern (but not its loop interval).
+	 * 
+	 * @param offset
+	 *            the duration after which to trigger the callable
+	 * @param callable
+	 *            the callable to trigger
+	 * @return the current pattern
+	 */
+	public Pattern after(BigFraction offset, Callable<Void> callable) {
+		Interval interval = new Interval(BigFraction.ZERO, offset);
+
+		Pattern trigger = new Pattern(null, new Event(interval, 1.0));
+		trigger.setTimeMatch(this);
+
+		addSibling(trigger);
 
 		trigger.onRelease(callable);
 

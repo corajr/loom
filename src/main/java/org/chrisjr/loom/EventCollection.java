@@ -189,8 +189,20 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	public void addAfterwards(Collection<Event> events)
 			throws IllegalStateException {
 		BigFraction end = getLatestEnd();
+		addWithOffset(end, events);
+	}
+
+	/**
+	 * Add events with a specified offset.
+	 * 
+	 * @param offset
+	 *            the amount by which to offset events
+	 * @param events
+	 *            the events to add
+	 */
+	public void addWithOffset(BigFraction offset, Collection<Event> events) {
 		for (Event e : events) {
-			Interval newInterval = e.getInterval().add(end);
+			Interval newInterval = e.getInterval().add(offset);
 			add(new Event(newInterval, e.getValue()));
 		}
 	}

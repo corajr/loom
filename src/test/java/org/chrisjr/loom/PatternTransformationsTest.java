@@ -303,6 +303,22 @@ public class PatternTransformationsTest {
 	}
 
 	@Test
+	public void after() {
+		final AtomicInteger ai = new AtomicInteger();
+		pattern.loop();
+		pattern.after(10, new Callable<Void>() {
+			@Override
+			public Void call() {
+				ai.incrementAndGet();
+				return null;
+			}
+		});
+
+		countBeats(pattern, 20000, 81);
+		assertThat(ai.get(), is(equalTo(1)));
+	}
+
+	@Test
 	public void slowEveryCycle() {
 		pattern.every(1, new Transforms.Speed(0.5));
 		pattern.loop();
