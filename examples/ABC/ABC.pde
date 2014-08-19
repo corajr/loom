@@ -8,22 +8,21 @@ Pattern pattern;
 MidiBus myBus;
 
 void setup() {
-  size(400,400);
-  
+  size(400, 400);
+
   loom = new Loom(this, 120);
-  pattern = Pattern.fromABC(loom, "C|^FG2C|(3^FGA(3FGA|GA2||");
+  pattern = Pattern.fromABC(loom, "zCDEF3/2G/4F/4EA|DG3/2A/2G/2F/2E/2||");
+
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
-  
-  loom.midiBusWrapper.set(new MidiBusImpl(myBus));
+  loom.setMidiBus(myBus);
 
-  pattern.asColor(#000000, #FFFFFF);
-  pattern.asMidiMessage(pattern);
+  pattern.asColor(#000000, #FFFFFF).asMidiMessage(pattern);
+  pattern.once();
 
-  pattern.loop();
-  
   loom.play();
 }
 
 void draw() {
   background(pattern.asColor());
 }
+
