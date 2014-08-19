@@ -36,11 +36,8 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.*;
 
 import processing.core.*;
-import themidibus.MidiBus;
 
 import org.chrisjr.loom.wrappers.*;
-
-import oscP5.OscP5;
 
 /**
  * A <code>Loom</code> holds all of the {@link Pattern}s associated with the
@@ -203,11 +200,11 @@ public class Loom {
 		play();
 	}
 
-	public void setOscP5(OscP5 oscP5) {
+	public void setOscP5(oscP5.OscP5 oscP5) {
 		oscP5Wrapper.set(new OscP5Impl(oscP5));
 	}
 
-	public void setMidiBus(MidiBus midiBus) {
+	public void setMidiBus(themidibus.MidiBus midiBus) {
 		midiBusWrapper.set(new MidiBusImpl(midiBus));
 	}
 
