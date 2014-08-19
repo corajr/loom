@@ -51,9 +51,9 @@ public class LsysTest {
 		assertThat(rewriter.fromDouble(1.0), is(equalTo("B")));
 	}
 
-	public String eventsToString(LsysRewriter rewriter, Collection<Event> events) {
+	public String eventsToString(LsysRewriter rewriter, Collection<LEvent> events) {
 		StringBuilder sb = new StringBuilder();
-		for (Event e : events) {
+		for (LEvent e : events) {
 			sb.append(rewriter.fromDouble(e.getValue()));
 		}
 

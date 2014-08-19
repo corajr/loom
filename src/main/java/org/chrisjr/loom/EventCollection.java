@@ -16,7 +16,7 @@ import org.chrisjr.loom.time.Interval;
  * @author chrisjr
  */
 
-public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
+public class EventCollection extends ConcurrentSkipListMap<BigFraction, LEvent>
 		implements EventQueryable {
 	private static final long serialVersionUID = -4270420021705392093L;
 
@@ -127,7 +127,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 			BigFraction start = new BigFraction(i, n);
 			BigFraction end = start.add(new BigFraction(1, n));
 			Interval interval = new Interval(start, end);
-			events.put(start, new Event(interval, value));
+			events.put(start, new LEvent(interval, value));
 		}
 		return events;
 	}
@@ -140,7 +140,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	 * @return a new EventCollection
 	 */
 
-	public static EventCollection fromEvents(Event... events) {
+	public static EventCollection fromEvents(LEvent... events) {
 		return fromEvents(Arrays.asList(events));
 	}
 
@@ -151,7 +151,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	 *            the collection of events to be added
 	 * @return a new EventCollection
 	 */
-	public static EventCollection fromEvents(Collection<Event> collection) {
+	public static EventCollection fromEvents(Collection<LEvent> collection) {
 		EventCollection events = new EventCollection();
 		events.addAll(collection);
 		return events;
@@ -165,16 +165,16 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	 *            the event to add
 	 * @throws IllegalStateException
 	 */
-	public void add(Event e) throws IllegalStateException {
-		Collection<Event> existingEvents = getForInterval(e.getInterval());
+	public void add(LEvent e) throws IllegalStateException {
+		Collection<LEvent> existingEvents = getForInterval(e.getInterval());
 		if (!existingEvents.isEmpty())
 			throw new IllegalStateException(
 					"Cannot add overlapping events! Create a new pattern instead.");
 		put(e.getInterval().getStart(), e);
 	}
 
-	public void addAll(Collection<Event> events) throws IllegalStateException {
-		for (Event e : events) {
+	public void addAll(Collection<LEvent> events) throws IllegalStateException {
+		for (LEvent e : events) {
 			add(e);
 		}
 	}
@@ -186,7 +186,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	 *            the events to add
 	 * @throws IllegalStateException
 	 */
-	public void addAfterwards(Collection<Event> events)
+	public void addAfterwards(Collection<LEvent> events)
 			throws IllegalStateException {
 		BigFraction end = getLatestEnd();
 		addWithOffset(end, events);
@@ -200,10 +200,10 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	 * @param events
 	 *            the events to add
 	 */
-	public void addWithOffset(BigFraction offset, Collection<Event> events) {
-		for (Event e : events) {
+	public void addWithOffset(BigFraction offset, Collection<LEvent> events) {
+		for (LEvent e : events) {
 			Interval newInterval = e.getInterval().add(offset);
-			add(new Event(newInterval, e.getValue()));
+			add(new LEvent(newInterval, e.getValue()));
 		}
 	}
 
@@ -213,7 +213,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	 * @return the end of the last event
 	 */
 	private BigFraction getLatestEnd() {
-		Event latest = null;
+		LEvent latest = null;
 		if (this.size() > 0) {
 			latest = this.descendingMap().firstEntry().getValue();
 		}
@@ -237,9 +237,9 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 	}
 
 	@Override
-	public Collection<Event> getForInterval(Interval interval) {
-		List<Event> events = new ArrayList<Event>();
-		for (Event e : this.values()) {
+	public Collection<LEvent> getForInterval(Interval interval) {
+		List<LEvent> events = new ArrayList<LEvent>();
+		for (LEvent e : this.values()) {
 			if (e.containedBy(interval))
 				events.add(e);
 		}
@@ -252,7 +252,7 @@ public class EventCollection extends ConcurrentSkipListMap<BigFraction, Event>
 		sb.append("EventCollection(\n\t");
 
 		boolean first = true;
-		for (Event e : this.values()) {
+		for (LEvent e : this.values()) {
 			if (first)
 				first = false;
 			else

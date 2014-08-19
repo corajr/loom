@@ -33,8 +33,8 @@ public class EventBoundaryProxy extends EventTransformer {
 	}
 
 	@Override
-	public Collection<Event> apply(Interval interval, Event e) {
-		Collection<Event> newEvents = new ArrayList<Event>();
+	public Collection<LEvent> apply(Interval interval, LEvent e) {
+		Collection<LEvent> newEvents = new ArrayList<LEvent>();
 
 		Interval eInterval = e.getInterval();
 		BigFraction instant = eInterval.getSize().divide(10);
@@ -47,11 +47,11 @@ public class EventBoundaryProxy extends EventTransformer {
 		BigFraction end = eInterval.getEnd();
 		BigFraction endMinus = end.subtract(instant);
 
-		Event[] triggers = new Event[] {
-				new Event(new Interval(start, startPlus), ONSET, e),
-				new Event(new Interval(endMinus, end), RELEASE, e) };
+		LEvent[] triggers = new LEvent[] {
+				new LEvent(new Interval(start, startPlus), ONSET, e),
+				new LEvent(new Interval(endMinus, end), RELEASE, e) };
 
-		for (Event t : triggers) {
+		for (LEvent t : triggers) {
 			if (t.containedBy(interval))
 				newEvents.add(t);
 		}

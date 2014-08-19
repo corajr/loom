@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import static org.chrisjr.loom.Event.*;
+import static org.chrisjr.loom.LEvent.*;
 
 import org.chrisjr.loom.*;
 

@@ -20,14 +20,14 @@ public abstract class EventTransformer implements EventQueryable {
 		this.parentEvents = parentEvents;
 	}
 
-	public abstract Collection<Event> apply(Interval interval, Event e);
+	public abstract Collection<LEvent> apply(Interval interval, LEvent e);
 
 	@Override
-	public Collection<Event> getForInterval(Interval interval) {
-		Collection<Event> realEvents = parentEvents.getForInterval(interval);
-		List<Event> events = new ArrayList<Event>();
+	public Collection<LEvent> getForInterval(Interval interval) {
+		Collection<LEvent> realEvents = parentEvents.getForInterval(interval);
+		List<LEvent> events = new ArrayList<LEvent>();
 
-		for (Event e : realEvents) {
+		for (LEvent e : realEvents) {
 			events.addAll(apply(interval, e));
 		}
 

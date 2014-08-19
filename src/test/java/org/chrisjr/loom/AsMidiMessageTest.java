@@ -13,7 +13,7 @@ import javax.sound.midi.ShortMessage;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
 import org.chrisjr.loom.time.RealTimeScheduler;
 
-import static org.chrisjr.loom.Event.*;
+import static org.chrisjr.loom.LEvent.*;
 
 import org.chrisjr.loom.util.MidiTools;
 import org.chrisjr.loom.util.MidiTools.Instrument;

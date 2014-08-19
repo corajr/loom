@@ -3,7 +3,7 @@ package org.chrisjr.loom.transforms;
 import java.util.*;
 
 import org.apache.commons.math3.fraction.BigFraction;
-import org.chrisjr.loom.Event;
+import org.chrisjr.loom.LEvent;
 import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.mappings.Draw;
 import org.chrisjr.loom.mappings.TurtleDrawCommand;
@@ -24,13 +24,13 @@ public class LsysRewriter extends EventRewriter {
 		}
 
 		@Override
-		public boolean canApply(int index, Event event) {
+		public boolean canApply(int index, LEvent event) {
 			return event.getValue() == matchOn;
 		}
 
 		@Override
-		public Collection<Event> apply(int index, Event event) {
-			ArrayList<Event> newEvents = new ArrayList<Event>();
+		public Collection<LEvent> apply(int index, LEvent event) {
+			ArrayList<LEvent> newEvents = new ArrayList<LEvent>();
 			Interval oldInterval = event.getInterval();
 			BigFraction start = oldInterval.getStart();
 			BigFraction newSize = oldInterval.getSize().divide(
@@ -39,7 +39,7 @@ public class LsysRewriter extends EventRewriter {
 			Interval interval = new Interval(start, start.add(newSize));
 
 			for (double value : replaceWith) {
-				newEvents.add(new Event(interval, value, event));
+				newEvents.add(new LEvent(interval, value, event));
 				interval = interval.add(newSize);
 			}
 
@@ -87,9 +87,9 @@ public class LsysRewriter extends EventRewriter {
 		return alphabet.substring(i, i + 1);
 	}
 
-	public String fromEvents(Collection<Event> events) {
+	public String fromEvents(Collection<LEvent> events) {
 		StringBuilder sb = new StringBuilder();
-		for (Event e : events) {
+		for (LEvent e : events) {
 			sb.append(fromDouble(e.getValue()));
 		}
 		return sb.toString();

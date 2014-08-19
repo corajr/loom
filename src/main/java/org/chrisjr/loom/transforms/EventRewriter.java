@@ -2,7 +2,7 @@ package org.chrisjr.loom.transforms;
 
 import java.util.*;
 
-import org.chrisjr.loom.Event;
+import org.chrisjr.loom.LEvent;
 import org.chrisjr.loom.EventCollection;
 
 /**
@@ -27,7 +27,7 @@ public abstract class EventRewriter {
 		EventCollection newEvents = new EventCollection();
 
 		int i = 0;
-		for (Event event : originalEvents.values()) {
+		for (LEvent event : originalEvents.values()) {
 			for (Rule rule : rules) {
 				if (rule.canApply(i, event)) {
 					newEvents.addAll(rule.apply(i, event));

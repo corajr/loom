@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.math3.fraction.BigFraction;
-import org.chrisjr.loom.Event;
+import org.chrisjr.loom.LEvent;
 import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.time.Interval;
 
@@ -22,21 +22,21 @@ public class SubdivideRewriter extends EventRewriter {
 		}
 
 		@Override
-		public boolean canApply(int index, Event event) {
+		public boolean canApply(int index, LEvent event) {
 			return true;
 		}
 
 		@Override
-		public Collection<Event> apply(int index, Event event) {
-			ArrayList<Event> newEvents = new ArrayList<Event>();
+		public Collection<LEvent> apply(int index, LEvent event) {
+			ArrayList<LEvent> newEvents = new ArrayList<LEvent>();
 
 			Interval length = event.getInterval();
 			int oldLevel = (int) (event.getValue() * (levels - 1));
 			double newValue = (oldLevel + 1.0) / levels;
 			Interval[] longShort = Interval.shortenBy(length, shortenAmt);
 
-			newEvents.add(new Event(longShort[0], newValue, event));
-			newEvents.add(new Event(longShort[1], 0.0, event));
+			newEvents.add(new LEvent(longShort[0], newValue, event));
+			newEvents.add(new LEvent(longShort[1], 0.0, event));
 			return newEvents;
 		}
 	}

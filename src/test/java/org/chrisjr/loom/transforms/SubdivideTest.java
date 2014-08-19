@@ -14,20 +14,20 @@ import org.junit.Test;
 public class SubdivideTest {
 	@Test
 	public void subdivideEvent() {
-		Event event = new Event(new Interval(0, 1), 1.0);
+		LEvent event = new LEvent(new Interval(0, 1), 1.0);
 		Rule subdivide = new SubdivideRewriter.SubdivideRule(new BigFraction(
 				125, 1000), 1);
-		Collection<Event> newEvents = subdivide.apply(event);
+		Collection<LEvent> newEvents = subdivide.apply(event);
 		assertThat(newEvents.size(), is(equalTo(2)));
 
-		Iterator<Event> it = newEvents.iterator();
-		Event event1 = it.next();
-		Event event2 = it.next();
+		Iterator<LEvent> it = newEvents.iterator();
+		LEvent event1 = it.next();
+		LEvent event2 = it.next();
 
 		assertThat(event1,
-				is(equalTo(new Event(new Interval(0.0, 0.875), 1.0))));
+				is(equalTo(new LEvent(new Interval(0.0, 0.875), 1.0))));
 		assertThat(event2,
-				is(equalTo(new Event(new Interval(0.875, 1.0), 0.0))));
+				is(equalTo(new LEvent(new Interval(0.875, 1.0), 0.0))));
 	}
 
 	@Test

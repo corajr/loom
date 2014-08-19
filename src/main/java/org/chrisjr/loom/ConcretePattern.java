@@ -66,7 +66,7 @@ public class ConcretePattern extends Pattern {
 
 	private Collection<Callable<?>> getAllCallablesInInterval(Interval interval) {
 		Collection<Callable<?>> callables = new ArrayList<Callable<?>>();
-		Collection<Event> activeEvents = this.events.getForInterval(interval);
+		Collection<LEvent> activeEvents = this.events.getForInterval(interval);
 		Collection<MappingType> myMappings = new ArrayList<MappingType>();
 
 		for (MappingType mapping : activeMappings) {
@@ -74,12 +74,12 @@ public class ConcretePattern extends Pattern {
 				myMappings.add(mapping);
 		}
 
-		for (Event e : activeEvents) {
+		for (LEvent e : activeEvents) {
 			double eventValue = transformValue(e.getValue());
 
 			for (MappingType mapping : myMappings) {
 				if (mapping == MappingType.CALLABLE_WITH_ARG) {
-					Event parentEvent = e.getParentEvent();
+					LEvent parentEvent = e.getParentEvent();
 					if (parentEvent != null) {
 						StatefulCallableMapping callMap = (StatefulCallableMapping) outputMappings
 								.get(MappingType.CALLABLE_WITH_ARG);
@@ -135,8 +135,8 @@ public class ConcretePattern extends Pattern {
 				e.printStackTrace();
 			}
 		} else if (this.events != null) {
-			Collection<Event> activeEvents = this.events.getForInterval(now);
-			for (Event e : activeEvents) {
+			Collection<LEvent> activeEvents = this.events.getForInterval(now);
+			for (LEvent e : activeEvents) {
 				value = e.getValue();
 			}
 		}

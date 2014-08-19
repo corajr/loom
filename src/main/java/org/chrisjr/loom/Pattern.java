@@ -143,7 +143,7 @@ public class Pattern implements Cloneable {
 	 * @param events
 	 *            the events to be added
 	 */
-	public Pattern(Loom loom, Event... events) {
+	public Pattern(Loom loom, LEvent... events) {
 		this(loom, EventCollection.fromEvents(events));
 	}
 
@@ -155,7 +155,7 @@ public class Pattern implements Cloneable {
 	 * @param events
 	 *            the events to be added
 	 */
-	public Pattern(Loom loom, Collection<Event> events) {
+	public Pattern(Loom loom, Collection<LEvent> events) {
 		this(loom, EventCollection.fromEvents(events));
 	}
 
@@ -456,7 +456,7 @@ public class Pattern implements Cloneable {
 	 * @return the current pattern with events added
 	 * @see #extend(Collection)
 	 */
-	public Pattern extend(Event... events) {
+	public Pattern extend(LEvent... events) {
 		return extend(Arrays.asList(events));
 	}
 
@@ -469,7 +469,7 @@ public class Pattern implements Cloneable {
 	 *            the events to be appended
 	 * @return the current pattern with events added
 	 */
-	public Pattern extend(Collection<Event> newEvents) {
+	public Pattern extend(Collection<LEvent> newEvents) {
 		EventCollection events = getEvents();
 		if (events != null) {
 			events.addAfterwards(newEvents);
@@ -489,7 +489,7 @@ public class Pattern implements Cloneable {
 	 *            the events to be added
 	 * @return the current pattern with events added
 	 */
-	public Pattern extend(double offset, Event... newEvents) {
+	public Pattern extend(double offset, LEvent... newEvents) {
 		return extend(IntervalMath.toFraction(offset), newEvents);
 	}
 
@@ -502,7 +502,7 @@ public class Pattern implements Cloneable {
 	 *            the events to be added
 	 * @return the current pattern with events added
 	 */
-	public Pattern extend(BigFraction offset, Event... newEvents) {
+	public Pattern extend(BigFraction offset, LEvent... newEvents) {
 		return extend(offset, Arrays.asList(newEvents));
 	}
 
@@ -515,7 +515,7 @@ public class Pattern implements Cloneable {
 	 *            the events to be added
 	 * @return the current pattern with events added
 	 */
-	public Pattern extend(BigFraction offset, Collection<Event> newEvents) {
+	public Pattern extend(BigFraction offset, Collection<LEvent> newEvents) {
 		EventCollection events = getEvents();
 		if (events == null) {
 			events = new EventCollection();
@@ -1374,7 +1374,7 @@ public class Pattern implements Cloneable {
 	public void addAllTurtleDrawCommands() {
 		turtle.clear();
 		EventCollection events = getEvents();
-		for (Event e : events.values()) {
+		for (LEvent e : events.values()) {
 			TurtleDrawCommand tdc = (TurtleDrawCommand) getAs(
 					MappingType.TURTLE_DRAW_COMMAND, e.getValue());
 			turtle.add(tdc);
@@ -1585,7 +1585,7 @@ public class Pattern implements Cloneable {
 	public Pattern every(BigFraction fraction, Callable<Void> callable) {
 		Interval interval = new Interval(BigFraction.ZERO, fraction);
 
-		Pattern trigger = new Pattern(null, new Event(interval, 1.0));
+		Pattern trigger = new Pattern(null, new LEvent(interval, 1.0));
 		trigger.loop();
 		trigger.setLoopInterval(interval);
 
@@ -1627,7 +1627,7 @@ public class Pattern implements Cloneable {
 	public Pattern after(BigFraction offset, Callable<Void> callable) {
 		Interval interval = new Interval(BigFraction.ZERO, offset);
 
-		Pattern trigger = new Pattern(null, new Event(interval, 1.0));
+		Pattern trigger = new Pattern(null, new LEvent(interval, 1.0));
 		trigger.setTimeMatch(this);
 
 		addSibling(trigger);
@@ -1639,7 +1639,7 @@ public class Pattern implements Cloneable {
 
 	/**
 	 * Adds events to the pattern at a certain time offset. Synonym for
-	 * {@link #extend(double, Event...)}.
+	 * {@link #extend(double, LEvent...)}.
 	 * 
 	 * @param offset
 	 *            the time offset
@@ -1647,13 +1647,13 @@ public class Pattern implements Cloneable {
 	 *            events to be added
 	 * @return the updated attern
 	 */
-	public Pattern after(double time, Event... eventsToAdd) {
+	public Pattern after(double time, LEvent... eventsToAdd) {
 		return after(IntervalMath.toFraction(time), eventsToAdd);
 	}
 
 	/**
 	 * Adds events to the pattern at a certain time offset. Synonym for
-	 * {@link #extend(BigFraction, Event...)}.
+	 * {@link #extend(BigFraction, LEvent...)}.
 	 * 
 	 * @param offset
 	 *            the time offset
@@ -1661,7 +1661,7 @@ public class Pattern implements Cloneable {
 	 *            events to be added
 	 * @return the updated pattern
 	 */
-	public Pattern after(BigFraction offset, Event... eventsToAdd) {
+	public Pattern after(BigFraction offset, LEvent... eventsToAdd) {
 		return extend(offset, eventsToAdd);
 	}
 
@@ -1678,11 +1678,11 @@ public class Pattern implements Cloneable {
 		if (this.getEvents() != null && other.getEvents() != null) {
 			thenPat = this;
 			after(getTotalInterval().getSize(), other.getEvents().values()
-					.toArray(new Event[] {}));
+					.toArray(new LEvent[] {}));
 		} else {
-			Pattern selector = new Pattern(loom, Event.seq(
-					new Event(this.getTotalInterval(), 0.5),
-					new Event(other.getTotalInterval(), 1.0)));
+			Pattern selector = new Pattern(loom, LEvent.seq(
+					new LEvent(this.getTotalInterval(), 0.5),
+					new LEvent(other.getTotalInterval(), 1.0)));
 
 			thenPat = selector.selectFrom(this,
 					other.delay(other.getTotalInterval().getSize()));

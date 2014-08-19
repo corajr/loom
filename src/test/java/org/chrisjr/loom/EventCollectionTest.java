@@ -34,15 +34,15 @@ public class EventCollectionTest {
 
 	@Test
 	public void canAddEvents() throws Exception {
-		Event e = new Event(new Interval(0, 1), 0);
+		LEvent e = new LEvent(new Interval(0, 1), 0);
 		events.add(e);
 		assertThat(events.size(), is(equalTo(1)));
 	}
 
 	@Test
 	public void overlapppingEventsCannotBeAdded() {
-		Event e = new Event(new Interval(0, 1), 0);
-		Event e1 = new Event(new Interval(0, 2), 0);
+		LEvent e = new LEvent(new Interval(0, 1), 0);
+		LEvent e1 = new LEvent(new Interval(0, 2), 0);
 		events.add(e);
 
 		thrown.expect(IllegalStateException.class);
@@ -77,11 +77,11 @@ public class EventCollectionTest {
 		assertThat(events.size(), is(equalTo(sample.length)));
 	}
 
-	private Event[] makeArray(int n) {
+	private LEvent[] makeArray(int n) {
 		Interval start = new Interval(0, 1);
-		Event[] sample = new Event[n];
+		LEvent[] sample = new LEvent[n];
 		for (int i = 0; i < n; i++) {
-			sample[i] = new Event(start, (double) i / n);
+			sample[i] = new LEvent(start, (double) i / n);
 			start = start.add(1);
 		}
 		return sample;
@@ -89,15 +89,15 @@ public class EventCollectionTest {
 
 	@Test
 	public void initializeFromEventArray() {
-		Event[] sample = makeArray(5);
+		LEvent[] sample = makeArray(5);
 		events = EventCollection.fromEvents(sample);
 		assertThat(events.size(), is(equalTo(sample.length)));
 	}
 
 	@Test
 	public void initializeFromCollection() {
-		Event[] sampleArray = makeArray(5);
-		Collection<Event> sample = Arrays.asList(sampleArray);
+		LEvent[] sampleArray = makeArray(5);
+		Collection<LEvent> sample = Arrays.asList(sampleArray);
 		events = EventCollection.fromEvents(sample);
 		assertThat(events.size(), is(equalTo(sample.size())));
 	}
@@ -115,15 +115,15 @@ public class EventCollectionTest {
 		events = EventCollection.fromString(sample);
 		Interval interval = new Interval(new BigFraction(1, 8),
 				new BigFraction(3, 8));
-		Collection<Event> results = events.getForInterval(interval);
+		Collection<LEvent> results = events.getForInterval(interval);
 		assertThat(results.size(), is(equalTo(2)));
 	}
 
 	@Test
 	public void getTotalInterval() {
 		events = new EventCollection();
-		events.add(new Event(new Interval(0, 1), 0.0));
-		events.add(new Event(new Interval(99, 100), 0.0));
+		events.add(new LEvent(new Interval(0, 1), 0.0));
+		events.add(new LEvent(new Interval(99, 100), 0.0));
 		assertThat(events.getTotalInterval(), is(equalTo(new Interval(0, 100))));
 	}
 }

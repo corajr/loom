@@ -2,7 +2,7 @@ package org.chrisjr.loom.transforms;
 
 import java.util.Collection;
 
-import org.chrisjr.loom.Event;
+import org.chrisjr.loom.LEvent;
 
 public abstract class Rule {
 	/**
@@ -14,9 +14,9 @@ public abstract class Rule {
 	 *            the input event
 	 * @return true if this rule can apply to event
 	 */
-	public abstract boolean canApply(int index, Event event);
+	public abstract boolean canApply(int index, LEvent event);
 
-	public boolean canApply(Event event) {
+	public boolean canApply(LEvent event) {
 		return canApply(-1, event);
 	}
 
@@ -29,9 +29,9 @@ public abstract class Rule {
 	 *            the input event
 	 * @return zero or more transformed events
 	 */
-	public abstract Collection<Event> apply(int index, Event event);
+	public abstract Collection<LEvent> apply(int index, LEvent event);
 
-	public Collection<Event> apply(Event event) {
+	public Collection<LEvent> apply(LEvent event) {
 		return apply(-1, event);
 	}
 }

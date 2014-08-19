@@ -16,7 +16,7 @@ public class MatchTest {
 		EventRewriter rewriter = new MatchRewriter(0.5);
 		EventCollection transformed = rewriter.apply(events);
 		assertThat(transformed.size(), is(equalTo(1)));
-		Event e = transformed.values().iterator().next();
+		LEvent e = transformed.values().iterator().next();
 		assertThat(e.getInterval().getStart().doubleValue(), is(equalTo(0.4)));
 		assertThat(e.getValue(), is(equalTo(0.5)));
 	}

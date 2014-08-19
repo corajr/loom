@@ -11,5 +11,5 @@ import org.chrisjr.loom.time.Interval;
  * @author chrisjr
  */
 public interface EventQueryable {
-	public Collection<Event> getForInterval(Interval interval);
+	public Collection<LEvent> getForInterval(Interval interval);
 }

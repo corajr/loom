@@ -15,16 +15,16 @@ import org.chrisjr.loom.util.MidiTools.Note;
  * 
  * @author chrisjr
  */
-public class Event {
+public class LEvent {
 	final private Interval interval;
 	final private double value;
-	final private Event parentEvent;
+	final private LEvent parentEvent;
 
-	public Event(Interval interval, double value) {
+	public LEvent(Interval interval, double value) {
 		this(interval, value, null);
 	}
 
-	public Event(Interval interval, double value, Event parentEvent) {
+	public LEvent(Interval interval, double value, LEvent parentEvent) {
 		this.interval = interval;
 		this.value = value;
 		this.parentEvent = parentEvent;
@@ -54,7 +54,7 @@ public class Event {
 	 * 
 	 * @return the parent event
 	 */
-	public Event getParentEvent() {
+	public LEvent getParentEvent() {
 		return parentEvent;
 	}
 
@@ -82,24 +82,24 @@ public class Event {
 		return startsBeforeOrAtQueryEnd && endsAfterQueryStart;
 	}
 
-	public static Event note(double duration, Note note) {
+	public static LEvent note(double duration, Note note) {
 		return evt(duration, ((double) note.ordinal()) / 127);
 	}
 
-	public static Event rest(double duration) {
+	public static LEvent rest(double duration) {
 		return evt(duration, 0.0);
 	}
 
-	public static Event rest(BigFraction duration) {
+	public static LEvent rest(BigFraction duration) {
 		return evt(duration, 0.0);
 	}
 
-	public static Event evt(double duration, double value) {
+	public static LEvent evt(double duration, double value) {
 		return evt(IntervalMath.toFraction(duration), value);
 	}
 
-	public static Event evt(BigFraction duration, double value) {
-		return new Event(Interval.zeroTo(duration), value);
+	public static LEvent evt(BigFraction duration, double value) {
+		return new LEvent(Interval.zeroTo(duration), value);
 	}
 
 	/**
@@ -112,21 +112,21 @@ public class Event {
 	 *            `duration`
 	 * @return the sequenced events
 	 */
-	public static Event[] seq(Event... events) {
-		ArrayList<Event> sequenced = new ArrayList<Event>();
+	public static LEvent[] seq(LEvent... events) {
+		ArrayList<LEvent> sequenced = new ArrayList<LEvent>();
 		// Event[] sequenced = new Event[events.length];
 		BigFraction offset = BigFraction.ZERO;
 		for (int i = 0; i < events.length; i++) {
-			Event oldEvent = events[i];
+			LEvent oldEvent = events[i];
 			Interval duration = oldEvent.getInterval();
 
 			if (oldEvent.getValue() != 0.0) {
-				sequenced.add(new Event(duration.add(offset), oldEvent
+				sequenced.add(new LEvent(duration.add(offset), oldEvent
 						.getValue()));
 			}
 			offset = offset.add(duration.getSize());
 		}
-		return sequenced.toArray(new Event[] {});
+		return sequenced.toArray(new LEvent[] {});
 	}
 
 	@Override
@@ -135,9 +135,9 @@ public class Event {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof Event))
+		if (!(obj instanceof LEvent))
 			return false;
-		Event other = (Event) obj;
+		LEvent other = (LEvent) obj;
 		if (interval == null) {
 			if (other.interval != null)
 				return false;

@@ -3,7 +3,7 @@ package org.chrisjr.loom.transforms;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.chrisjr.loom.Event;
+import org.chrisjr.loom.LEvent;
 
 /**
  * @author chrisjr
@@ -21,12 +21,12 @@ public class MatchRewriter extends EventRewriter {
 		}
 
 		@Override
-		public boolean canApply(int index, Event event) {
+		public boolean canApply(int index, LEvent event) {
 			return true;
 		}
 
 		@Override
-		public Collection<Event> apply(int index, Event event) {
+		public Collection<LEvent> apply(int index, LEvent event) {
 			if (Math.abs(event.getValue() - value) < EPSILON)
 				return Collections.singletonList(event);
 			else

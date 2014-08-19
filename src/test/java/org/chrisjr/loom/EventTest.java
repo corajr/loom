@@ -18,14 +18,14 @@ public class EventTest {
 		Interval queryInterval1 = new Interval(0.99, 1.0);
 		Interval queryInterval2 = new Interval(1.0, 1.01);
 
-		Event event = new Event(interval, 0.0);
+		LEvent event = new LEvent(interval, 0.0);
 		assertTrue(event.containedBy(queryInterval1));
 		assertFalse(event.containedBy(queryInterval2));
 	}
 
 	@Test
 	public void testNote() {
-		Event event = Event.note(2.0, Note.C4);
+		LEvent event = LEvent.note(2.0, Note.C4);
 		assertThat(event.getInterval().getSize().doubleValue(),
 				is(equalTo(2.0)));
 		assertThat(event.getValue(), is(closeTo(0.4724, EPSILON)));
@@ -33,17 +33,17 @@ public class EventTest {
 
 	@Test
 	public void testRest() {
-		Event event = Event.rest(2.0);
+		LEvent event = LEvent.rest(2.0);
 		assertThat(event.getInterval().getSize().doubleValue(),
 				is(equalTo(2.0)));
 	}
 
 	@Test
 	public void testSeq() {
-		Event[] eventsOld = new Event[] { Event.note(0.25, Note.C4),
-				Event.note(0.25, Note.E4), Event.note(0.25, Note.G4),
-				Event.rest(0.25) };
-		Event[] events = Event.seq(eventsOld);
+		LEvent[] eventsOld = new LEvent[] { LEvent.note(0.25, Note.C4),
+				LEvent.note(0.25, Note.E4), LEvent.note(0.25, Note.G4),
+				LEvent.rest(0.25) };
+		LEvent[] events = LEvent.seq(eventsOld);
 		for (int i = 1; i < events.length; i++) {
 			assertThat(events[i].getInterval().getStart(),
 					is(equalTo(events[i - 1].getInterval().getEnd())));

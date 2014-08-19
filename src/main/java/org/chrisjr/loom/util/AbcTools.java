@@ -88,7 +88,7 @@ public class AbcTools {
 						}
 						Interval interval = new Interval(start,
 								start.add(duration));
-						events.add(new Event(interval, midinote / 127.0));
+						events.add(new LEvent(interval, midinote / 127.0));
 					}
 
 					start = start.add(duration);

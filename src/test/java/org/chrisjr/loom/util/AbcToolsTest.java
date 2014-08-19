@@ -28,7 +28,7 @@ public class AbcToolsTest {
 		assertThat(events.size(), is(equalTo(8)));
 		assertThat(events.lastKey().doubleValue(), is(equalTo(1.75)));
 
-		Iterator<Event> it = events.values().iterator();
+		Iterator<LEvent> it = events.values().iterator();
 
 		IntMapping m = new IntMapping(0, 127);
 

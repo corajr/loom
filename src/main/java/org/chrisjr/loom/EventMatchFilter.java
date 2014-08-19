@@ -20,12 +20,12 @@ public class EventMatchFilter extends EventTransformer {
 	}
 
 	@Override
-	public Collection<Event> apply(Interval interval, Event e) {
+	public Collection<LEvent> apply(Interval interval, LEvent e) {
 		if (Math.abs(e.getValue() - matchValue) < EPSILON)
-			return Collections.singletonList(new Event(e.getInterval(), 1.0, e
+			return Collections.singletonList(new LEvent(e.getInterval(), 1.0, e
 					.getParentEvent()));
 		else
-			return Collections.singletonList(new Event(e.getInterval(), 0.0, e
+			return Collections.singletonList(new LEvent(e.getInterval(), 0.0, e
 					.getParentEvent()));
 	}
 }
