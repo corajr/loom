@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.midi.*;
 
@@ -58,7 +59,8 @@ public class Pattern implements Cloneable {
 	protected double valueOffset = 0.0;
 	protected double valueScale = 1.0;
 
-	private Integer transposition = null;
+	protected Integer transposition = null;
+	protected final AtomicInteger repeats = new AtomicInteger();
 
 	protected boolean isConcrete;
 
@@ -579,7 +581,7 @@ public class Pattern implements Cloneable {
 		if (useOffset)
 			interval = interval.add(getTimeOffset());
 
-		if (isLooping && positiveScale) {
+		if (repeats.get() > 0 || (isLooping && positiveScale)) {
 			interval = interval.modulo(loopInterval);
 		}
 
@@ -606,6 +608,18 @@ public class Pattern implements Cloneable {
 		if (getEvents() != null) {
 			setLoopInterval(getEvents().getTotalInterval());
 		}
+		return this;
+	}
+
+	public Pattern repeat(int n) {
+		repeats.set(n);
+		every(1, new Callable<Void>() {
+			@Override
+			public Void call() {
+				repeats.decrementAndGet();
+				return null;
+			}
+		});
 		return this;
 	}
 
@@ -1736,9 +1750,11 @@ public class Pattern implements Cloneable {
 		copy.isLooping = isLooping;
 		copy.loopInterval = loopInterval;
 		copy.parent = parent;
+		copy.repeats.set(repeats.get());
 		copy.timeMatch = timeMatch;
 		copy.timeOffset = timeOffset;
 		copy.timeScale = timeScale;
+		copy.transposition = transposition;
 		copy.useParentOffset = useParentOffset;
 		copy.valueOffset = valueOffset;
 		copy.valueScale = valueScale;
