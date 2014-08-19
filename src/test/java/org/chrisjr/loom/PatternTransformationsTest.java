@@ -295,8 +295,11 @@ public class PatternTransformationsTest {
 	@Test
 	public void repeat() {
 		pattern.repeat(4);
-		countBeats(pattern, 999, 4, 1999, 8, 2999, 12, 3999, 16, 5999, 16,
-				6999, 16);
+		countBeats(pattern, 999, 4, 1999, 8, 2999, 12, 3999, 16, 5999, 16);
+
+		pattern.repeat(3);
+
+		countBeats(pattern, 6999, 4, 7999, 8, 8999, 12, 9999, 12);
 	}
 
 	@Test

@@ -60,7 +60,9 @@ public class Pattern implements Cloneable {
 	protected double valueScale = 1.0;
 
 	protected Integer transposition = null;
+
 	protected final AtomicInteger repeats = new AtomicInteger();
+	private boolean repeaterSet = false;
 
 	protected boolean isConcrete;
 
@@ -611,15 +613,26 @@ public class Pattern implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Repeats this pattern a specified number of times.
+	 * 
+	 * @param n
+	 *            the number of times to loop
+	 * @return the current pattern
+	 */
 	public Pattern repeat(int n) {
 		repeats.set(n);
-		every(1, new Callable<Void>() {
-			@Override
-			public Void call() {
-				repeats.decrementAndGet();
-				return null;
-			}
-		});
+		if (!repeaterSet) {
+			every(1, new Callable<Void>() {
+				@Override
+				public Void call() {
+					if (repeats.get() > 0)
+						repeats.decrementAndGet();
+					return null;
+				}
+			});
+			repeaterSet = true;
+		}
 		return this;
 	}
 
