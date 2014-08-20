@@ -240,14 +240,14 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	@Test
 	public void asMidiPercussionRealtimeTest() throws InterruptedException {
-		loom = new Loom(null, new RealTimeScheduler(), 2000);
+		loom = new Loom(null, new RealTimeScheduler());
 		loom.setMidiBus(myBus);
 
 		pattern = Pattern.fromString(loom, "111011010110");
 		pattern.asMidiPercussion(Percussion.CLAVES).loop();
 
 		loom.play();
-		Thread.sleep(4000);
+		Thread.sleep(2000);
 
 		assertThat(notesOnReceived.get(), is(equalTo(16)));
 		assertThat(notesOffReceived.get(), is(equalTo(16)));
@@ -272,7 +272,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	@Override
 	public void midiMessage(MidiMessage message, long timeStamp) {
 		byte[] data = message.getMessage();
-		MidiTools.printMidi(message);
+		// MidiTools.printMidi(message);
 		if ((data[0] & 0xC0) == ShortMessage.PROGRAM_CHANGE) {
 			int channel = (data[0] & 0xFF) - 0xC0;
 			if (channel == 0)
