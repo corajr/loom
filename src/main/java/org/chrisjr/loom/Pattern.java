@@ -834,25 +834,11 @@ public class Pattern implements Cloneable {
 	 * @see MidiTools.Percussion
 	 */
 	public Pattern asMidiPercussion(MidiTools.Percussion sound) {
-		Pattern hits = new Pattern(null, this.getEvents());
-		hits.rewrite(new MatchRewriter(1.0));
+		this.rewrite(new MatchRewriter(1.0));
+		asMidiChannel(9);
+		asMidiNote(sound.getNote());
 
-		ConcretePattern commands = ConcretePattern.forEach(hits);
-		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
-
-		Pattern channels = (new Pattern(loom, 1.0)).asMidiChannel(9);
-		Pattern notes = (new Pattern(loom, 1.0))
-				.asMidiData1(0, sound.getNote());
-
-		ContinuousFunction velocityFunc = new ThresholdFunction(commands, 1.0);
-		Pattern velocities = (new Pattern(loom, velocityFunc)).asMidiData2(0,
-				127);
-
-		addChild(commands);
-		addChild(channels);
-		addChild(velocities);
-
-		return asMidiMessage(commands, channels, notes, velocities);
+		return asMidiMessage(this);
 	}
 
 	/**
