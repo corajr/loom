@@ -27,6 +27,43 @@ import themidibus.*;
 
 public class AsMidiMessageTest implements StandardMidiListener {
 
+	private static class Counter {
+		public AtomicInteger[] noteOns, noteOffs;
+
+		public Counter() {
+			noteOns = new AtomicInteger[128];
+			noteOffs = new AtomicInteger[128];
+			for (int i = 0; i < 128; i++) {
+				noteOns[i] = new AtomicInteger();
+				noteOffs[i] = new AtomicInteger();
+			}
+		}
+
+		public synchronized void on(int i) {
+			noteOns[i].incrementAndGet();
+		}
+
+		public synchronized void off(int i) {
+			noteOffs[i].incrementAndGet();
+		}
+
+		public void clear() {
+			for (int i = 0; i < 128; i++) {
+				noteOns[i].set(0);
+				noteOffs[i].set(0);
+			}
+		}
+
+		public void check(int value) {
+			for (int i = 0; i < 128; i++) {
+				assertThat(String.format("%d turned on %d times", i, value),
+						noteOns[i].get(), is(equalTo(value)));
+				assertThat(String.format("%d turned off %d times", i, value),
+						noteOffs[i].get(), is(equalTo(value)));
+			}
+		}
+	}
+
 	private Loom loom;
 	private NonRealTimeScheduler scheduler;
 	private Pattern pattern;
@@ -34,6 +71,8 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 	private final AtomicInteger notesOnReceived = new AtomicInteger();
 	private final AtomicInteger notesOffReceived = new AtomicInteger();
+	private final Counter counter = new Counter();
+
 	private CopyOnWriteArrayList<Integer> notes = null;
 	int program1ChangedTo = -1;
 	int program2ChangedTo = -1;
@@ -42,6 +81,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	public void setUp() throws Exception {
 		notesOnReceived.set(0);
 		notesOffReceived.set(0);
+		counter.clear();
 
 		scheduler = new NonRealTimeScheduler();
 		loom = new Loom(null, scheduler);
@@ -107,12 +147,12 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		pattern.loop();
 		pattern.asMidiPercussion(Percussion.CLAVES);
 
-		scheduler.setElapsedMillis(2998);
+		scheduler.setElapsedMillis(2999);
 
 		Thread.sleep(1);
 
 		assertThat(notesOnReceived.get(), is(equalTo(9)));
-		assertThat(notesOffReceived.get(), is(equalTo(8)));
+		assertThat(notesOffReceived.get(), is(equalTo(9)));
 
 	}
 
@@ -213,9 +253,26 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		assertThat(notesOffReceived.get(), is(equalTo(16)));
 	}
 
+	@Test
+	public void asMidiManyNotes() throws InterruptedException {
+		int n = 2;
+		LEvent[] events = new LEvent[128 * n];
+		double duration = 1.0 / events.length;
+		for (int i = 0; i < events.length; i++) {
+			events[i] = evt(duration, (i % 128) / 127.0);
+		}
+		pattern.extend(seq(events)).asMidiData1(0, 127).asMidiMessage(pattern);
+
+		scheduler.setElapsedMillis(1000);
+		Thread.sleep(10);
+
+		counter.check(n);
+	}
+
 	@Override
 	public void midiMessage(MidiMessage message, long timeStamp) {
 		byte[] data = message.getMessage();
+		MidiTools.printMidi(message);
 		if ((data[0] & 0xC0) == ShortMessage.PROGRAM_CHANGE) {
 			int channel = (data[0] & 0xFF) - 0xC0;
 			if (channel == 0)
@@ -223,10 +280,13 @@ public class AsMidiMessageTest implements StandardMidiListener {
 			else if (channel == 1)
 				program2ChangedTo = data[1] & 0xFF;
 		} else if ((data[0] & 0x90) == ShortMessage.NOTE_ON) {
+			counter.on(data[1] & 0xFF);
 			notesOnReceived.getAndIncrement();
 			if (notes != null)
 				notes.add(data[1] & 0xFF);
-		} else if ((data[0] & 0x80) == ShortMessage.NOTE_OFF)
+		} else if ((data[0] & 0x80) == ShortMessage.NOTE_OFF) {
+			counter.off(data[1] & 0xFF);
 			notesOffReceived.getAndIncrement();
+		}
 	}
 }
