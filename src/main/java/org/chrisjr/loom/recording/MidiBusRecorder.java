@@ -17,10 +17,12 @@ public class MidiBusRecorder implements IMidiBus {
 	Sequence sequence;
 	Track track;
 	File midiFile;
+	long period;
 
 	public MidiBusRecorder(Loom loom, File midiFile) {
 		this.loom = loom;
 		this.midiFile = midiFile;
+		period = loom.getPeriod();
 
 		try {
 			sequence = new Sequence(Sequence.PPQ, 250);
@@ -37,7 +39,7 @@ public class MidiBusRecorder implements IMidiBus {
 		Interval currentInterval = loom.getCurrentInterval();
 		BigFraction now = currentInterval.getStart().add(
 				currentInterval.getSize().divide(2));
-		long ticks = now.multiply(1000).longValue();
+		long ticks = now.multiply(period).longValue();
 
 		track.add(new MidiEvent(message, ticks));
 	}

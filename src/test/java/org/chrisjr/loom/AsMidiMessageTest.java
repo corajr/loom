@@ -79,14 +79,14 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 		scheduler.setElapsedMillis(250);
 
-		Thread.sleep(1);
+		Thread.sleep(2);
 
 		assertThat(notesOnReceived.get(), is(equalTo(2)));
 		assertThat(notesOffReceived.get(), is(equalTo(1)));
 
 		scheduler.setElapsedMillis(999);
 
-		Thread.sleep(1);
+		Thread.sleep(2);
 
 		assertThat(notesOnReceived.get(), is(equalTo(4)));
 		assertThat(notesOffReceived.get(), is(equalTo(4)));
@@ -107,12 +107,12 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		pattern.loop();
 		pattern.asMidi(Percussion.CLAVES);
 
-		scheduler.setElapsedMillis(2999);
+		scheduler.setElapsedMillis(2998);
 
 		Thread.sleep(1);
 
 		assertThat(notesOnReceived.get(), is(equalTo(9)));
-		assertThat(notesOffReceived.get(), is(equalTo(9)));
+		assertThat(notesOffReceived.get(), is(equalTo(8)));
 
 	}
 

@@ -20,11 +20,12 @@ public class MidiMessageMapping implements Mapping<MidiMessage> {
 	@Override
 	public MidiMessage call(double value) {
 		int command = patterns[0].asMidiCommand();
-
-		if (command == -1)
-			return null;
 		int channel = patterns[1].asMidiChannel();
 		int data1 = patterns[2].asMidiData1();
+
+		if (command == -1 || channel == -1 || data1 == -1)
+			return null;
+
 		int data2 = patterns.length > 3 && patterns[3] != null ? patterns[3]
 				.asMidiData2() : 0x00;
 
