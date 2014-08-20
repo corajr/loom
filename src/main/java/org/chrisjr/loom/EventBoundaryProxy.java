@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.chrisjr.loom.time.Interval;
+import org.chrisjr.loom.time.Scheduler;
 
 /**
  * Transforms each event of a parent EventQueryable into separate onset and
@@ -15,7 +16,6 @@ import org.chrisjr.loom.time.Interval;
  */
 public class EventBoundaryProxy extends EventTransformer {
 	final private Pattern timeScaler;
-	static final BigFraction DEFAULT_RESOLUTION = new BigFraction(1, 1000);
 
 	public static final double ONSET = 1.0;
 	public static final double RELEASE = 0.5;
@@ -29,7 +29,7 @@ public class EventBoundaryProxy extends EventTransformer {
 		if (timeScaler != null)
 			return timeScaler.getMinimumResolution();
 		else
-			return DEFAULT_RESOLUTION;
+			return Scheduler.DEFAULT_RESOLUTION;
 	}
 
 	@Override
