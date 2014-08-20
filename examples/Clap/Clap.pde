@@ -23,7 +23,7 @@ void setup() {
     patterns[i] = new Pattern(loom);
     patterns[i].extend("111011010110")
       .asColor(#000000, #FFFFFF)
-        .asMidi(i == 0 ? Percussion.HAND_CLAP : Percussion.CLAVES)
+        .asMidiPercussion(i == 0 ? Percussion.HAND_CLAP : Percussion.CLAVES)
           .loop();
   }
 

@@ -18,6 +18,7 @@ import org.chrisjr.loom.time.*;
 import org.chrisjr.loom.transforms.*;
 import org.chrisjr.loom.util.*;
 import org.chrisjr.loom.util.MidiTools.Instrument;
+import org.chrisjr.loom.util.MidiTools.Percussion;
 import org.chrisjr.loom.wrappers.OscP5Impl;
 
 import oscP5.*;
@@ -781,10 +782,10 @@ public class Pattern implements Cloneable {
 	 *            the name of a MIDI instrument to trigger as a string
 	 * @return the updated pattern
 	 * @see Instrument
-	 * @see #asMidi(Instrument)
+	 * @see #asMidiInstrument(Instrument)
 	 */
-	public Pattern asMidi(String instrument) {
-		return asMidi(Instrument.valueOf(instrument));
+	public Pattern asMidiInstrument(String instrument) {
+		return asMidiInstrument(Instrument.valueOf(instrument));
 	}
 
 	/**
@@ -796,7 +797,7 @@ public class Pattern implements Cloneable {
 	 * @return the updated pattern
 	 * @see Instrument
 	 */
-	public Pattern asMidi(Instrument instrument) {
+	public Pattern asMidiInstrument(Instrument instrument) {
 		int midiInstrument = instrument.ordinal();
 
 		if (!hasMapping(MappingType.MIDI_CHANNEL))
@@ -820,7 +821,19 @@ public class Pattern implements Cloneable {
 	 * @return the updated pattern
 	 * @see MidiTools.Percussion
 	 */
-	public Pattern asMidi(MidiTools.Percussion sound) {
+	public Pattern asMidiPercussion(String sound) {
+		return asMidiPercussion(Percussion.valueOf(sound));
+	}
+
+	/**
+	 * Set a mapping from the pattern's events to a percussive sound.
+	 * 
+	 * @param sound
+	 *            a MIDI percussion instrument
+	 * @return the updated pattern
+	 * @see MidiTools.Percussion
+	 */
+	public Pattern asMidiPercussion(MidiTools.Percussion sound) {
 		Pattern hits = new Pattern(null, this.getEvents());
 		hits.rewrite(new MatchRewriter(1.0));
 

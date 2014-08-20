@@ -105,7 +105,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	public void asMidiPercussionTest() throws InterruptedException {
 		pattern.extend("1101");
 		pattern.loop();
-		pattern.asMidi(Percussion.CLAVES);
+		pattern.asMidiPercussion(Percussion.CLAVES);
 
 		scheduler.setElapsedMillis(2998);
 
@@ -164,7 +164,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	public void asMidiInstrumentTest() throws InterruptedException {
 		pattern.extend("0242");
 		pattern.asMidiNote(60, 64, 67);
-		pattern.asMidi("ACOUSTIC_GRAND_PIANO");
+		pattern.asMidiInstrument("ACOUSTIC_GRAND_PIANO");
 
 		scheduler.setElapsedMillis(1000);
 
@@ -182,11 +182,11 @@ public class AsMidiMessageTest implements StandardMidiListener {
 
 		pattern.extend("0242");
 		pattern.asMidiNote(60, 64, 67);
-		pattern.asMidi(instOne);
+		pattern.asMidiInstrument(instOne);
 
 		Pattern pattern2 = Pattern.fromString(loom, "0242");
 		pattern2.asMidiNote(60, 64, 67);
-		pattern2.asMidiChannel(1).asMidi(instTwo);
+		pattern2.asMidiChannel(1).asMidiInstrument(instTwo);
 
 		scheduler.setElapsedMillis(1000);
 
@@ -204,7 +204,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		loom.setMidiBus(myBus);
 
 		pattern = Pattern.fromString(loom, "111011010110");
-		pattern.asMidi(Percussion.CLAVES).loop();
+		pattern.asMidiPercussion(Percussion.CLAVES).loop();
 
 		loom.play();
 		Thread.sleep(4000);
