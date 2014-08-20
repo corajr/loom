@@ -96,7 +96,7 @@ public class DiscretePatternTest {
 		pattern.extend("0001");
 		pattern.repeat(4).after(10, LEvent.evt(0.25, 0.5));
 
-		checkValues(pattern, 751, 1.0, 1751, 1.0, 2751, 1.0, 3751, 1.0, 4000,
+		checkValues(pattern, 751, 1.0, 1751, 1.0, 2751, 1.0, 3751, 1.0, 4001,
 				0.0, 4751, 0.0, 10001, 0.5, 10251, 0.0);
 	}
 

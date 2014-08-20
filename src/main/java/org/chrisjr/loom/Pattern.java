@@ -667,17 +667,30 @@ public class Pattern implements Cloneable {
 	 * @return the current pattern
 	 */
 	public Pattern repeat(int n) {
-		repeats.set(n);
-		if (!repeaterSet) {
-			every(loopInterval.getSize(), new Callable<Void>() {
-				@Override
-				public Void call() {
-					if (repeats.get() > 0)
-						repeats.decrementAndGet();
-					return null;
-				}
-			});
-			repeaterSet = true;
+		if (getEvents() != null) {
+			EventCollection events = getEvents();
+			Collection<LEvent> eventsToRepeat = events.values();
+
+			EventCollection newEvents = new EventCollection();
+
+			for (int i = 1; i < n; i++) {
+				newEvents.addAfterwards(eventsToRepeat);
+			}
+
+			events.addAfterwards(newEvents.values());
+		} else {
+			repeats.set(n);
+			if (!repeaterSet) {
+				every(loopInterval.getSize(), new Callable<Void>() {
+					@Override
+					public Void call() {
+						if (repeats.get() > 0)
+							repeats.decrementAndGet();
+						return null;
+					}
+				});
+				repeaterSet = true;
+			}
 		}
 
 		return this;
@@ -910,10 +923,6 @@ public class Pattern implements Cloneable {
 		Integer result = (Integer) getAs(MappingType.MIDI_DATA1);
 		int outcome = getIntOrElse(result, Integer.MIN_VALUE)
 				+ getIntOrElse(transposition, 0);
-		if (outcome < 0)
-			outcome = 0;
-		if (outcome > 127)
-			outcome = 127;
 		return outcome;
 	}
 
@@ -924,14 +933,13 @@ public class Pattern implements Cloneable {
 	 * 
 	 * Example: asMidiNote(60, 64, 67) will map the values 0.0, 0.5, and 1.0 to
 	 * the notes middle C, E, and G. Other values will be floored (e.g. 0.25 =>
-	 * 60). Input is sorted, so asMidiNote(67, 64, 60) has the same effect.
+	 * 60).
 	 * 
 	 * @param values
 	 *            the notes to be mapped to
 	 * @return the current pattern
 	 */
 	public Pattern asMidiNote(Integer... values) {
-		Arrays.sort(values);
 		putMapping(MappingType.MIDI_DATA1, new ObjectMapping<Integer>(values));
 		return this;
 	}
