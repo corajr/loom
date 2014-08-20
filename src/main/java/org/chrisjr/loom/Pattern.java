@@ -1810,7 +1810,8 @@ public class Pattern implements Cloneable {
 	// Time shifts
 
 	public BigFraction getMinimumResolution() {
-		return Scheduler.minimumResolution.multiply(getTimeScale().abs());
+		return (loom != null ? loom.getMinimumResolution()
+				: Scheduler.DEFAULT_RESOLUTION).multiply(getTimeScale().abs());
 	}
 
 	public BigFraction getTimeOffset() {

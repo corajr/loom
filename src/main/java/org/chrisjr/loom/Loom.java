@@ -238,6 +238,10 @@ public class Loom {
 		scheduler.setPeriod(millis);
 	}
 
+	public BigFraction getMinimumResolution() {
+		return scheduler.getMinimumResolution();
+	}
+
 	public void midiMessage(MidiMessage theMidiMessage) {
 		// MidiTools.printMidi(theMidiMessage);
 	}

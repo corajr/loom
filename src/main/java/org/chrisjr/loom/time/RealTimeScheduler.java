@@ -27,15 +27,15 @@ public class RealTimeScheduler extends Scheduler {
 			}
 
 			int waitInNanos = (int) (periodMillis
-					* minimumResolution.doubleValue() * 500000);
+					* getMinimumResolution().doubleValue() * 500000);
 			if (waitInNanos > 999999)
 				waitInNanos = 500000;
 
-			BigFraction lastUpdated = getNow().subtract(halfMinimum);
+			BigFraction lastUpdated = getNow().subtract(getHalfMinimum());
 			BigFraction nowFrac;
 			while (true) {
 				try {
-					nowFrac = getNow().add(halfMinimum);
+					nowFrac = getNow().add(getHalfMinimum());
 					updateFor(new Interval(lastUpdated, nowFrac));
 					lastUpdated = nowFrac;
 					Thread.sleep(0, waitInNanos);

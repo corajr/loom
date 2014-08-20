@@ -43,8 +43,11 @@ public abstract class Scheduler {
 	/**
 	 * One millisecond at standard playback speed.
 	 */
-	public static final BigFraction minimumResolution = new BigFraction(1, 1000);
-	public static final BigFraction halfMinimum = minimumResolution.divide(2);
+
+	public static final BigFraction DEFAULT_RESOLUTION = new BigFraction(1,
+			1000);
+
+	private BigFraction minimumResolution = DEFAULT_RESOLUTION;
 
 	/**
 	 * Implementations of the Scheduler class must provide the present time when
@@ -78,7 +81,8 @@ public abstract class Scheduler {
 	 */
 	public Interval getCurrentInterval() {
 		BigFraction now = getNow();
-		return new Interval(now.subtract(halfMinimum), now.add(halfMinimum));
+		return new Interval(now.subtract(getHalfMinimum()),
+				now.add(getHalfMinimum()));
 	}
 
 	/**
@@ -107,6 +111,14 @@ public abstract class Scheduler {
 		return periodMillis;
 	}
 
+	public BigFraction getMinimumResolution() {
+		return minimumResolution;
+	}
+
+	public BigFraction getHalfMinimum() {
+		return minimumResolution.divide(2);
+	}
+
 	/**
 	 * Sets the period of the scheduler.
 	 * 
@@ -115,6 +127,7 @@ public abstract class Scheduler {
 	 */
 	public void setPeriod(long periodMillis) {
 		this.periodMillis = periodMillis;
+		this.minimumResolution = new BigFraction(1, periodMillis);
 	}
 
 	/**
