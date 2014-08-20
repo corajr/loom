@@ -10,18 +10,11 @@ import org.apache.commons.math3.fraction.BigFraction;
  */
 public class RealTimeScheduler extends Scheduler {
 	class Timer implements Runnable {
-		public long getElapsedMillis() {
-			return state == State.PAUSED ? elapsedMillis : System
-					.currentTimeMillis() - startMillis;
-		}
-
 		@Override
 		public void run() {
-			long now = System.currentTimeMillis();
-
 			if (state == State.PAUSED) {
 				// resume counting where we left off
-				startMillis = now - elapsedMillis;
+				startMillis = System.currentTimeMillis() - elapsedMillis;
 			} else {
 				startMillis = System.currentTimeMillis();
 			}
@@ -35,9 +28,13 @@ public class RealTimeScheduler extends Scheduler {
 			BigFraction nowFrac;
 			while (true) {
 				try {
+					elapsedMillis = System.currentTimeMillis() - startMillis;
+
 					nowFrac = getNow().add(getHalfMinimum());
 					updateFor(new Interval(lastUpdated, nowFrac));
+
 					lastUpdated = nowFrac;
+
 					Thread.sleep(0, waitInNanos);
 				} catch (InterruptedException e) {
 					break;
@@ -60,7 +57,7 @@ public class RealTimeScheduler extends Scheduler {
 
 	@Override
 	public long getElapsedMillis() {
-		return timer.getElapsedMillis();
+		return elapsedMillis;
 	}
 
 	@Override
