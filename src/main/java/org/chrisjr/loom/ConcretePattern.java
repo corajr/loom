@@ -185,7 +185,8 @@ public class ConcretePattern extends Pattern {
 			throw new IllegalArgumentException(
 					"Other pattern in forEach is not made of discrete events!");
 
-		EventQueryable proxy = new EventBoundaryProxy(other, other.getEvents());
+		EventQueryable proxy = new EventBoundaryProxy(other,
+				other.getConcretePattern().events);
 
 		if (boundaryType != null)
 			proxy = new EventMatchFilter(proxy, boundaryType);

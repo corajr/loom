@@ -989,7 +989,8 @@ public class Pattern implements Cloneable {
 	 * @see #asMidiMessage(Pattern, Pattern, Pattern, Pattern)
 	 */
 	public Pattern asMidiMessage(Pattern notes) {
-		ConcretePattern commands = ConcretePattern.forEach(notes);
+		Pattern commands = new Pattern(null);
+		commands.addChild(ConcretePattern.forEach(notes));
 		commands.asMidiCommand(-1, ShortMessage.NOTE_OFF, ShortMessage.NOTE_ON);
 
 		addChild(commands);
@@ -1053,8 +1054,7 @@ public class Pattern implements Cloneable {
 			}
 		};
 
-		commands.asStatefulCallable(CallableOnChange.fromCallables(sendMidi,
-				sendMidi));
+		commands.onOnset(sendMidi);
 
 		return this;
 	}
@@ -1488,7 +1488,7 @@ public class Pattern implements Cloneable {
 	}
 
 	public boolean isDiscretePattern() {
-		return getEvents() != null;
+		return getConcretePattern().events != null;
 	}
 
 	/**
@@ -1745,10 +1745,6 @@ public class Pattern implements Cloneable {
 	}
 
 	private Pattern onBoundary(double boundaryType, Callable<Void> callable) {
-		if (!isDiscretePattern())
-			throw new IllegalArgumentException(
-					"Pattern is not made of discrete events!");
-
 		ConcretePattern concrete = ConcretePattern.forEach(this, boundaryType);
 		concrete.asStatefulCallable(CallableOnChange.fromCallables(callable));
 
