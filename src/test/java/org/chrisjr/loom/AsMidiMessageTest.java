@@ -239,6 +239,22 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	}
 
 	@Test
+	public void asMidiInstrumentRealtimeTest() throws InterruptedException {
+		loom = new Loom(null, new RealTimeScheduler());
+		loom.setMidiBus(myBus);
+
+		pattern = Pattern.fromString(loom, "0242").repeat(2);
+		pattern.asMidiNote(60, 64, 67).asMidiInstrument(
+				Instrument.ACOUSTIC_GRAND_PIANO);
+
+		loom.play();
+		Thread.sleep(2002);
+
+		assertThat(notesOnReceived.get(), is(equalTo(8)));
+		assertThat(notesOffReceived.get(), is(equalTo(8)));
+	}
+
+	@Test
 	public void asMidiPercussionRealtimeTest() throws InterruptedException {
 		loom = new Loom(null, new RealTimeScheduler());
 		loom.setMidiBus(myBus);
