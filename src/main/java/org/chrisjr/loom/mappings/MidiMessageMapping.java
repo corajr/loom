@@ -23,7 +23,7 @@ public class MidiMessageMapping implements Mapping<MidiMessage> {
 		int channel = patterns[1].asMidiChannel();
 		int data1 = patterns[2].asMidiData1();
 
-		if (command == -1 || channel == -1 || data1 == -1)
+		if (command < 0 || channel < 0 || data1 < 0)
 			return null;
 
 		int data2 = patterns.length > 3 && patterns[3] != null ? patterns[3]
