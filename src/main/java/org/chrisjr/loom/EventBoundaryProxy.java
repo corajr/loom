@@ -37,7 +37,7 @@ public class EventBoundaryProxy extends EventTransformer {
 		Collection<LEvent> newEvents = new ArrayList<LEvent>();
 
 		Interval eInterval = e.getInterval();
-		BigFraction instant = eInterval.getSize().divide(10);
+		BigFraction instant = eInterval.getSize().divide(2);
 		if (instant.compareTo(getMinimumResolution()) > 0) {
 			instant = getMinimumResolution();
 		}
