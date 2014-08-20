@@ -165,11 +165,30 @@ public class ConcretePattern extends Pattern {
 	 * @see EventBoundaryProxy
 	 */
 	public static ConcretePattern forEach(Pattern other) {
+		return forEach(other, null);
+	}
+
+	/**
+	 * Generate a pattern of note on or note off events from the events of
+	 * another pattern, depending on the boundary type desired.
+	 * 
+	 * @param other
+	 *            the pattern to get events from
+	 * @param boundaryType
+	 *            the boundary type (note on == 1.0, note off == 0.5)
+	 * @return a new pattern
+	 * @see EventBoundaryProxy
+	 */
+
+	public static ConcretePattern forEach(Pattern other, Double boundaryType) {
 		if (!other.isDiscretePattern())
 			throw new IllegalArgumentException(
 					"Other pattern in forEach is not made of discrete events!");
 
 		EventQueryable proxy = new EventBoundaryProxy(other, other.getEvents());
+
+		if (boundaryType != null)
+			proxy = new EventMatchFilter(proxy, boundaryType);
 
 		return new ConcretePattern(other.loom, proxy);
 	}

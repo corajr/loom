@@ -1763,11 +1763,7 @@ public class Pattern implements Cloneable {
 			throw new IllegalArgumentException(
 					"Pattern is not made of discrete events!");
 
-		EventQueryable proxy = new EventBoundaryProxy(this, this.getEvents());
-
-		ConcretePattern concrete = new ConcretePattern(loom,
-				new EventMatchFilter(proxy, boundaryType));
-
+		ConcretePattern concrete = ConcretePattern.forEach(this, boundaryType);
 		concrete.asStatefulCallable(CallableOnChange.fromCallables(callable));
 
 		concrete.useParentOffset = false;
@@ -1786,10 +1782,7 @@ public class Pattern implements Cloneable {
 	}
 
 	private Pattern onBoundary(double boundaryType, Callable<Void>... callables) {
-		EventQueryable proxy = new EventBoundaryProxy(this, this.getEvents());
-
-		ConcretePattern concrete = new ConcretePattern(loom,
-				new EventMatchFilter(proxy, boundaryType));
+		ConcretePattern concrete = ConcretePattern.forEach(this, boundaryType);
 
 		Mapping<StatefulCallable> callableMapping = new StatefulCallableMapping(
 				CallableOnChange.fromCallables(callables));
