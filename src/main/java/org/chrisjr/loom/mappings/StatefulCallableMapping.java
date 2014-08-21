@@ -1,5 +1,6 @@
 package org.chrisjr.loom.mappings;
 
+import org.chrisjr.loom.LEvent;
 import org.chrisjr.loom.util.StatefulCallable;
 
 /**
@@ -13,7 +14,8 @@ import org.chrisjr.loom.util.StatefulCallable;
  * @see org.chrisjr.loom.Pattern#asTurtleDrawCommand(TurtleDrawCommand...)
  * @author chrisjr
  */
-public class StatefulCallableMapping extends ObjectMapping<StatefulCallable> {
+public class StatefulCallableMapping extends ObjectMapping<StatefulCallable>
+		implements EventMapping<StatefulCallable> {
 
 	public StatefulCallableMapping(StatefulCallable... objects) {
 		this.objects = objects;
@@ -21,6 +23,16 @@ public class StatefulCallableMapping extends ObjectMapping<StatefulCallable> {
 
 	public StatefulCallable getNoop() {
 		return objects[0];
+	}
+
+	@Override
+	public StatefulCallable call(LEvent event) {
+		LEvent parentEvent = event.getParentEvent();
+		if (parentEvent == null)
+			return null;
+
+		return event.getValue() == 1.0 ? call(parentEvent.getValue())
+				: getNoop();
 	}
 
 	@Override

@@ -207,7 +207,7 @@ public class DrawCommandsTest {
 
 		testApp.commands.clear();
 		loom.play();
-		Thread.sleep(1001);
+		Thread.sleep(1010);
 		loom.stop();
 
 		loom.draw();
