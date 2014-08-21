@@ -17,15 +17,13 @@ public class MidiBusRecorder implements IMidiBus {
 	Sequence sequence;
 	Track track;
 	File midiFile;
-	long period;
 
 	public MidiBusRecorder(Loom loom, File midiFile) {
 		this.loom = loom;
 		this.midiFile = midiFile;
-		period = loom.getPeriod();
 
 		try {
-			sequence = new Sequence(Sequence.PPQ, 250);
+			sequence = new Sequence(Sequence.PPQ, 500);
 		} catch (InvalidMidiDataException e) {
 			// we define the division type above, so this should never arise
 			e.printStackTrace();
@@ -39,7 +37,7 @@ public class MidiBusRecorder implements IMidiBus {
 		Interval currentInterval = loom.getCurrentInterval();
 		BigFraction now = currentInterval.getStart().add(
 				currentInterval.getSize().divide(2));
-		long ticks = now.multiply(period).longValue();
+		long ticks = now.multiply(loom.getPeriod()).longValue();
 
 		track.add(new MidiEvent(message, ticks));
 	}

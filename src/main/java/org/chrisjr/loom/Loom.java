@@ -214,19 +214,19 @@ public class Loom {
 		}
 	}
 
-	private static int periodToBpm(long period) {
-		return (int) (240000.0 / period);
+	private static double periodToBpm(long period) {
+		return 240000.0 / period;
 	}
 
-	private static long bpmToPeriod(int bpm) {
+	private static long bpmToPeriod(double bpm) {
 		return (long) (240000.0 / bpm);
 	}
 
-	public int getBPM() {
+	public double getBPM() {
 		return periodToBpm(getPeriod());
 	}
 
-	public void setBPM(int bpm) {
+	public void setBPM(double bpm) {
 		setPeriod(bpmToPeriod(bpm));
 	}
 
