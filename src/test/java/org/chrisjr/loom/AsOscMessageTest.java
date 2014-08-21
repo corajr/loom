@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import netP5.NetAddress;
 
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.time.RealTimeScheduler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -19,6 +20,7 @@ import oscP5.OscP5;
 
 public class AsOscMessageTest {
 	private OscP5 oscP5;
+	private OscP5 loomOscP5;
 	private final NetAddress myRemoteLocation = new NetAddress("127.0.0.1",
 			12001);
 
@@ -36,7 +38,8 @@ public class AsOscMessageTest {
 		loom = new Loom(null, scheduler);
 		pattern = new Pattern(loom);
 
-		loom.setOscP5(new OscP5(loom, 12000));
+		loomOscP5 = new OscP5(loom, 12000);
+		loom.setOscP5(loomOscP5);
 		loom.play();
 	}
 
@@ -85,6 +88,22 @@ public class AsOscMessageTest {
 		pattern.asOscBundle(myRemoteLocation, messagePat);
 
 		scheduler.setElapsedMillis(1001);
+		waitForEvents(4, 200);
+	}
+
+	@Test
+	public void receiveRT() throws InterruptedException {
+		loom = new Loom(null, new RealTimeScheduler());
+		loom.setOscP5(loomOscP5);
+		pattern = Pattern.fromString(loom, "1101");
+
+		Pattern messagePat = new Pattern(loom);
+		messagePat.asOscMessage("/test", 123);
+
+		pattern.asOscBundle(myRemoteLocation, messagePat);
+
+		loom.play();
+		Thread.sleep(1001);
 		waitForEvents(4, 200);
 	}
 }
