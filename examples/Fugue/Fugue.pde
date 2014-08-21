@@ -19,15 +19,19 @@ void setup() {
 
   loom = new Loom(this, 104);
   pattern = Pattern.fromABC(loom, fugueSubject);
-  pattern.asColor(#000100, #00FF00).asMidiMessage(pattern);
+  pattern.asColor(#000100, #00FF00);
 
   pattern2 = pattern.clone().transpose(7).delay(3);
-  pattern2.asColor(#010000, #FF0000).asMidiMessage(pattern2);
+  pattern2.asColor(#010000, #FF0000);
 
   pattern3 = Pattern.fromABC(loom, counterSubject);
   pattern3.delay(3.125);
-  pattern3.asColor(#000001, #0000FF).asMidiMessage(pattern3);
-
+  pattern3.asColor(#000001, #0000FF);
+  
+  pattern.asMidiMessage(pattern);
+  pattern2.asMidiMessage(pattern2);
+  pattern3.asMidiMessage(pattern3);
+  
   duration = pattern2.getTotalInterval();
 
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
