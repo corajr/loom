@@ -867,7 +867,12 @@ public class Pattern implements Cloneable {
 	 * @return the current MIDI command
 	 */
 	public int asMidiCommand() {
-		Integer result = (Integer) getAs(MappingType.MIDI_COMMAND);
+		return asMidiCommand(getCurrentInterval());
+	}
+
+	public int asMidiCommand(Interval now) {
+		Integer result = (Integer) getAs(MappingType.MIDI_COMMAND,
+				getValueFor(now));
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
@@ -893,7 +898,12 @@ public class Pattern implements Cloneable {
 	 * @return the current MIDI channel
 	 */
 	public int asMidiChannel() {
-		Integer result = (Integer) getAs(MappingType.MIDI_CHANNEL);
+		return asMidiChannel(getCurrentInterval());
+	}
+
+	public int asMidiChannel(Interval now) {
+		Integer result = (Integer) getAs(MappingType.MIDI_CHANNEL,
+				getValueFor(now));
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
@@ -919,7 +929,12 @@ public class Pattern implements Cloneable {
 	 * @return the current MIDI data 1 value
 	 */
 	public int asMidiData1() {
-		Integer result = (Integer) getAs(MappingType.MIDI_DATA1);
+		return asMidiData1(getCurrentInterval());
+	}
+
+	public int asMidiData1(Interval now) {
+		Integer result = (Integer) getAs(MappingType.MIDI_DATA1,
+				getValueFor(now));
 		int outcome = getIntOrElse(result, Integer.MIN_VALUE)
 				+ getIntOrElse(transposition, 0);
 		return outcome;
@@ -973,7 +988,12 @@ public class Pattern implements Cloneable {
 	 * @return the current MIDI data 2 value
 	 */
 	public int asMidiData2() {
-		Integer result = (Integer) getAs(MappingType.MIDI_DATA2);
+		return asMidiData2(getCurrentInterval());
+	}
+
+	public int asMidiData2(Interval now) {
+		Integer result = (Integer) getAs(MappingType.MIDI_DATA2,
+				getValueFor(now));
 		return getIntOrElse(result, Integer.MIN_VALUE);
 	}
 
@@ -1039,33 +1059,15 @@ public class Pattern implements Cloneable {
 	public Pattern asMidiMessage(Pattern commands, Pattern channels,
 			Pattern notes, Pattern velocities) {
 
-		putMapping(MappingType.MIDI_MESSAGE, new MidiMessageMapping(commands,
-				channels, notes, velocities));
-
-		final Pattern original = this;
-
-		Callable<Void> sendMidi = new Callable<Void>() {
-			@Override
-			public Void call() {
-				MidiMessage mess = original.asMidiMessage();
-				if (mess != null)
-					loom.midiBusWrapper.get().sendMessage(mess);
-				return null;
-			}
-		};
-
-		commands.onOnset(sendMidi);
+		Pattern onsets = new Pattern(null);
+		onsets.addChild(ConcretePattern.forEach(commands,
+				EventBoundaryProxy.ONSET));
+		commands.addChild(onsets);
+		onsets.putMapping(MappingType.CALLABLE_WITH_ARG,
+				new MidiMessageMapping(loom.midiBusWrapper, commands, channels,
+						notes, velocities));
 
 		return this;
-	}
-
-	/**
-	 * Returns the current MIDI message from this pattern.
-	 * 
-	 * @return the current MIDI message
-	 */
-	public MidiMessage asMidiMessage() {
-		return (MidiMessage) getAs(MappingType.MIDI_MESSAGE);
 	}
 
 	/**

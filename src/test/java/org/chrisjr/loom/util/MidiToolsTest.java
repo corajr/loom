@@ -93,4 +93,12 @@ public class MidiToolsTest {
 				.ordinal();
 		assertThat(piano, is(equalTo(0)));
 	}
+
+	@Test
+	public void hashMessage() throws InvalidMidiDataException {
+		ShortMessage message2 = new ShortMessage();
+		message2.setMessage(144, 0, 60, 127);
+		assertThat(message, is(not(equalTo(message2))));
+		assertThat(MidiTools.hash(message), is(MidiTools.hash(message2)));
+	}
 }

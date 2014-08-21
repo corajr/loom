@@ -55,6 +55,17 @@ public class MidiTools {
 	}
 
 	/**
+	 * Get a hash code for a message that allows to test for equality.
+	 * 
+	 * @param message
+	 *            the message to be hashed
+	 * @return a hash code for the message
+	 */
+	public static int hash(ShortMessage message) {
+		return Arrays.hashCode(message.getMessage());
+	}
+
+	/**
 	 * The names of all General MIDI instruments.
 	 * 
 	 */
