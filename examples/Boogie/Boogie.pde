@@ -2,40 +2,36 @@ import java.util.Map;
 
 import org.chrisjr.loom.*;
 import org.chrisjr.loom.time.*;
-import org.chrisjr.loom.wrappers.*;
-import static org.chrisjr.loom.Event.*;
+import org.chrisjr.loom.transforms.*;
+import static org.chrisjr.loom.LEvent.*;
 
 import themidibus.*;
 
 MidiBus myBus;
 
-int seed = 0;
+int seed = 2;
 boolean recording = false;
-
-Integer[] verticalPitches = new Integer[] { 57, 60, 64};
-Integer[] horizontalPitches = new Integer[] { 62, 67, 71};
 
 Loom loom;
 NonRealTimeScheduler scheduler;
 
-int desiredFPS = 24;
+int desiredFPS = 30;
 
 float millis = 0;
 float millisPerFrame = 1000.0 / desiredFPS;
 
+Interval singleInterval = new Interval(0, 1);
 HashMap<Integer, Pattern> vertical, horizontal;
 
-int roadWidth = 10;
-color yellow = #FFD300;
-color gray = #DDDDDD;
-color blue = #00499A;
-color red = #CA0000;
+int repeats = 2;
+
+int roadWidth = 12;
 
 float mu = 0.0;
-float sd = 1.0;
+float sd = 1.2;
 
-org.chrisjr.loom.Event[] makeEvents() {
-  int numEvents = 20;
+LEvent[] makeEvents() {
+  int numEvents = 8;
   int[] durations = new int[numEvents];
   float totalDuration = 0.0;
 
@@ -45,11 +41,11 @@ org.chrisjr.loom.Event[] makeEvents() {
     totalDuration += duration;
   }
 
-  org.chrisjr.loom.Event[] events = new org.chrisjr.loom.Event[numEvents];
+  LEvent[] events = new LEvent[numEvents];
 
   for (int i = 0; i < numEvents; i++) {
     float duration = durations[i] / totalDuration;
-    float value = duration > 0.1 ? 0.0 : round(random(1, 3)) / 3.0; 
+    float value = duration > 0.2 ? 0.0 : round(random(1, 3)) / 4.0; 
     events[i] = evt(duration, value);
   }
 
@@ -57,39 +53,57 @@ org.chrisjr.loom.Event[] makeEvents() {
 }
 
 void setup() {
-  size(600, 600);
+  size(720, 720);
   noSmooth();
 
+  scheduler = new NonRealTimeScheduler();
+  loom = new Loom(this, scheduler);
+  loom.setPeriod(7500);
+
   if (recording) {
-    scheduler = new NonRealTimeScheduler();
-    loom = new Loom(this, scheduler);
-  } else {
-    loom = new Loom(this, 5);
+    loom.recordMidi("boogie.mid");
   }
+
   vertical = new HashMap<Integer, Pattern>();
   horizontal = new HashMap<Integer, Pattern>();
 
   randomSeed(seed);
 
-  for (int i = 0; i < 10; i++) {
-    Pattern verticalPat = new Pattern(loom, makeEvents());
-    verticalPat.asColor(yellow, gray, blue, red).loop();
-    verticalPat.asMidiChannel(0).asMidi("ACOUSTIC_GRAND_PIANO");
-    verticalPat.asMidiNote(verticalPitches).asMidiMessage(verticalPat);
-    vertical.put(i * 60, verticalPat);
+  Pattern proto = new Pattern(loom, new EventCollection());
+  proto.asColor(#FFD300, #DDDDDD, #00499A, #CA0000, #005C35).asMidiData2(0, 80);
 
-    Pattern horizontalPat = new Pattern(loom, makeEvents());
-    horizontalPat.asColor(yellow, gray, blue, red).loop();
-    horizontalPat.asMidiChannel(1).asMidi("ACOUSTIC_GRAND_PIANO");
-    horizontalPat.asMidiNote(horizontalPitches).asMidiMessage(horizontalPat);
-    horizontal.put(i * 60, horizontalPat);
+  for (int i = 0; i < 10; i++) {
+    int octave = ((i % 5) + 3) * 12;
+
+    Pattern verticalPat = proto.clone();
+    verticalPat.extend(makeEvents()).repeat(repeats);
+
+    if (i != 0 && i != 8)
+      verticalPat.after(repeats, seq(rest(0.3), evt(0.3, 1.0)));
+
+    verticalPat.asMidiChannel(0).asMidiInstrument("ORCHESTRAL_HARP");
+    verticalPat.asMidiNote(-127, 0, 4, 7, 0).transpose(octave).asMidiMessage(verticalPat);
+
+    vertical.put(i * (width/10), verticalPat);
+
+    Pattern horizontalPat = proto.clone();
+    horizontalPat.extend(makeEvents()).repeat(repeats);
+
+    if (i == 1)
+      horizontalPat.after(repeats, seq(rest(0.2), rest(0.3), evt(0.1, 1.0), rest(0.1), evt(0.1, 1.0), rest(0.1), evt(0.2, 1.0)));
+    else if (i == 4)
+      horizontalPat.after(repeats, seq(rest(0.2), rest(0.1), evt(0.1, 1.0), rest(0.1), evt(0.1, 1.0), rest(0.1), evt(0.1, 1.0)));
+
+    horizontalPat.asColor(#FFD300, #DDDDDD, #00499A, #CA0000, #005C35);
+    horizontalPat.asMidiChannel(1).asMidiInstrument("ORCHESTRAL_HARP");
+    horizontalPat.asMidiNote(-127, 2, 9, 11, 9).transpose(octave).asMidiMessage(horizontalPat);
+
+    horizontal.put(i * (height/10), horizontalPat);
   }
 
-  if (recording) {
-    loom.recordMidi("boogie.mid");
-  } else {
+  if (!recording) {
     myBus = new MidiBus(this, "Bus 1", "Bus 1");
-    loom.midiBusWrapper.set(new MidiBusImpl(myBus));
+    loom.setMidiBus(myBus);
     loom.play();
   }
 }
@@ -99,25 +113,24 @@ void draw() {
 
   for (Map.Entry me : horizontal.entrySet ()) {
     Pattern pat = (Pattern) me.getValue();
-    pat.rect(0, ((Integer) me.getKey()).intValue(), width, roadWidth);
+    pat.rect(0, ((Integer) me.getKey()).intValue(), width, roadWidth, singleInterval);
   }
 
-  translate(width, 0);
   rotate(HALF_PI);
+  translate(0, -width);
 
   for (Map.Entry me : vertical.entrySet ()) {
     Pattern pat = (Pattern) me.getValue();
-    pat.rect(0, ((Integer) me.getKey()).intValue(), height, roadWidth);
+    pat.rect(0, ((Integer) me.getKey()).intValue(), height, roadWidth, singleInterval);
   }
 
+  millis += millisPerFrame;
+  scheduler.setElapsedMillis((long) millis);
 
   if (recording) {
     saveFrame("####.png");
 
-    millis += desiredFPS;
-    scheduler.setElapsedMillis((long) millis);
-
-    if (millis > 4000)
+    if (millis > loom.getPeriod() * (repeats + 1.3))
       exit();
   }
 }
