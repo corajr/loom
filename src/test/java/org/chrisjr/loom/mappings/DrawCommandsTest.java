@@ -8,6 +8,7 @@ import org.chrisjr.loom.EventCollection;
 import org.chrisjr.loom.Loom;
 import org.chrisjr.loom.Pattern;
 import org.chrisjr.loom.time.NonRealTimeScheduler;
+import org.chrisjr.loom.time.RealTimeScheduler;
 import org.chrisjr.loom.transforms.LsysRewriter;
 import org.junit.After;
 import org.junit.Before;
@@ -151,8 +152,7 @@ public class DrawCommandsTest {
 
 	}
 
-	@Test
-	public void turtleWithLsys() {
+	private String[] makeLsys() {
 		LsysRewriter lsys = new LsysRewriter("X->F-[[X]+X]+F[+FX]-X", "F->FF");
 		EventCollection axiom = lsys.makeAxiom("X");
 
@@ -168,16 +168,51 @@ public class DrawCommandsTest {
 		EventCollection events = lsys.apply(axiom);
 
 		pattern = new Pattern(loom, events);
-		pattern.asTurtleDrawCommand(commands);
-		pattern.loop();
+		pattern.asTurtleDrawCommand(false, commands);
 
-		for (int i = 0; i < 20; i++) {
+		pattern.addAllTurtleDrawCommands();
+		pattern.draw();
+
+		String[] result = new String[testApp.commands.size()];
+		result = testApp.commands.toArray(result);
+
+		pattern.turtle.clear();
+		return result;
+	}
+
+	@Test
+	public void turtleWithLsys() {
+		String[] result = makeLsys();
+
+		for (int i = 0; i < 10; i++) {
 			testApp.commands.clear();
+			scheduler.setElapsedMillis(i * 100);
 
-			scheduler.setElapsedMillis(i * 100 + 1);
 			loom.draw();
-
 			assertThat(testApp.commands.size(), is(greaterThan(0)));
 		}
+		testApp.commands.clear();
+
+		scheduler.setElapsedMillis(1000);
+		loom.draw();
+
+		assertThat(testApp.commands.size(), is(result.length));
+		assertThat(testApp.commands, contains(result));
+	}
+
+	@Test
+	public void turtleWithLsysRealtime() throws InterruptedException {
+		loom = new Loom(testApp, new RealTimeScheduler());
+		String[] result = makeLsys();
+
+		testApp.commands.clear();
+		loom.play();
+		Thread.sleep(1001);
+		loom.stop();
+
+		loom.draw();
+
+		assertThat(testApp.commands.size(), is(result.length));
+		assertThat(testApp.commands, contains(result));
 	}
 }

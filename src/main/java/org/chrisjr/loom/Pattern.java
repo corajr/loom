@@ -1354,7 +1354,7 @@ public class Pattern implements Cloneable {
 		return asTurtleDrawCommand(true, commands);
 	}
 
-	public Pattern asTurtleDrawCommand(boolean doUpdates,
+	public Pattern asTurtleDrawCommand(boolean clearing,
 			TurtleDrawCommand... commands) {
 		turtle = new Turtle(loom.getParent());
 
@@ -1366,10 +1366,10 @@ public class Pattern implements Cloneable {
 		putMapping(MappingType.TURTLE_DRAW_COMMAND,
 				new ObjectMapping<TurtleDrawCommand>(commands));
 
-		if (doUpdates) {
-			onOnset(commands);
+		onOnset(commands);
 
-			every(1, new Callable<Void>() {
+		if (clearing) {
+			every(getTotalInterval().getSize(), new Callable<Void>() {
 				@Override
 				public Void call() {
 					turtle.clear();
