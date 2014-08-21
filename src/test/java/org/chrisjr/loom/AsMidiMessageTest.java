@@ -102,6 +102,7 @@ public class AsMidiMessageTest implements StandardMidiListener {
 	public void tearDown() throws Exception {
 		myBus = null;
 		pattern = null;
+		notes = null;
 		notesOnReceived.set(0);
 		notesOffReceived.set(0);
 		program1ChangedTo = -1;
@@ -269,18 +270,39 @@ public class AsMidiMessageTest implements StandardMidiListener {
 		assertThat(notesOffReceived.get(), is(equalTo(16)));
 	}
 
-	@Test
-	public void asMidiManyNotes() throws InterruptedException {
-		int n = 3;
+	private void makeManyNotes(int n) {
 		LEvent[] events = new LEvent[128 * n];
 		double duration = 1.0 / events.length;
 		for (int i = 0; i < events.length; i++) {
 			events[i] = evt(duration, (i % 128) / 127.0);
 		}
 		pattern.extend(seq(events)).asMidiData1(0, 127).asMidiMessage(pattern);
+	}
+
+	@Test
+	public void asMidiManyNotes() throws InterruptedException {
+		int n = 3;
+		makeManyNotes(n);
 
 		scheduler.setElapsedMillis(1000);
-		Thread.sleep(10);
+		Thread.sleep(1);
+
+		counter.check(n);
+	}
+
+	@Test
+	public void asMidiManyNotesRealtime() throws InterruptedException {
+		int n = 3;
+
+		loom = new Loom(null, new RealTimeScheduler());
+		loom.setMidiBus(myBus);
+
+		pattern = new Pattern(loom);
+		makeManyNotes(n);
+
+		loom.play();
+		Thread.sleep(1005);
+		loom.stop();
 
 		counter.check(n);
 	}
