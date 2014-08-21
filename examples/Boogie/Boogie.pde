@@ -57,12 +57,15 @@ void setup() {
   noSmooth();
 
   scheduler = new NonRealTimeScheduler();
-  loom = new Loom(this, scheduler);
-  loom.setPeriod(7500);
 
   if (recording) {
+    loom = new Loom(this, scheduler);
     loom.recordMidi("boogie.mid");
+  } else {
+    loom = new Loom(this);
   }
+
+  loom.setPeriod(7500);
 
   vertical = new HashMap<Integer, Pattern>();
   horizontal = new HashMap<Integer, Pattern>();
@@ -124,10 +127,10 @@ void draw() {
     pat.rect(0, ((Integer) me.getKey()).intValue(), height, roadWidth, singleInterval);
   }
 
-  millis += millisPerFrame;
-  scheduler.setElapsedMillis((long) millis);
-
   if (recording) {
+    millis += millisPerFrame;
+    scheduler.setElapsedMillis((long) millis);
+
     saveFrame("####.png");
 
     if (millis > loom.getPeriod() * (repeats + 1.3))
