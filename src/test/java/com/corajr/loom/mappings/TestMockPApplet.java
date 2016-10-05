@@ -8,10 +8,17 @@ public class TestMockPApplet extends PApplet {
 	private static final long serialVersionUID = -7174699997244200887L;
 	public ArrayList<String> commands = new ArrayList<String>();
 
+	public void init() {
+		runSketch();
+	}
+
+	@Override
+	public void settings() {
+		size(400, 400);
+	}
+
 	@Override
 	public void setup() {
-		size(400, 400);
-
 		// prevent thread from starving everything else
 		noLoop();
 	}
