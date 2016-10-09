@@ -1,8 +1,8 @@
-org.chrisjr.loom
-org.chrisjr.loom.continuous
-org.chrisjr.loom.mappings
-org.chrisjr.loom.recording
-org.chrisjr.loom.time
-org.chrisjr.loom.transforms
-org.chrisjr.loom.util
-org.chrisjr.loom.wrappers
+com.corajr.loom
+com.corajr.loom.continuous
+com.corajr.loom.mappings
+com.corajr.loom.recording
+com.corajr.loom.time
+com.corajr.loom.transforms
+com.corajr.loom.util
+com.corajr.loom.wrappers

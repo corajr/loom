@@ -1,7 +1,18 @@
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.time.*;
-import org.chrisjr.loom.wrappers.*;
-import org.chrisjr.loom.util.*;
+/**
+ * Fugue shows how patterns can be transformed and combined.
+ *
+ * Using Bach's Fugue no. 1 in C from the Well-Tempered Clavier,
+ * we can write the subject and counter-subject out and play each
+ * with transposition or delay.
+ *
+ * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
+ * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
+ */
+
+import com.corajr.loom.*;
+import com.corajr.loom.time.*;
+import com.corajr.loom.wrappers.*;
+import com.corajr.loom.util.*;
 import themidibus.*;
 
 Loom loom;
@@ -21,6 +32,7 @@ void setup() {
   pattern = Pattern.fromABC(loom, fugueSubject);
   pattern.asColor(#000100, #00FF00);
 
+  // transpose the subject up a 5th, delayed by 3 bars
   pattern2 = pattern.clone().transpose(7).delay(3);
   pattern2.asColor(#010000, #FF0000);
 
@@ -47,4 +59,3 @@ void draw() {
   pattern2.rect(0, 100, width, 100, duration);
   pattern3.rect(0, 200, width, 100, duration);
 }
-

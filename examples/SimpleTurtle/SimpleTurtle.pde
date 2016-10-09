@@ -1,11 +1,16 @@
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.mappings.*;
+/**
+ * SimpleTurtle draws a square using a "turtle," as in LOGO.
+ *
+ * Turtle drawing is needed for L-systems.
+ */
+import com.corajr.loom.*;
+import com.corajr.loom.mappings.*;
 
 Loom loom;
 Pattern pattern;
 
 void setup() {
-  size(800, 600);
+  size(400, 400);
 
   loom = new Loom(this);
   pattern = new Pattern(loom);
@@ -16,7 +21,7 @@ void setup() {
 
   pattern.asTurtleDrawCommand(forwardAndTurn);
   pattern.loop();
-  
+
   loom.play();
 }
 
@@ -26,4 +31,3 @@ void draw() {
 
   loom.draw();
 }
-
