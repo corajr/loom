@@ -4,6 +4,9 @@
  * There are two patterns: one stays the same and the other shifts.
  * The procedure for shifting the second pattern is described declaratively,
  * rather than written out.
+ *
+ * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
+ * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
  */
 import themidibus.*;
 

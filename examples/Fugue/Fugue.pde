@@ -4,6 +4,9 @@
  * Using Bach's Fugue no. 1 in C from the Well-Tempered Clavier,
  * we can write the subject and counter-subject out and play each
  * with transposition or delay.
+ *
+ * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
+ * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
  */
 
 import com.corajr.loom.*;

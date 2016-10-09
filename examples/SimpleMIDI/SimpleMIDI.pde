@@ -1,5 +1,8 @@
 /**
  * SimpleMIDI demonstrates the basic use of MIDI to play notes.
+ *
+ * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
+ * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
  */
 import com.corajr.loom.*;
 import com.corajr.loom.wrappers.*;

@@ -1,11 +1,13 @@
 /**
  * ABC shows the use of the text-based ABC format for entering musical notation.
- * 
- * See http://abcnotation.com/learn for a tutorial on ABC notation.
+ *
+ * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
+ * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
  * 
  * Note that the key defaults to C major; if you want to specify a different key,
  * you can either provide just the key in the input string (e.g. "K:D\n ..."
- * or a complete ABC header. 
+ * or a complete ABC header. See http://abcnotation.com/learn for a tutorial
+ * on ABC notation.
  */
 
 import com.corajr.loom.*;
@@ -27,7 +29,7 @@ void setup() {
   // If using C major, the header can be omitted.
   pattern = Pattern.fromABC(loom, "zCDEF3/2G/4F/4EA|DG3/2A/2G/2F/2E/2||");
 
-  // Initialize the MIDI bus and add it to the loom.
+  // Initialize the MIDI bus and add it to the Loom.
   myBus = new MidiBus(this, "Bus 1", "Bus 1");
   loom.setMidiBus(myBus);
 
