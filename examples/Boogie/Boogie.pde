@@ -8,6 +8,7 @@
 import java.util.Map;
 
 import com.corajr.loom.*;
+import com.corajr.loom.wrappers.*;
 import com.corajr.loom.time.*;
 import com.corajr.loom.transforms.*;
 import static com.corajr.loom.LEvent.*;
@@ -128,7 +129,7 @@ void setup() {
   }
 
   if (!recording) {
-    myBus = new MidiBus(this, "Bus 1", "Bus 1");
+    myBus = MidiBusImpl.getDefaultMidiBus(this);
     loom.setMidiBus(myBus);
     loom.play();
   }

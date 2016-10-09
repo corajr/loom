@@ -1,9 +1,12 @@
 /**
  * ABC shows the use of the text-based ABC format for entering musical notation.
  *
- * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
- * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
- * 
+ * You will need The MidiBus <https://github.com/sparks/themidibus/> installed for this example.
+ *
+ * You will also need a MIDI synthesizer connected (real or virtual) to hear sound.
+ * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>, while Windows
+ * users can simply use the sketch as-is.
+ *
  * Note that the key defaults to C major; if you want to specify a different key,
  * you can either provide just the key in the input string (e.g. "K:D\n ..."
  * or a complete ABC header. See http://abcnotation.com/learn for a tutorial
@@ -30,7 +33,7 @@ void setup() {
   pattern = Pattern.fromABC(loom, "zCDEF3/2G/4F/4EA|DG3/2A/2G/2F/2E/2||");
 
   // Initialize the MIDI bus and add it to the Loom.
-  myBus = new MidiBus(this, "Bus 1", "Bus 1");
+  myBus = MidiBusImpl.getDefaultMidiBus(this);
   loom.setMidiBus(myBus);
 
   // Rendering as a color, interpolate between black and white;

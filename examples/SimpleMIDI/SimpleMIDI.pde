@@ -1,8 +1,11 @@
 /**
  * SimpleMIDI demonstrates the basic use of MIDI to play notes.
  *
- * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
- * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
+ * You will need The MidiBus <https://github.com/sparks/themidibus/> installed for this example.
+ *
+ * You will also need a MIDI synthesizer connected (real or virtual) to hear sound.
+ * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>, while Windows
+ * users can simply use the sketch as-is.
  */
 import com.corajr.loom.*;
 import com.corajr.loom.wrappers.*;
@@ -17,8 +20,9 @@ void setup() {
   
   loom = new Loom(this, 120);
   pattern = new Pattern(loom);
-  myBus = new MidiBus(this, "Bus 1", "Bus 1");
   
+  // Initialize the MIDI bus and add it to the Loom.
+  myBus = MidiBusImpl.getDefaultMidiBus(this);
   loom.setMidiBus(myBus);
 
   pattern.extend("0123");
