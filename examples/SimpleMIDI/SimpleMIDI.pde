@@ -1,11 +1,9 @@
 /**
  * SimpleMIDI demonstrates the basic use of MIDI to play notes.
  *
- * You will need The MidiBus <https://github.com/sparks/themidibus/> installed for this example.
- *
- * You will also need a MIDI synthesizer connected (real or virtual) to hear sound.
- * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>, while Windows
- * users can simply use the sketch as-is.
+ * You will need The MidiBus <https://github.com/sparks/themidibus/> and a MIDI synthesizer
+ * installed for this example. If you don't hear any sound, please consult the instructions at:
+ * https://corajr.github.io/loom/reference/com/corajr/loom/wrappers/MidiBusImpl.html#midi
  */
 import com.corajr.loom.*;
 import com.corajr.loom.wrappers.*;

@@ -3,6 +3,10 @@
  *
  * This example combines the visual pattern rendering of the ColorBars example,
  * and MIDI rendering from SimpleMIDI.
+ *
+ * You will need The MidiBus <https://github.com/sparks/themidibus/> and a MIDI synthesizer
+ * installed for this example. If you don't hear any sound, please consult the instructions at:
+ * https://corajr.github.io/loom/reference/com/corajr/loom/wrappers/MidiBusImpl.html#midi
  */
 
 import java.util.Map;
