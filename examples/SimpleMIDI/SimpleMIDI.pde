@@ -6,7 +6,6 @@
  * https://corajr.github.io/loom/reference/com/corajr/loom/wrappers/MidiBusImpl.html#midi
  */
 import com.corajr.loom.*;
-import com.corajr.loom.wrappers.*;
 import themidibus.*;
 
 Loom loom;
@@ -19,8 +18,11 @@ void setup() {
   loom = new Loom(this, 120);
   pattern = new Pattern(loom);
   
+  // List valid MIDI devices.
+  // MidiBus.list();
+
   // Initialize the MIDI bus and add it to the Loom.
-  myBus = MidiBusImpl.getDefaultMidiBus(this);
+  myBus = new MidiBus(this, -1, "Bus 1");
   loom.setMidiBus(myBus);
 
   pattern.extend("0123");

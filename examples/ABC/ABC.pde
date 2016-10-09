@@ -30,8 +30,11 @@ void setup() {
   // If using C major, the header can be omitted.
   pattern = Pattern.fromABC(loom, "zCDEF3/2G/4F/4EA|DG3/2A/2G/2F/2E/2||");
 
+  // List valid MIDI devices.
+  // MidiBus.list();
+
   // Initialize the MIDI bus and add it to the Loom.
-  myBus = MidiBusImpl.getDefaultMidiBus(this);
+  myBus = new MidiBus(this, -1, "Bus 1");
   loom.setMidiBus(myBus);
 
   // Rendering as a color, interpolate between black and white;
