@@ -1,3 +1,10 @@
+/**
+ * Click shows how user input can influence a pattern.
+ *
+ * Clicking causes the TriggerFunction to fire,
+ * momentarily raising the pattern's value to 1.
+ */
+
 import com.corajr.loom.*;
 import com.corajr.loom.continuous.*;
 
