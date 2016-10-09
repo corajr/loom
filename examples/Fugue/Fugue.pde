@@ -1,7 +1,7 @@
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.time.*;
-import org.chrisjr.loom.wrappers.*;
-import org.chrisjr.loom.util.*;
+import com.corajr.loom.*;
+import com.corajr.loom.time.*;
+import com.corajr.loom.wrappers.*;
+import com.corajr.loom.util.*;
 import themidibus.*;
 
 Loom loom;

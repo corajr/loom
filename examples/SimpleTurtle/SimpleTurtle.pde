@@ -1,5 +1,5 @@
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.mappings.*;
+import com.corajr.loom.*;
+import com.corajr.loom.mappings.*;
 
 Loom loom;
 Pattern pattern;

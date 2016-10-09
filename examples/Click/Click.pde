@@ -1,5 +1,5 @@
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.continuous.*;
+import com.corajr.loom.*;
+import com.corajr.loom.continuous.*;
 
 Loom loom;
 Pattern pattern;

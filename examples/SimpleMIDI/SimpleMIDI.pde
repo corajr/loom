@@ -1,5 +1,5 @@
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.wrappers.*;
+import com.corajr.loom.*;
+import com.corajr.loom.wrappers.*;
 import themidibus.*;
 
 Loom loom;

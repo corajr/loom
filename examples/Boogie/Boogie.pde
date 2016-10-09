@@ -1,9 +1,9 @@
 import java.util.Map;
 
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.time.*;
-import org.chrisjr.loom.transforms.*;
-import static org.chrisjr.loom.LEvent.*;
+import com.corajr.loom.*;
+import com.corajr.loom.time.*;
+import com.corajr.loom.transforms.*;
+import static com.corajr.loom.LEvent.*;
 
 import themidibus.*;
 

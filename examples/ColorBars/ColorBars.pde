@@ -1,4 +1,4 @@
-import org.chrisjr.loom.*;
+import com.corajr.loom.*;
 
 Loom loom;
 Pattern[] patterns;

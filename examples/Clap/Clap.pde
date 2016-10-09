@@ -1,9 +1,9 @@
 import themidibus.*;
 
-import org.chrisjr.loom.*;
-import org.chrisjr.loom.transforms.*;
-import org.chrisjr.loom.continuous.*;
-import org.chrisjr.loom.util.MidiTools.Percussion;
+import com.corajr.loom.*;
+import com.corajr.loom.transforms.*;
+import com.corajr.loom.continuous.*;
+import com.corajr.loom.util.MidiTools.Percussion;
 
 MidiBus myBus;
 Loom loom;
