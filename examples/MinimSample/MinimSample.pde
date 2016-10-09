@@ -1,3 +1,7 @@
+/**
+ * MinimSample uses the Minim audio library to play a sample according to a pattern.
+ */
+
 import com.corajr.loom.*;
 import ddf.minim.*;
 
