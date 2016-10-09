@@ -9,7 +9,7 @@ import processing.core.*;
  * will be attached to the current PApplet and will execute in its graphics
  * context.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class Draw {
 
@@ -22,7 +22,7 @@ public class Draw {
 	/**
 	 * Do nothing. Additionally leaves the state of a Turtle unchanged.
 	 * 
-	 * @author chrisjr
+	 * @author corajr
 	 */
 	public static class Noop extends TurtleDrawCommand {
 		@Override
@@ -34,7 +34,7 @@ public class Draw {
 	/**
 	 * Combines several different DrawCommands into a single command.
 	 * 
-	 * @author chrisjr
+	 * @author corajr
 	 */
 	public static class Compound extends DrawCommand {
 		DrawCommand[] commands;
@@ -78,7 +78,7 @@ public class Draw {
 	/**
 	 * Draws a line from (x1, y1) to (x2, y2).
 	 * 
-	 * @author chrisjr
+	 * @author corajr
 	 */
 	public static class Line extends DrawCommand {
 		float x1, y1, x2, y2;
@@ -111,7 +111,7 @@ public class Draw {
 	/**
 	 * Draws a rectangle.
 	 * 
-	 * @author chrisjr
+	 * @author corajr
 	 */
 	public static class Rect extends DrawCommand {
 		float x, y, w, h;

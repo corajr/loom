@@ -6,7 +6,7 @@ import processing.core.PVector;
  * Holds the current position and direction information from a Turtle, and
  * allows it to be manipulated in various ways.
  * 
- * @author chrisjr
+ * @author corajr
  * @see Turtle
  */
 public final class PositionHeading {

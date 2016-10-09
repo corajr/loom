@@ -5,7 +5,7 @@ package com.corajr.loom.mappings;
  * single output for a value between 0.0 and 1.0. It may also return null if
  * there is no output associated with a given value.
  * 
- * @author chrisjr
+ * @author corajr
  * 
  * @param <T>
  *            the return type of the mapping

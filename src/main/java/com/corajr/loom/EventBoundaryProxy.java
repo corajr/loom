@@ -12,7 +12,7 @@ import com.corajr.loom.time.Scheduler;
  * Transforms each event of a parent EventQueryable into separate onset and
  * release events.
  * 
- * @author chrisjr
+ * @author corajr
  * 
  */
 public class EventBoundaryProxy extends EventTransformer {

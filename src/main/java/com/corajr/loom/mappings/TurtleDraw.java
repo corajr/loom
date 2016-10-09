@@ -10,7 +10,7 @@ import processing.core.PVector;
  * drawing state. When added to a pattern, these commands will be executed by
  * that pattern's {@link Turtle}.
  * 
- * @author chrisjr
+ * @author corajr
  */
 
 public class TurtleDraw {

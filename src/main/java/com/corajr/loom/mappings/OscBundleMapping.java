@@ -8,7 +8,7 @@ import oscP5.OscBundle;
  * Collects OSC messages from the specified patterns and wraps them in a single
  * OSC bundle.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class OscBundleMapping implements Mapping<OscBundle> {
 	private final PatternCollection oscPatterns;

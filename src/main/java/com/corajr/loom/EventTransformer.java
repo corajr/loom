@@ -10,7 +10,7 @@ import com.corajr.loom.time.Interval;
  * Abstract class for transforming the events of an EventQueryable. For each
  * event in the original collection, zero or more events may be returned.
  * 
- * @author chrisjr
+ * @author corajr
  */
 
 public abstract class EventTransformer implements EventQueryable {

@@ -8,7 +8,7 @@ import com.corajr.loom.time.Interval;
 /**
  * Match events from the parent EventQueryable according to a specified value.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class EventMatchFilter extends EventTransformer {
 	double matchValue;

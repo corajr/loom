@@ -8,7 +8,7 @@ import processing.core.PConstants;
  * return that color. Otherwise, take the input value and interpolates in HSB
  * space between the two colors closest to the value.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class ColorMapping implements Mapping<Integer> {
 	final int[] colors;

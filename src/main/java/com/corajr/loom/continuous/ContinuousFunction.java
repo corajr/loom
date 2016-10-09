@@ -8,7 +8,7 @@ import com.corajr.loom.time.Interval;
  * A ContinuousFunction must define <code>call</code> as a function of time,
  * returning a value between 0.0 and 1.0.
  * 
- * @author chrisjr
+ * @author corajr
  * 
  */
 public abstract class ContinuousFunction {

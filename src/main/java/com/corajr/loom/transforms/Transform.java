@@ -8,7 +8,7 @@ import com.corajr.loom.Pattern;
  * A Transform must define <code>call</code> as a function that takes a Pattern
  * as input and returns a new Pattern.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public abstract class Transform {
 	/**

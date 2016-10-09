@@ -7,7 +7,7 @@ import com.corajr.loom.Loom;
 import com.corajr.loom.recording.MidiBusRecorder;
 
 /**
- * @author chrisjr
+ * @author corajr
  * 
  *         Holds either an actual MidiBus instance or a MidiBusRecorder. This
  *         allows us to avoid importing themidibus in sketches where it is not

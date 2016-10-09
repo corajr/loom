@@ -18,7 +18,7 @@ import com.corajr.loom.time.IntervalMath;
  * associated events/function. ConcretePatterns have no children and hold
  * exactly one value at any given time.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class ConcretePattern extends Pattern {
 	protected ConcurrentMap<MappingType, Mapping<?>> outputMappings = new ConcurrentHashMap<MappingType, Mapping<?>>();

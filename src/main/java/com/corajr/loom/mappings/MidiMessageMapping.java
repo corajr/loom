@@ -14,7 +14,7 @@ import com.corajr.loom.wrappers.MidiBusWrapper;
  * Collects the MIDI message parameters (command, channel, data) from the
  * specified patterns and returns a javax.sound.midi.ShortMessage when queried.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class MidiMessageMapping implements Mapping<MidiMessage>,
 		EventMapping<Callable<Void>> {

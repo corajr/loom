@@ -7,7 +7,7 @@ import com.corajr.loom.time.Interval;
  * Follows another pattern, returning 1.0 when it matches the specified value,
  * and 0.0 otherwise.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class MatchFunction extends FollowerFunction {
 	private final double matchValue;

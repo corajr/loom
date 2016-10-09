@@ -14,7 +14,7 @@ import com.corajr.loom.util.MidiTools.Note;
  * 
  * (For "events" that vary over time, use a ContinuousPattern.)
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class LEvent {
 	final private Interval interval;

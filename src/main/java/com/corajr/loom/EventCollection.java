@@ -14,7 +14,7 @@ import com.corajr.loom.time.Interval;
  * (polyphony) can be achieved by creating multiple child patterns, each with
  * its own set of events.
  * 
- * @author chrisjr
+ * @author corajr
  */
 
 public class EventCollection extends ConcurrentSkipListMap<BigFraction, LEvent>

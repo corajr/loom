@@ -7,7 +7,7 @@ import com.corajr.loom.time.Interval;
  * Follows another pattern, returning 1.0 when its value equals or exceeds the
  * specified threshold and 0.0 otherwise.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class ThresholdFunction extends FollowerFunction {
 	private final double threshold;

@@ -7,7 +7,7 @@ import processing.core.PApplet;
 /**
  * Holds a list of {@link TurtleDrawCommand}s and draws them on command.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class Turtle extends ConcurrentLinkedQueue<TurtleDrawCommand> {
 	private static final long serialVersionUID = -6712479056720391577L;

@@ -7,7 +7,7 @@ import org.apache.commons.math3.fraction.BigFraction;
 /**
  * A "trigger" pattern that can be fired by outside events.
  * 
- * @author chrisjr
+ * @author corajr
  * 
  */
 public class TriggerFunction extends ContinuousFunction {

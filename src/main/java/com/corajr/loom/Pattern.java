@@ -37,7 +37,7 @@ import ddf.minim.*;
  * Pattern using {@link #following}, multiple mappings can be assigned.
  * 
  * @see ConcretePattern
- * @author chrisjr
+ * @author corajr
  */
 public class Pattern implements Cloneable {
 	Loom loom;
@@ -72,7 +72,7 @@ public class Pattern implements Cloneable {
 	 * Constants for each possible mapping from floating-point values to output.
 	 * Only one mapping of each type is allowed per pattern.
 	 * 
-	 * @author chrisjr
+	 * @author corajr
 	 */
 	public enum MappingType {
 		INTEGER, // inclusive range

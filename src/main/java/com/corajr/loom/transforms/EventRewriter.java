@@ -8,7 +8,7 @@ import com.corajr.loom.LEvent;
 /**
  * Takes in an EventCollection and outputs a new EventCollection.
  * 
- * @author chrisjr
+ * @author corajr
  * 
  */
 public abstract class EventRewriter {

@@ -10,7 +10,7 @@ import processing.core.PApplet;
  * allows these commands to be called by the scheduler through a common
  * interface.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public abstract class TurtleDrawCommand extends DrawCommand implements
 		Callable<Void> {

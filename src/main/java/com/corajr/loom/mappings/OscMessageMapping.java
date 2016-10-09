@@ -8,7 +8,7 @@ import oscP5.OscMessage;
  * Create an OSC message by using a second pattern and mapping to provide the
  * arguments for the message.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class OscMessageMapping implements Mapping<OscMessage> {
 	private final Pattern original;

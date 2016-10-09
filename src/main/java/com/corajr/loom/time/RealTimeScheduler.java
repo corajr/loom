@@ -3,7 +3,7 @@ package com.corajr.loom.time;
 import org.apache.commons.math3.fraction.BigFraction;
 
 /**
- * @author chrisjr
+ * @author corajr
  * 
  *         This Scheduler plays back pattern events as close to real time as
  *         possible.

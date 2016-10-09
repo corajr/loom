@@ -5,7 +5,7 @@ import processing.core.PApplet;
 /**
  * Describes a drawing operation but does not execute it right away.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public abstract class DrawCommand {
 	private PApplet parent;

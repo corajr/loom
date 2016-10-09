@@ -5,7 +5,7 @@ import org.apache.commons.math3.fraction.BigFraction;
 /**
  * Returns a constant whenever queried.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class ConstantFunction extends ContinuousFunction {
 	private final double value;

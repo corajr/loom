@@ -11,7 +11,7 @@ import com.corajr.loom.PatternCollection;
 /**
  * The base class for schedulers in Loom.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public abstract class Scheduler {
 

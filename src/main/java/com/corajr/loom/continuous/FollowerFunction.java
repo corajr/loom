@@ -8,7 +8,7 @@ import com.corajr.loom.time.Interval;
 /**
  * "Follows" another pattern by returning that pattern's value when queried.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class FollowerFunction extends ContinuousFunction {
 	final Pattern pattern;

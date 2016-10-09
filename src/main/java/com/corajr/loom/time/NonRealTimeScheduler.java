@@ -1,7 +1,7 @@
 package com.corajr.loom.time;
 
 /**
- * @author chrisjr
+ * @author corajr
  * 
  *         This Scheduler records pattern events to a file for later rendering.
  * 

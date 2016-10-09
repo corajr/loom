@@ -6,7 +6,7 @@ import java.util.Collections;
 import com.corajr.loom.LEvent;
 
 /**
- * @author chrisjr
+ * @author corajr
  * 
  *         Keep only those events that match the specified value.
  * 

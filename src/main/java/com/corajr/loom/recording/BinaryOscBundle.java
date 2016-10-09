@@ -4,7 +4,7 @@ import java.net.*;
 import oscP5.OscBundle;
 
 /**
- * @author chrisjr
+ * @author corajr
  * 
  *         Exposes the OscBundle(DatagramPacket) constructor from oscP5.
  * 

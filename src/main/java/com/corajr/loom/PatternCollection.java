@@ -10,7 +10,7 @@ import java.util.concurrent.*;
  * extensions for application-specific queries. Must be concurrent, as it will
  * be queried from multiple threads.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class PatternCollection extends CopyOnWriteArrayList<Pattern> {
 	private static final long serialVersionUID = -6951516407692217125L;

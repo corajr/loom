@@ -5,7 +5,7 @@ import org.apache.commons.math3.fraction.BigFraction;
 /**
  * A sine function with a period of 1 cycle, with a range between 0.0 and 1.0.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class SineFunction extends ContinuousFunction {
 	@Override

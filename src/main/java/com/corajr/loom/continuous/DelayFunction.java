@@ -8,7 +8,7 @@ import com.corajr.loom.time.Interval;
 /**
  * Returns the value of the original function after a delay.
  * 
- * @author chrisjr
+ * @author corajr
  * 
  */
 public class DelayFunction extends FollowerFunction {

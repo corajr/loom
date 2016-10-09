@@ -9,7 +9,7 @@ import com.corajr.loom.recording.OscP5Recorder;
 import oscP5.OscMessage;
 
 /**
- * @author chrisjr
+ * @author corajr
  * 
  *         Holds either an actual oscP5 instance or an OscP5Recorder. This
  *         allows us to avoid importing oscP5 in sketches where it is not used.

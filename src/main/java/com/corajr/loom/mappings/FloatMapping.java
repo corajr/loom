@@ -3,7 +3,7 @@ package com.corajr.loom.mappings;
 /**
  * Map a value from [0.0, 1.0] to [lo, hi] inclusive, as a floating-point value.
  * 
- * @author chrisjr
+ * @author corajr
  */
 
 public class FloatMapping implements Mapping<Float> {

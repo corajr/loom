@@ -8,7 +8,7 @@ import oscP5.*;
 import netP5.*;
 
 /**
- * @author chrisjr
+ * @author corajr
  * 
  *         A map from double-precision timestamps (where 1.0 == one cycle) to
  *         OscBundles.

@@ -5,7 +5,7 @@ package com.corajr.loom.mappings;
  * 
  * Note: Given this behavior, this class should *not* be used for getting an array index.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class IntMapping implements Mapping<Integer> {
 	final int lo;

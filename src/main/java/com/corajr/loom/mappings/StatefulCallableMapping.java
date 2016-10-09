@@ -12,7 +12,7 @@ import com.corajr.loom.util.StatefulCallable;
  * 
  * 
  * @see com.corajr.loom.Pattern#asTurtleDrawCommand(TurtleDrawCommand...)
- * @author chrisjr
+ * @author corajr
  */
 public class StatefulCallableMapping extends ObjectMapping<StatefulCallable>
 		implements EventMapping<StatefulCallable> {

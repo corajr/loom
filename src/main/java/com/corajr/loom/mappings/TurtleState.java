@@ -9,7 +9,7 @@ import processing.core.PVector;
  * Stores both the current {@link PositionHeading} and a stack of previous
  * PositionHeadings for a {@link Turtle}.
  * 
- * @author chrisjr
+ * @author corajr
  */
 public class TurtleState {
 	public static final PositionHeading DEFAULT_POSITION = new PositionHeading(
