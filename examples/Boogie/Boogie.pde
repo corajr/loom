@@ -133,7 +133,11 @@ void setup() {
   }
 
   if (!recording) {
-    myBus = MidiBusImpl.getDefaultMidiBus(this);
+    // List valid MIDI devices.
+    // MidiBus.list();
+
+    // Initialize the MIDI bus and add it to the Loom.
+    myBus = new MidiBus(this, -1, "Bus 1");
     loom.setMidiBus(myBus);
     loom.play();
   }

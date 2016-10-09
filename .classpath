@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="resources/libs/hamcrest-all-1.3.jar"/>
 	<classpathentry kind="lib" path="resources/libs/junit.jar"/>
 	<classpathentry kind="lib" path="resources/libs/oscP5.jar"/>
-	<classpathentry kind="lib" path="resources/libs/themidibus.jar"/>
+	<classpathentry kind="lib" path="resources/libs/themidibus.jar" sourcepath="/Users/corajr/Documents/java-workspace/themidibus/src"/>
 	<classpathentry kind="lib" path="resources/libs/minim/jl1.0.jar"/>
 	<classpathentry kind="lib" path="resources/libs/minim/jsminim.jar"/>
 	<classpathentry kind="lib" path="resources/libs/minim/minim.jar"/>

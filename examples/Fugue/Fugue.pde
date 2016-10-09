@@ -12,7 +12,6 @@
 
 import com.corajr.loom.*;
 import com.corajr.loom.time.*;
-import com.corajr.loom.wrappers.*;
 import com.corajr.loom.util.*;
 import themidibus.*;
 
@@ -47,9 +46,12 @@ void setup() {
   
   duration = pattern2.getTotalInterval();
 
-  myBus = new MidiBus(this, "Bus 1", "Bus 1");
+  // List valid MIDI devices.
+  // MidiBus.list();
 
-  loom.midiBusWrapper.set(new MidiBusImpl(myBus));
+  // Initialize the MIDI bus and add it to the Loom.
+  myBus = new MidiBus(this, -1, "Bus 1");
+  loom.setMidiBus(myBus);
 
   loom.play();
 }

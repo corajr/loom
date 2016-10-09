@@ -12,7 +12,6 @@
 import themidibus.*;
 
 import com.corajr.loom.*;
-import com.corajr.loom.wrappers.*;
 import com.corajr.loom.transforms.*;
 import com.corajr.loom.continuous.*;
 import com.corajr.loom.util.MidiTools.Percussion;
@@ -25,7 +24,12 @@ void setup() {
   size(400, 400);
 
   loom = new Loom(this, 112);
-  myBus = MidiBusImpl.getDefaultMidiBus(this);
+
+  // List valid MIDI devices.
+  // MidiBus.list();
+
+  // Initialize the MIDI bus and add it to the Loom.
+  myBus = new MidiBus(this, -1, "Bus 1");
   loom.setMidiBus(myBus);
 
   pattern = new Pattern(loom);
