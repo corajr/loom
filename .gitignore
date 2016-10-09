@@ -1,3 +1,4 @@
 distribution
-resources/code/org
+resources/code/com
+/tmp
 .DS_Store
