@@ -2,3 +2,4 @@ distribution
 resources/code/com
 /tmp
 .DS_Store
+/bin/
