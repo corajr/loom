@@ -5,8 +5,9 @@
  * we can write the subject and counter-subject out and play each
  * with transposition or delay.
  *
- * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
- * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
+ * You will need The MidiBus <https://github.com/sparks/themidibus/> and a MIDI synthesizer
+ * installed for this example. If you don't hear any sound, please consult the instructions at:
+ * https://corajr.github.io/loom/reference/com/corajr/loom/wrappers/MidiBusImpl.html#midi
  */
 
 import com.corajr.loom.*;

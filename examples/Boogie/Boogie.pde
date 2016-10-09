@@ -3,11 +3,16 @@
  *
  * This example combines the visual pattern rendering of the ColorBars example,
  * and MIDI rendering from SimpleMIDI.
+ *
+ * You will need The MidiBus <https://github.com/sparks/themidibus/> and a MIDI synthesizer
+ * installed for this example. If you don't hear any sound, please consult the instructions at:
+ * https://corajr.github.io/loom/reference/com/corajr/loom/wrappers/MidiBusImpl.html#midi
  */
 
 import java.util.Map;
 
 import com.corajr.loom.*;
+import com.corajr.loom.wrappers.*;
 import com.corajr.loom.time.*;
 import com.corajr.loom.transforms.*;
 import static com.corajr.loom.LEvent.*;
@@ -128,7 +133,7 @@ void setup() {
   }
 
   if (!recording) {
-    myBus = new MidiBus(this, "Bus 1", "Bus 1");
+    myBus = MidiBusImpl.getDefaultMidiBus(this);
     loom.setMidiBus(myBus);
     loom.play();
   }

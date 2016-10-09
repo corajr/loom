@@ -5,12 +5,14 @@
  * The procedure for shifting the second pattern is described declaratively,
  * rather than written out.
  *
- * You will need a MIDI synthesizer connected (real or virtual) to hear sound.
- * OS X users might try SimpleSynth <http://notahat.com/simplesynth/>.
+ * You will need The MidiBus <https://github.com/sparks/themidibus/> and a MIDI synthesizer
+ * installed for this example. If you don't hear any sound, please consult the instructions at:
+ * https://corajr.github.io/loom/reference/com/corajr/loom/wrappers/MidiBusImpl.html#midi
  */
 import themidibus.*;
 
 import com.corajr.loom.*;
+import com.corajr.loom.wrappers.*;
 import com.corajr.loom.transforms.*;
 import com.corajr.loom.continuous.*;
 import com.corajr.loom.util.MidiTools.Percussion;
@@ -23,7 +25,7 @@ void setup() {
   size(400, 400);
 
   loom = new Loom(this, 112);
-  myBus = new MidiBus(this, "Bus 1", "Bus 1");
+  myBus = MidiBusImpl.getDefaultMidiBus(this);
   loom.setMidiBus(myBus);
 
   pattern = new Pattern(loom);
