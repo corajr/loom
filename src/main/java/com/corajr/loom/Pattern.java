@@ -26,6 +26,7 @@ import oscP5.*;
 import processing.core.PApplet;
 import supercollider.*;
 import ddf.minim.*;
+import processing.sound.SoundFile;
 
 /**
  * The base class for patterns in Loom. A Pattern may either be: discrete,
@@ -1305,6 +1306,32 @@ public class Pattern implements Cloneable {
 
 		return this;
 	}
+	
+	/**
+	 * Sets a mapping that triggers a SoundFile when this pattern's
+	 * events have a value of 1.0.
+	 * 
+	 * @param sample
+	 *            the AudioSample
+	 * @return the current pattern
+	 */
+	public Pattern asSoundFile(final SoundFile soundFile) {
+		Pattern hits = new Pattern(null, this.getEvents());
+		hits.rewrite(new MatchRewriter(1.0));
+
+		addChild(hits);
+
+		hits.onOnset(new Callable<Void>() {
+			@Override
+			public Void call() {
+				soundFile.play();
+				return null;
+			}
+		});
+
+		return this;
+	}
+
 
 	/**
 	 * Set a mapping from the pattern's events to colors, blending between them
