@@ -1,4 +1,6 @@
-# Loom
+# Loom [UNMAINTAINED]
+
+While a nice idea in principle, the real-time performance is very poor, and it's hard to generate SuperCollider scores from this.
 
 ## An Audiovisual Pattern Language for Processing
 
